@@ -6,10 +6,35 @@
 	objectVersion = 48;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		82340BD51FFE046D0034204F /* CommonCryptoModuleMap */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 82340BD61FFE046D0034204F /* Build configuration list for PBXAggregateTarget "CommonCryptoModuleMap" */;
+			buildPhases = (
+				82340BD91FFE048C0034204F /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = CommonCryptoModuleMap;
+			productName = CommonCryptoModuleMap;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		82340BA61FFDF2DA0034204F /* SwiftyStellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340B9C1FFDF2DA0034204F /* SwiftyStellar.framework */; };
 		82340BAB1FFDF2DA0034204F /* SwiftyStellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BAA1FFDF2DA0034204F /* SwiftyStellarTests.swift */; };
 		82340BAD1FFDF2DA0034204F /* SwiftyStellar.h in Headers */ = {isa = PBXBuildFile; fileRef = 82340B9F1FFDF2DA0034204F /* SwiftyStellar.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		82340BBA1FFDF3390034204F /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB71FFDF3390034204F /* Conversion.swift */; };
+		82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB81FFDF3390034204F /* XDRCodable.swift */; };
+		82340BBC1FFDF3390034204F /* StellarTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB91FFDF3390034204F /* StellarTypes.swift */; };
+		82340BC41FFDF3F30034204F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BC31FFDF3F30034204F /* AppDelegate.swift */; };
+		82340BC61FFDF3F30034204F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BC51FFDF3F30034204F /* ViewController.swift */; };
+		82340BC91FFDF3F30034204F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340BC71FFDF3F30034204F /* Main.storyboard */; };
+		82340BCB1FFDF3F30034204F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82340BCA1FFDF3F30034204F /* Assets.xcassets */; };
+		82340BCE1FFDF3F30034204F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340BCC1FFDF3F30034204F /* LaunchScreen.storyboard */; };
+		82340BD41FFDF7780034204F /* CommonCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BD31FFDF7780034204F /* CommonCrypto.swift */; };
+		82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BDC1FFE24EE0034204F /* Stellar.swift */; };
+		82340C421FFE52A50034204F /* Sodium.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340C371FFE52900034204F /* Sodium.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,6 +45,55 @@
 			remoteGlobalIDString = 82340B9B1FFDF2DA0034204F;
 			remoteInfo = SwiftyStellar;
 		};
+		82340BDA1FFE04AC0034204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82340B931FFDF2DA0034204F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 82340BD51FFE046D0034204F;
+			remoteInfo = CommonCryptoModuleMap;
+		};
+		82340C361FFE52900034204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82340C2E1FFE52900034204F /* Sodium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 09A943C71A4EB5F500C8A04F;
+			remoteInfo = Sodium_iOS;
+		};
+		82340C381FFE52900034204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82340C2E1FFE52900034204F /* Sodium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 09A943D21A4EB5F500C8A04F;
+			remoteInfo = SodiumTests;
+		};
+		82340C3A1FFE52900034204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82340C2E1FFE52900034204F /* Sodium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 90C75E941AE3571900F1E749;
+			remoteInfo = Sodium_OSX;
+		};
+		82340C3C1FFE52900034204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82340C2E1FFE52900034204F /* Sodium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 901644B61AE36EA700163E3E;
+			remoteInfo = "Example iOS";
+		};
+		82340C3E1FFE52900034204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82340C2E1FFE52900034204F /* Sodium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 901644DC1AE36F2D00163E3E;
+			remoteInfo = "Example OSX";
+		};
+		82340C401FFE529A0034204F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82340C2E1FFE52900034204F /* Sodium.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 09A943C61A4EB5F500C8A04F;
+			remoteInfo = Sodium_iOS;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +103,21 @@
 		82340BA51FFDF2DA0034204F /* SwiftyStellarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftyStellarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		82340BAA1FFDF2DA0034204F /* SwiftyStellarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyStellarTests.swift; sourceTree = "<group>"; };
 		82340BAC1FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		82340BB71FFDF3390034204F /* Conversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversion.swift; sourceTree = "<group>"; };
+		82340BB81FFDF3390034204F /* XDRCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRCodable.swift; sourceTree = "<group>"; };
+		82340BB91FFDF3390034204F /* StellarTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarTypes.swift; sourceTree = "<group>"; };
+		82340BC11FFDF3F30034204F /* SwiftyStellarHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftyStellarHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		82340BC31FFDF3F30034204F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		82340BC51FFDF3F30034204F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		82340BC81FFDF3F30034204F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		82340BCA1FFDF3F30034204F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		82340BCD1FFDF3F30034204F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		82340BCF1FFDF3F30034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		82340BD31FFDF7780034204F /* CommonCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonCrypto.swift; sourceTree = "<group>"; };
+		82340BDC1FFE24EE0034204F /* Stellar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stellar.swift; sourceTree = "<group>"; };
+		82340BFF1FFE463E0034204F /* CEd25519.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CEd25519.framework; path = "../../Library/Developer/Xcode/DerivedData/Ed25519-erqfkshyktfguraklhmhbjqzafft/Build/Products/Debug-iphonesimulator/CEd25519.framework"; sourceTree = "<group>"; };
+		82340C001FFE463E0034204F /* Ed25519.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Ed25519.framework; path = "../../Library/Developer/Xcode/DerivedData/Ed25519-erqfkshyktfguraklhmhbjqzafft/Build/Products/Debug-iphonesimulator/Ed25519.framework"; sourceTree = "<group>"; };
+		82340C2E1FFE52900034204F /* Sodium.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sodium.xcodeproj; path = "../swift-sodium/Sodium.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82340C421FFE52A50034204F /* Sodium.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,15 +137,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		82340BBE1FFDF3F30034204F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		82340B921FFDF2DA0034204F = {
 			isa = PBXGroup;
 			children = (
+				82340C2E1FFE52900034204F /* Sodium.xcodeproj */,
 				82340B9E1FFDF2DA0034204F /* SwiftyStellar */,
 				82340BA91FFDF2DA0034204F /* SwiftyStellarTests */,
+				82340BC21FFDF3F30034204F /* SwiftyStellarHost */,
 				82340B9D1FFDF2DA0034204F /* Products */,
+				82340BFC1FFE41AA0034204F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,6 +164,7 @@
 			children = (
 				82340B9C1FFDF2DA0034204F /* SwiftyStellar.framework */,
 				82340BA51FFDF2DA0034204F /* SwiftyStellarTests.xctest */,
+				82340BC11FFDF3F30034204F /* SwiftyStellarHost.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -71,6 +172,7 @@
 		82340B9E1FFDF2DA0034204F /* SwiftyStellar */ = {
 			isa = PBXGroup;
 			children = (
+				82340BB61FFDF3030034204F /* source */,
 				82340B9F1FFDF2DA0034204F /* SwiftyStellar.h */,
 				82340BA01FFDF2DA0034204F /* Info.plist */,
 			);
@@ -84,6 +186,52 @@
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
 			);
 			path = SwiftyStellarTests;
+			sourceTree = "<group>";
+		};
+		82340BB61FFDF3030034204F /* source */ = {
+			isa = PBXGroup;
+			children = (
+				82340BB71FFDF3390034204F /* Conversion.swift */,
+				82340BB91FFDF3390034204F /* StellarTypes.swift */,
+				82340BB81FFDF3390034204F /* XDRCodable.swift */,
+				82340BD31FFDF7780034204F /* CommonCrypto.swift */,
+				82340BDC1FFE24EE0034204F /* Stellar.swift */,
+			);
+			path = source;
+			sourceTree = "<group>";
+		};
+		82340BC21FFDF3F30034204F /* SwiftyStellarHost */ = {
+			isa = PBXGroup;
+			children = (
+				82340BC31FFDF3F30034204F /* AppDelegate.swift */,
+				82340BC51FFDF3F30034204F /* ViewController.swift */,
+				82340BC71FFDF3F30034204F /* Main.storyboard */,
+				82340BCA1FFDF3F30034204F /* Assets.xcassets */,
+				82340BCC1FFDF3F30034204F /* LaunchScreen.storyboard */,
+				82340BCF1FFDF3F30034204F /* Info.plist */,
+			);
+			path = SwiftyStellarHost;
+			sourceTree = "<group>";
+		};
+		82340BFC1FFE41AA0034204F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				82340BFF1FFE463E0034204F /* CEd25519.framework */,
+				82340C001FFE463E0034204F /* Ed25519.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		82340C2F1FFE52900034204F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				82340C371FFE52900034204F /* Sodium.framework */,
+				82340C391FFE52900034204F /* SodiumTests.xctest */,
+				82340C3B1FFE52900034204F /* Sodium.framework */,
+				82340C3D1FFE52900034204F /* Example iOS.app */,
+				82340C3F1FFE52900034204F /* Example OSX.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +260,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				82340C411FFE529A0034204F /* PBXTargetDependency */,
+				82340BDB1FFE04AC0034204F /* PBXTargetDependency */,
 			);
 			name = SwiftyStellar;
 			productName = SwiftyStellar;
@@ -136,6 +286,23 @@
 			productReference = 82340BA51FFDF2DA0034204F /* SwiftyStellarTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		82340BC01FFDF3F30034204F /* SwiftyStellarHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 82340BD01FFDF3F30034204F /* Build configuration list for PBXNativeTarget "SwiftyStellarHost" */;
+			buildPhases = (
+				82340BBD1FFDF3F30034204F /* Sources */,
+				82340BBE1FFDF3F30034204F /* Frameworks */,
+				82340BBF1FFDF3F30034204F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwiftyStellarHost;
+			productName = SwiftyStellarHost;
+			productReference = 82340BC11FFDF3F30034204F /* SwiftyStellarHost.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -148,9 +315,18 @@
 				TargetAttributes = {
 					82340B9B1FFDF2DA0034204F = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 					82340BA41FFDF2DA0034204F = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+					82340BC01FFDF3F30034204F = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+					82340BD51FFE046D0034204F = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 					};
@@ -162,17 +338,64 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 82340B921FFDF2DA0034204F;
 			productRefGroup = 82340B9D1FFDF2DA0034204F /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 82340C2F1FFE52900034204F /* Products */;
+					ProjectRef = 82340C2E1FFE52900034204F /* Sodium.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				82340B9B1FFDF2DA0034204F /* SwiftyStellar */,
 				82340BA41FFDF2DA0034204F /* SwiftyStellarTests */,
+				82340BC01FFDF3F30034204F /* SwiftyStellarHost */,
+				82340BD51FFE046D0034204F /* CommonCryptoModuleMap */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		82340C371FFE52900034204F /* Sodium.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Sodium.framework;
+			remoteRef = 82340C361FFE52900034204F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		82340C391FFE52900034204F /* SodiumTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SodiumTests.xctest;
+			remoteRef = 82340C381FFE52900034204F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		82340C3B1FFE52900034204F /* Sodium.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Sodium.framework;
+			remoteRef = 82340C3A1FFE52900034204F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		82340C3D1FFE52900034204F /* Example iOS.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Example iOS.app";
+			remoteRef = 82340C3C1FFE52900034204F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		82340C3F1FFE52900034204F /* Example OSX.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Example OSX.app";
+			remoteRef = 82340C3E1FFE52900034204F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		82340B9A1FFDF2DA0034204F /* Resources */ = {
@@ -189,13 +412,44 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		82340BBF1FFDF3F30034204F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82340BCE1FFDF3F30034204F /* LaunchScreen.storyboard in Resources */,
+				82340BCB1FFDF3F30034204F /* Assets.xcassets in Resources */,
+				82340BC91FFDF3F30034204F /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		82340BD91FFE048C0034204F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This if-statement means we'll only run the main script if the CommonCryptoModuleMap directory doesn't exist\n# Because otherwise the rest of the script causes a full recompile for anything where CommonCrypto is a dependency\n# Do a \"Clean Build Folder\" to remove this directory and trigger the rest of the script to run\nif [ -d \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap\" ]; then\necho \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap directory already exists, so skipping the rest of the script.\"\nexit 0\nfi\n\nmkdir -p \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap\"\ncat <<EOF > \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap/module.modulemap\"\nmodule CommonCrypto [system] {\n    header \"${SDKROOT}/usr/include/CommonCrypto/CommonCrypto.h\"\n    export *\n}\nEOF";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		82340B971FFDF2DA0034204F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82340BBC1FFDF3390034204F /* StellarTypes.swift in Sources */,
+				82340BBA1FFDF3390034204F /* Conversion.swift in Sources */,
+				82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */,
+				82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */,
+				82340BD41FFDF7780034204F /* CommonCrypto.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +461,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		82340BBD1FFDF3F30034204F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82340BC61FFDF3F30034204F /* ViewController.swift in Sources */,
+				82340BC41FFDF3F30034204F /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -215,7 +478,36 @@
 			target = 82340B9B1FFDF2DA0034204F /* SwiftyStellar */;
 			targetProxy = 82340BA71FFDF2DA0034204F /* PBXContainerItemProxy */;
 		};
+		82340BDB1FFE04AC0034204F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 82340BD51FFE046D0034204F /* CommonCryptoModuleMap */;
+			targetProxy = 82340BDA1FFE04AC0034204F /* PBXContainerItemProxy */;
+		};
+		82340C411FFE529A0034204F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Sodium_iOS;
+			targetProxy = 82340C401FFE529A0034204F /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		82340BC71FFDF3F30034204F /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				82340BC81FFDF3F30034204F /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		82340BCC1FFDF3F30034204F /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				82340BCD1FFDF3F30034204F /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		82340BAE1FFDF2DA0034204F /* Debug */ = {
@@ -334,6 +626,7 @@
 		82340BB11FFDF2DA0034204F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -341,12 +634,14 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				HEADER_SEARCH_PATHS = "${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap";
 				INFOPLIST_FILE = SwiftyStellar/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellar;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -355,6 +650,7 @@
 		82340BB21FFDF2DA0034204F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -362,6 +658,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				HEADER_SEARCH_PATHS = "${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap";
 				INFOPLIST_FILE = SwiftyStellar/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -376,6 +673,7 @@
 		82340BB41FFDF2DA0034204F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MZAK745F32;
 				INFOPLIST_FILE = SwiftyStellarTests/Info.plist;
@@ -390,6 +688,7 @@
 		82340BB51FFDF2DA0034204F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MZAK745F32;
 				INFOPLIST_FILE = SwiftyStellarTests/Info.plist;
@@ -398,6 +697,54 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		82340BD11FFDF3F30034204F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MZAK745F32;
+				INFOPLIST_FILE = SwiftyStellarHost/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellarHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		82340BD21FFDF3F30034204F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MZAK745F32;
+				INFOPLIST_FILE = SwiftyStellarHost/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellarHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		82340BD71FFE046D0034204F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MZAK745F32;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		82340BD81FFE046D0034204F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MZAK745F32;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -427,6 +774,24 @@
 			buildConfigurations = (
 				82340BB41FFDF2DA0034204F /* Debug */,
 				82340BB51FFDF2DA0034204F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		82340BD01FFDF3F30034204F /* Build configuration list for PBXNativeTarget "SwiftyStellarHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82340BD11FFDF3F30034204F /* Debug */,
+				82340BD21FFDF3F30034204F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		82340BD61FFE046D0034204F /* Build configuration list for PBXAggregateTarget "CommonCryptoModuleMap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82340BD71FFE046D0034204F /* Debug */,
+				82340BD81FFE046D0034204F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
