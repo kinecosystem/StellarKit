@@ -11,6 +11,7 @@ import Sodium
 
 enum StellarError: Error {
     case missingSequence
+    case missingBalance
     case urlEncodingFailed
     case urlCreationFailed
     case dataEncodingFailed
@@ -53,8 +54,51 @@ class Stellar {
         }
     }
 
+    static func balance(account: Data, completion: @escaping (Decimal?, Error?) -> Void) {
+        let base32 = publicKeyToBase32(account)
+        guard let url = URL(string: "https://horizon-testnet.stellar.org/accounts/\(base32)") else {
+            completion(nil, StellarError.urlCreationFailed)
+
+            return
+        }
+
+        URLSession
+            .shared
+            .dataTask(with: url, completionHandler: { (data, response, error) in
+                if error != nil {
+                    completion(nil, error)
+
+                    return
+                }
+
+                guard
+                    let data = data,
+                    let jsonOpt = try? JSONSerialization.jsonObject(with: data,
+                                                                    options: []) as? [String: Any],
+                    let json = jsonOpt,
+                    let balances = json["balances"] as? [[String: Any]] else {
+                        completion(nil, StellarError.missingBalance)
+
+                        return
+                }
+
+                for balance in balances {
+                    if balance["asset_type"] as? String == "native" {
+                        if let amountStr = balance["balance"] as? String, let amount = Decimal(string: amountStr) {
+                            completion(amount, nil)
+
+                            return
+                        }
+                    }
+                }
+
+                completion(nil, StellarError.missingBalance)
+            })
+            .resume()
+    }
+
     private static func sequence(account: Data, completion: @escaping (UInt64?, Error?) -> Void) {
-        let base32 = publicKeyToStellar(account)
+        let base32 = publicKeyToBase32(account)
         guard let url = URL(string: "https://horizon-testnet.stellar.org/accounts/\(base32)") else {
             completion(nil, StellarError.urlCreationFailed)
 

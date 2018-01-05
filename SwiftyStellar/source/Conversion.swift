@@ -1,6 +1,9 @@
 import Foundation
 
 func base32KeyToData(key: String) -> Data {
+    // Stellar represents a key in base32 using a leading type identifier and a trailing 2-byte
+    // checksum, for a total of 35 bytes.  The actual key is stored in bytes 2-33.
+
     let binary = base32ToBinary(base32: key)
 
     let keyData = binary[8..<264]
@@ -14,18 +17,16 @@ func base32KeyToData(key: String) -> Data {
     return d
 }
 
-func dataKeyToBase32(_ key: Data) -> String {
-    let binary = key.binaryString
-    var s = ""
+func publicKeyToBase32(_ key: Data) -> String {
+    var d = Data([VersionBytes.ed25519PublicKey])
 
-    for i in stride(from: 0, to: binary.count, by: 5) {
-        s += toTable[binary[i..<(i + 5)]]!
-    }
+    d.append(key)
+    d.append(contentsOf: d.crc16)
 
-    return s
+    return dataToBase32(d)
 }
 
-let fromTable: [String: String] = [
+private let fromTable: [String: String] = [
     "A": "00000", "B": "00001", "C": "00010", "D": "00011", "E": "00100", "F": "00101",
     "G": "00110", "H": "00111", "I": "01000", "J": "01001", "K": "01010", "L": "01011",
     "M": "01100", "N": "01101", "O": "01110", "P": "01111", "Q": "10000", "R": "10001",
@@ -34,7 +35,7 @@ let fromTable: [String: String] = [
     "6": "11110", "7": "11111",
 ]
 
-let toTable: [String: String] = {
+private let toTable: [String: String] = {
     var t = [String: String]()
 
     for (k, v) in fromTable { t[v] = k }
@@ -42,7 +43,7 @@ let toTable: [String: String] = {
     return t
 }()
 
-func base32ToBinary(base32: String) -> String {
+private func base32ToBinary(base32: String) -> String {
     var s = ""
     for c in base32 {
         if c != "=" {
@@ -53,20 +54,26 @@ func base32ToBinary(base32: String) -> String {
     return s
 }
 
-struct VersionBytes {
+private struct VersionBytes {
     static let ed25519PublicKey: UInt8 = 6 << 3         // G
     static let ed25519SecretSeed: UInt8 = 18 << 3       // S
     static let preAuthTx: UInt8 = 19 << 3               // T
     static let sha256Hash: UInt8 =  23 << 3             // X
 }
 
-func publicKeyToStellar(_ key: Data) -> String {
-    var d = Data([VersionBytes.ed25519PublicKey])
+private func dataToBase32(_ data: Data) -> String {
+    guard (data.count * UInt8.bitWidth) % 5 == 0 else {
+        fatalError("Number of bits not a multiple of 5.  This method intended for encoding Stellar public keys.")
+    }
 
-    d.append(key)
-    d.append(contentsOf: d.crc16)
+    let binary = data.binaryString
+    var s = ""
 
-    return dataKeyToBase32(d)
+    for i in stride(from: 0, to: binary.count, by: 5) {
+        s += toTable[binary[i..<(i + 5)]]!
+    }
+
+    return s
 }
 
 extension UInt8 {

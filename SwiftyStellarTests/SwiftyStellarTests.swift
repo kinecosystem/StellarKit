@@ -75,7 +75,30 @@ class SwiftyStellarTests: XCTestCase {
 
         print(keys.publicKey.crc16)
 
-        print(publicKeyToStellar(keys.publicKey))
+        print(publicKeyToBase32(keys.publicKey))
         print(base32KeyToData(key: "GCAQUXSDESO5CYIDEJYGBFUHGLZ6VHZOYWTLZPWNH2HXQNHPR55DA6MT").hexString)
+    }
+
+    func test3() {
+        let e = expectation(description: "")
+
+        Stellar.balance(account: keyPair().publicKey) { amount, error in
+            defer {
+                e.fulfill()
+            }
+
+            if let error = error {
+                print("Error: \(error)")
+            }
+
+            guard let amount = amount else {
+                return
+            }
+
+            print(amount)
+
+        }
+
+        wait(for: [e], timeout: 10)
     }
 }
