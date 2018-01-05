@@ -37,9 +37,13 @@ class SwiftyStellarTests: XCTestCase {
         Stellar.payment(source: keyPair().publicKey,
                         destination: base32KeyToData(key: destination),
                         amount: 1229,
-                        signingKey: keyPair().secretKey) { data in
+                        signingKey: keyPair().secretKey) { data, error in
                             defer {
                                 e.fulfill()
+                            }
+
+                            if let error = error {
+                                print("Error: \(error)")
                             }
 
                             guard

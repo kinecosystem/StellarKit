@@ -156,6 +156,15 @@ extension Data {
 }
 
 extension String {
+    var urlEncoded: String? {
+        var allowedQueryParamAndKey = NSMutableCharacterSet.urlQueryAllowed
+        allowedQueryParamAndKey.remove(charactersIn: ";/?:@&=+$, ")
+
+        return self.addingPercentEncoding(withAllowedCharacters: allowedQueryParamAndKey)
+    }
+}
+
+extension String {
     var length: Int {
         return self.count
     }
