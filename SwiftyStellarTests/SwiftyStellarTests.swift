@@ -11,7 +11,8 @@ import XCTest
 @testable import Sodium
 
 class SwiftyStellarTests: XCTestCase {
-    
+    let stellar = Stellar(baseURL: URL(string: "https://horizon-testnet.stellar.org")!)
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -34,7 +35,7 @@ class SwiftyStellarTests: XCTestCase {
 
         let destination = "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K"
 
-        Stellar.payment(source: keyPair().publicKey,
+        stellar.payment(source: keyPair().publicKey,
                         destination: base32KeyToData(key: destination),
                         amount: 1229,
                         signingKey: keyPair().secretKey) { data, error in
@@ -82,7 +83,7 @@ class SwiftyStellarTests: XCTestCase {
     func test3() {
         let e = expectation(description: "")
 
-        Stellar.balance(account: keyPair().publicKey) { amount, error in
+        stellar.balance(account: keyPair().publicKey) { amount, error in
             defer {
                 e.fulfill()
             }

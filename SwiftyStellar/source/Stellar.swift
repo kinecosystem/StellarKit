@@ -13,7 +13,6 @@ enum StellarError: Error {
     case missingSequence
     case missingBalance
     case urlEncodingFailed
-    case urlCreationFailed
     case dataEncodingFailed
     case signingFailed
 }
@@ -21,11 +20,17 @@ enum StellarError: Error {
 typealias Completion = (Data?, Error?) -> Void
 
 class Stellar {
-    static func payment(source: Data,
-                        destination: Data,
-                        amount: Int64,
-                        signingKey: Data,
-                        completion: @escaping Completion) {
+    let baseURL: URL
+
+    init(baseURL: URL) {
+        self.baseURL = baseURL
+    }
+
+    func payment(source: Data,
+                 destination: Data,
+                 amount: Int64,
+                 signingKey: Data,
+                 completion: @escaping Completion) {
         sequence(account: source) { sequence, error in
             guard error == nil else {
                 completion(nil, error)
@@ -40,13 +45,13 @@ class Stellar {
             }
 
             do {
-                let envelope = try txEnvelope(source: source,
-                                              destination: destination,
-                                              sequence: sequence,
-                                              amount: amount,
-                                              signingKey: signingKey)
+                let envelope = try self.txEnvelope(source: source,
+                                                   destination: destination,
+                                                   sequence: sequence,
+                                                   amount: amount,
+                                                   signingKey: signingKey)
 
-                postTransaction(envelope: envelope, completion: completion)
+                self.postTransaction(envelope: envelope, completion: completion)
             }
             catch {
                 completion(nil, error)
@@ -54,13 +59,9 @@ class Stellar {
         }
     }
 
-    static func balance(account: Data, completion: @escaping (Decimal?, Error?) -> Void) {
+    func balance(account: Data, completion: @escaping (Decimal?, Error?) -> Void) {
         let base32 = publicKeyToBase32(account)
-        guard let url = URL(string: "https://horizon-testnet.stellar.org/accounts/\(base32)") else {
-            completion(nil, StellarError.urlCreationFailed)
-
-            return
-        }
+        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(base32)
 
         URLSession
             .shared
@@ -97,13 +98,9 @@ class Stellar {
             .resume()
     }
 
-    private static func sequence(account: Data, completion: @escaping (UInt64?, Error?) -> Void) {
+    private func sequence(account: Data, completion: @escaping (UInt64?, Error?) -> Void) {
         let base32 = publicKeyToBase32(account)
-        guard let url = URL(string: "https://horizon-testnet.stellar.org/accounts/\(base32)") else {
-            completion(nil, StellarError.urlCreationFailed)
-
-            return
-        }
+        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(base32)
 
         URLSession
             .shared
@@ -131,18 +128,14 @@ class Stellar {
             .resume()
     }
 
-    private static func postTransaction(envelope: TransactionEnvelope, completion: @escaping Completion) {
+    private func postTransaction(envelope: TransactionEnvelope, completion: @escaping Completion) {
         guard let urlEncodedEnvelope = envelope.toXDR().base64EncodedString().urlEncoded else {
             completion(nil, StellarError.urlEncodingFailed)
 
             return
         }
 
-        guard let url = URL(string: "https://horizon-testnet.stellar.org/transactions") else {
-            completion(nil, StellarError.urlCreationFailed)
-
-            return
-        }
+        let url = baseURL.appendingPathComponent("transactions")
 
         guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
             completion(nil, StellarError.dataEncodingFailed)
@@ -162,11 +155,11 @@ class Stellar {
             .resume()
     }
 
-    private static func txEnvelope(source: Data,
-                                   destination: Data,
-                                   sequence: UInt64,
-                                   amount: Int64,
-                                   signingKey: Data) throws -> TransactionEnvelope {
+    private func txEnvelope(source: Data,
+                            destination: Data,
+                            sequence: UInt64,
+                            amount: Int64,
+                            signingKey: Data) throws -> TransactionEnvelope {
         let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(source))
         let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(destination))
 
@@ -187,9 +180,9 @@ class Stellar {
         return try sign(transaction: tx, signingKey: signingKey, hint: source.suffix(4))
     }
 
-    private static func sign(transaction tx: Transaction,
-                             signingKey: Data,
-                             hint: Data) throws -> TransactionEnvelope {
+    private func sign(transaction tx: Transaction,
+                      signingKey: Data,
+                      hint: Data) throws -> TransactionEnvelope {
         guard let data = "Test SDF Network ; September 2015".data(using: .utf8) else {
             throw StellarError.dataEncodingFailed
         }
