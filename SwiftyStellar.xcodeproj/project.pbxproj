@@ -35,6 +35,8 @@
 		82340BD41FFDF7780034204F /* CommonCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BD31FFDF7780034204F /* CommonCrypto.swift */; };
 		82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BDC1FFE24EE0034204F /* Stellar.swift */; };
 		82340C421FFE52A50034204F /* Sodium.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340C371FFE52900034204F /* Sodium.framework */; };
+		82340C45200138E50034204F /* StellarResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C44200138E50034204F /* StellarResults.swift */; };
+		82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C4A20014BFC0034204F /* StellarErrors.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,6 +120,8 @@
 		82340BFF1FFE463E0034204F /* CEd25519.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CEd25519.framework; path = "../../Library/Developer/Xcode/DerivedData/Ed25519-erqfkshyktfguraklhmhbjqzafft/Build/Products/Debug-iphonesimulator/CEd25519.framework"; sourceTree = "<group>"; };
 		82340C001FFE463E0034204F /* Ed25519.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Ed25519.framework; path = "../../Library/Developer/Xcode/DerivedData/Ed25519-erqfkshyktfguraklhmhbjqzafft/Build/Products/Debug-iphonesimulator/Ed25519.framework"; sourceTree = "<group>"; };
 		82340C2E1FFE52900034204F /* Sodium.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sodium.xcodeproj; path = "../swift-sodium/Sodium.xcodeproj"; sourceTree = "<group>"; };
+		82340C44200138E50034204F /* StellarResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarResults.swift; sourceTree = "<group>"; };
+		82340C4A20014BFC0034204F /* StellarErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarErrors.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +200,8 @@
 				82340BB81FFDF3390034204F /* XDRCodable.swift */,
 				82340BD31FFDF7780034204F /* CommonCrypto.swift */,
 				82340BDC1FFE24EE0034204F /* Stellar.swift */,
+				82340C44200138E50034204F /* StellarResults.swift */,
+				82340C4A20014BFC0034204F /* StellarErrors.swift */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -449,6 +455,8 @@
 				82340BBA1FFDF3390034204F /* Conversion.swift in Sources */,
 				82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */,
 				82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */,
+				82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */,
+				82340C45200138E50034204F /* StellarResults.swift in Sources */,
 				82340BD41FFDF7780034204F /* CommonCrypto.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -10,14 +10,16 @@ import Foundation
 import Sodium
 
 enum StellarError: Error {
+    case missingHash
     case missingSequence
     case missingBalance
     case urlEncodingFailed
     case dataEncodingFailed
     case signingFailed
+    case unknownError (Data?)
 }
 
-typealias Completion = (Data?, Error?) -> Void
+typealias Completion = (String?, Error?) -> Void
 
 class Stellar {
     let baseURL: URL
@@ -150,7 +152,78 @@ class Stellar {
         URLSession
             .shared
             .dataTask(with: request, completionHandler: { data, response, error in
-                completion(data, error)
+                if error != nil {
+                    completion(nil, error)
+
+                    return
+                }
+
+                guard
+                    let d = data,
+                    let jsonOpt = try? JSONSerialization.jsonObject(with: d,
+                                                                    options: []) as? [String: Any],
+                    let json = jsonOpt else {
+                        completion(nil, StellarError.unknownError(data))
+
+                        return
+                }
+
+                let dict: [String: Any]
+                if let extras = json["extras"] as? [String: Any] {
+                    dict = extras
+                } else {
+                    dict = json
+                }
+
+                if
+                    let resultXDRStr = dict["result_xdr"] as? String,
+                    var resultXDRData = Data(base64Encoded: resultXDRStr) {
+                    let result = TransactionResult(xdrData: &resultXDRData, count: 0)
+
+                    switch result.result {
+                    case .txSUCCESS:
+                        break
+                    case .txERROR:
+                        completion(nil, StellarError.unknownError(data))
+
+                        return
+                    case .txFAILED (let opResults):
+                        guard let opResult = opResults.first else {
+                            completion(nil, StellarError.unknownError(data))
+
+                            return
+                        }
+
+                        switch opResult {
+                        case .opINNER(let tr):
+                            switch tr {
+                            case .PAYMENT (let paymentResult):
+                                switch paymentResult {
+                                case .failure (let code):
+                                    if let paymentError = PaymentError(rawValue: code) {
+                                        completion(nil, paymentError)
+
+                                        return
+                                    }
+
+                                default:
+                                    break
+                                }
+                            }
+
+                        default:
+                            break
+                        }
+                    }
+                }
+
+                guard let hash = json["hash"] as? String else {
+                    completion(nil, StellarError.missingHash)
+
+                    return
+                }
+
+                completion(hash, nil)
             })
             .resume()
     }

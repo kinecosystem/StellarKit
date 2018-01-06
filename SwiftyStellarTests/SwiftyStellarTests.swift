@@ -30,30 +30,63 @@ class SwiftyStellarTests: XCTestCase {
         return Sign.KeyPair(publicKey: publicKey, secretKey: secretKey)
     }
     
-    func testExample() {
+    func testPayment() {
         let e = expectation(description: "")
 
         let destination = "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K"
 
         stellar.payment(source: keyPair().publicKey,
                         destination: base32KeyToData(key: destination),
-                        amount: 1229,
-                        signingKey: keyPair().secretKey) { data, error in
+                        amount: Int64.max, //1229,
+                        signingKey: keyPair().secretKey) { txHash, error in
                             defer {
                                 e.fulfill()
                             }
 
-                            if let error = error {
+                            if let error = error as? StellarError {
+                                switch error {
+                                case .unknownError (let data):
+                                    if
+                                        let data = data,
+                                        let jsonOpt = try? JSONSerialization.jsonObject(with: data,
+                                                                                    options: []) as? [String: Any],
+                                        let json = jsonOpt {
+                                        print(json)
+                                    }
+                                default:
+                                    break
+                                }
+
                                 print("Error: \(error)")
                             }
 
-                            guard
-                                let data = data,
-                                let string = String(data: data, encoding: .utf8) else {
-                                    return
+                            guard let txHash = txHash else {
+                                return
                             }
 
-                            print(string)
+                            print(txHash)
+        }
+
+        wait(for: [e], timeout: 10)
+    }
+
+    func testBalance() {
+        let e = expectation(description: "")
+
+        stellar.balance(account: keyPair().publicKey) { amount, error in
+            defer {
+                e.fulfill()
+            }
+
+            if let error = error {
+                print("Error: \(error)")
+            }
+
+            guard let amount = amount else {
+                return
+            }
+
+            print(amount)
 
         }
 
@@ -78,28 +111,5 @@ class SwiftyStellarTests: XCTestCase {
 
         print(publicKeyToBase32(keys.publicKey))
         print(base32KeyToData(key: "GCAQUXSDESO5CYIDEJYGBFUHGLZ6VHZOYWTLZPWNH2HXQNHPR55DA6MT").hexString)
-    }
-
-    func test3() {
-        let e = expectation(description: "")
-
-        stellar.balance(account: keyPair().publicKey) { amount, error in
-            defer {
-                e.fulfill()
-            }
-
-            if let error = error {
-                print("Error: \(error)")
-            }
-
-            guard let amount = amount else {
-                return
-            }
-
-            print(amount)
-
-        }
-
-        wait(for: [e], timeout: 10)
     }
 }
