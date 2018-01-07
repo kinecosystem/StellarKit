@@ -120,7 +120,7 @@ class Stellar {
                 }
 
                 for balance in balances {
-                    if balance["asset_type"] as? String == "native" {
+                    if balance["asset_code"] as? String == "KIN" {
                         if let amountStr = balance["balance"] as? String, let amount = Decimal(string: amountStr) {
                             completion(amount, nil)
 
