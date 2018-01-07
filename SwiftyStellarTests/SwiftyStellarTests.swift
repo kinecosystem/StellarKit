@@ -175,5 +175,6 @@ class SwiftyStellarTests: XCTestCase {
             print(txHash)
         }
 
-        wait(for: [e], timeout: 20)    }
+        wait(for: [e], timeout: 20)
+    }
 }
