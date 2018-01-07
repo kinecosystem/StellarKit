@@ -45,19 +45,22 @@ class SwiftyStellarTests: XCTestCase {
 
                             if let error = error as? StellarError {
                                 switch error {
-                                case .unknownError (let data):
-                                    if
-                                        let data = data,
-                                        let jsonOpt = try? JSONSerialization.jsonObject(with: data,
-                                                                                    options: []) as? [String: Any],
-                                        let json = jsonOpt {
-                                        print(json)
+                                case .parseError (let data):
+                                    if let data = data {
+                                        print("Error: (\(error)): \(data.base64EncodedString())")
+                                    }
+                                case .unknownError (let json):
+                                    if let json = json {
+                                        print("Error: (\(error)): \(json)")
                                     }
                                 default:
                                     break
                                 }
 
                                 print("Error: \(error)")
+                            }
+                            else if let error = error {
+                                print(error)
                             }
 
                             guard let txHash = txHash else {
@@ -67,7 +70,7 @@ class SwiftyStellarTests: XCTestCase {
                             print(txHash)
         }
 
-        wait(for: [e], timeout: 10)
+        wait(for: [e], timeout: 20)
     }
 
     func testBalance() {

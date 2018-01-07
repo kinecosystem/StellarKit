@@ -9,16 +9,6 @@
 import Foundation
 import Sodium
 
-enum StellarError: Error {
-    case missingHash
-    case missingSequence
-    case missingBalance
-    case urlEncodingFailed
-    case dataEncodingFailed
-    case signingFailed
-    case unknownError (Data?)
-}
-
 typealias Completion = (String?, Error?) -> Void
 
 class Stellar {
@@ -75,14 +65,19 @@ class Stellar {
                 }
 
                 guard
-                    let data = data,
-                    let jsonOpt = try? JSONSerialization.jsonObject(with: data,
+                    let d = data,
+                    let jsonOpt = try? JSONSerialization.jsonObject(with: d,
                                                                     options: []) as? [String: Any],
-                    let json = jsonOpt,
-                    let balances = json["balances"] as? [[String: Any]] else {
-                        completion(nil, StellarError.missingBalance)
+                    let json = jsonOpt else {
+                        completion(nil, StellarError.parseError(data))
 
                         return
+                }
+
+                guard let balances = json["balances"] as? [[String: Any]] else {
+                    completion(nil, StellarError.missingBalance)
+
+                    return
                 }
 
                 for balance in balances {
@@ -114,10 +109,16 @@ class Stellar {
                 }
 
                 guard
-                    let data = data,
-                    let jsonOpt = try? JSONSerialization.jsonObject(with: data,
+                    let d = data,
+                    let jsonOpt = try? JSONSerialization.jsonObject(with: d,
                                                                     options: []) as? [String: Any],
-                    let json = jsonOpt,
+                    let json = jsonOpt else {
+                        completion(nil, StellarError.parseError(data))
+
+                        return
+                }
+
+                guard
                     let sequenceStr = json["sequence"] as? String,
                     let sequence = UInt64(sequenceStr) else {
                         completion(nil, StellarError.missingSequence)
@@ -163,58 +164,15 @@ class Stellar {
                     let jsonOpt = try? JSONSerialization.jsonObject(with: d,
                                                                     options: []) as? [String: Any],
                     let json = jsonOpt else {
-                        completion(nil, StellarError.unknownError(data))
+                        completion(nil, StellarError.parseError(data))
 
                         return
                 }
 
-                let dict: [String: Any]
-                if let extras = json["extras"] as? [String: Any] {
-                    dict = extras
-                } else {
-                    dict = json
-                }
+                if let resultError = errorFromResponse(response: json) {
+                    completion(nil, resultError)
 
-                if
-                    let resultXDRStr = dict["result_xdr"] as? String,
-                    var resultXDRData = Data(base64Encoded: resultXDRStr) {
-                    let result = TransactionResult(xdrData: &resultXDRData, count: 0)
-
-                    switch result.result {
-                    case .txSUCCESS:
-                        break
-                    case .txERROR:
-                        completion(nil, StellarError.unknownError(data))
-
-                        return
-                    case .txFAILED (let opResults):
-                        guard let opResult = opResults.first else {
-                            completion(nil, StellarError.unknownError(data))
-
-                            return
-                        }
-
-                        switch opResult {
-                        case .opINNER(let tr):
-                            switch tr {
-                            case .PAYMENT (let paymentResult):
-                                switch paymentResult {
-                                case .failure (let code):
-                                    if let paymentError = PaymentError(rawValue: code) {
-                                        completion(nil, paymentError)
-
-                                        return
-                                    }
-
-                                default:
-                                    break
-                                }
-                            }
-
-                        default:
-                            break
-                        }
-                    }
+                    return
                 }
 
                 guard let hash = json["hash"] as? String else {
