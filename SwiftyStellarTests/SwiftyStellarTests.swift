@@ -100,42 +100,11 @@ class SwiftyStellarTests: XCTestCase {
         wait(for: [e], timeout: 10)
     }
 
-    func test1() {
-        let keys = Sodium().sign.keyPair()!
-
-        let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(keys.publicKey))
-
-        print(pk.toXDR().base64EncodedString())
-
-        print(keys.publicKey.base64EncodedString())
-        print(keys.secretKey.base64EncodedString())
-    }
-
-    func test2() {
-        let keys = keyPair()
-
-        print(keys.publicKey.crc16)
-
-        print(publicKeyToBase32(keys.publicKey))
-        print(base32KeyToData(key: "GCAQUXSDESO5CYIDEJYGBFUHGLZ6VHZOYWTLZPWNH2HXQNHPR55DA6MT").hexString)
-    }
-
-    func test3() {
-        let data = Data(base64Encoded: "AAAAAMz0aA3zam0llfm+6vrjvMfGp9N69xmsOxJ37Fg3vKoVAAAAZABiBBUAAAABAAAAAAAAAAAAAAABAAAAAAAAAAcAAAAAgQpeQySd0WEDInBglocy8+qfLsWmvL7NPo94NO+PejAAAAABS0lOAAAAAAEAAAAAAAAAAA==")!
-
-        print("----")
-        data.withUnsafeBytes { (bp: UnsafePointer<UInt8>) -> Void in
-            for i in 0..<data.count {
-                print(bp.advanced(by: i).pointee)
-            }
-        }
-    }
-
     func testTrust() {
         let e = expectation(description: "")
 
-//        let source = keyPair().publicKey
-//        let signingKey = keyPair().secretKey
+        //        let source = keyPair().publicKey
+        //        let signingKey = keyPair().secretKey
 
         let seed = base32KeyToData(key: "SCWANWGKVFISGCVRGIT2RMD6MUCK3EFC563COHW5M7HJJXWJB3YDRYFA")
         let keyPair = Sign().keyPair(seed: seed)!
@@ -176,5 +145,36 @@ class SwiftyStellarTests: XCTestCase {
         }
 
         wait(for: [e], timeout: 20)
+    }
+
+    func test1() {
+        let keys = Sodium().sign.keyPair()!
+
+        let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(keys.publicKey))
+
+        print(pk.toXDR().base64EncodedString())
+
+        print(keys.publicKey.base64EncodedString())
+        print(keys.secretKey.base64EncodedString())
+    }
+
+    func test2() {
+        let keys = keyPair()
+
+        print(keys.publicKey.crc16)
+
+        print(publicKeyToBase32(keys.publicKey))
+        print(base32KeyToData(key: "GCAQUXSDESO5CYIDEJYGBFUHGLZ6VHZOYWTLZPWNH2HXQNHPR55DA6MT").hexString)
+    }
+
+    func test3() {
+        let data = Data(base64Encoded: "AAAAAMz0aA3zam0llfm+6vrjvMfGp9N69xmsOxJ37Fg3vKoVAAAAZABiBBUAAAABAAAAAAAAAAAAAAABAAAAAAAAAAcAAAAAgQpeQySd0WEDInBglocy8+qfLsWmvL7NPo94NO+PejAAAAABS0lOAAAAAAEAAAAAAAAAAA==")!
+
+        print("----")
+        data.withUnsafeBytes { (bp: UnsafePointer<UInt8>) -> Void in
+            for i in 0..<data.count {
+                print(bp.advanced(by: i).pointee)
+            }
+        }
     }
 }
