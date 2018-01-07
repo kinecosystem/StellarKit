@@ -93,6 +93,11 @@ struct PaymentOp: XDREncodableStruct {
     let amount: Int64
 }
 
+struct ChangeTrustOp: XDREncodableStruct {
+    let asset: Asset
+    let limit: Int64 = Int64.max / 2
+}
+
 struct OperationType {
     static let CREATE_ACCOUNT: Int32 = 0
     static let PAYMENT: Int32 = 1
@@ -114,11 +119,13 @@ struct Operation: XDREncodableStruct {
     enum Body: XDREncodable {
         case CREATE_ACCOUNT (CreateAccountOp)
         case PAYMENT (PaymentOp)
+        case CHANGE_TRUST (ChangeTrustOp)
 
         func discriminant() -> Int32 {
             switch self {
             case .CREATE_ACCOUNT: return OperationType.CREATE_ACCOUNT
             case .PAYMENT: return OperationType.PAYMENT
+            case .CHANGE_TRUST: return OperationType.CHANGE_TRUST
             }
         }
 
@@ -130,6 +137,9 @@ struct Operation: XDREncodableStruct {
                 xdr.append(op.toXDR())
 
             case .PAYMENT (let op):
+                xdr.append(op.toXDR())
+
+            case .CHANGE_TRUST (let op):
                 xdr.append(op.toXDR())
             }
 

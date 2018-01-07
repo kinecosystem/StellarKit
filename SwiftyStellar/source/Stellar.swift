@@ -11,8 +11,17 @@ import Sodium
 
 typealias Completion = (String?, Error?) -> Void
 
+private struct Assets {
+    private static let kinAssetPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(base32KeyToData(key: "GBOJSMAO3YZ3CQYUJOUWWFV37IFLQVNVKHVRQDEJ4M3O364H5FEGGMBH"))))
+
+    static let KINAsset = Asset
+        .ASSET_TYPE_CREDIT_ALPHANUM4(Asset
+            .Alpha4(assetCode: FixedLengthDataWrapper("KIN\0".data(using: .utf8)!),
+                    issuer: kinAssetPK))
+}
+
 class Stellar {
-    let baseURL: URL
+    private let baseURL: URL
 
     init(baseURL: URL) {
         self.baseURL = baseURL
@@ -38,9 +47,39 @@ class Stellar {
 
             do {
                 let envelope = try self.txEnvelope(source: source,
-                                                   destination: destination,
                                                    sequence: sequence,
-                                                   amount: amount,
+                                                   operation: self.paymentOp(destination: destination,
+                                                                             amount: amount),
+                                                   signingKey: signingKey)
+
+                self.postTransaction(envelope: envelope, completion: completion)
+            }
+            catch {
+                completion(nil, error)
+            }
+        }
+    }
+
+    func trustKIN(source: Data,
+                 signingKey: Data,
+                 completion: @escaping Completion) {
+        sequence(account: source) { sequence, error in
+            guard error == nil else {
+                completion(nil, error)
+
+                return
+            }
+
+            guard let sequence = sequence else {
+                completion(nil, StellarError.missingSequence)
+
+                return
+            }
+
+            do {
+                let envelope = try self.txEnvelope(source: source,
+                                                   sequence: sequence,
+                                                   operation: self.trustOp(),
                                                    signingKey: signingKey)
 
                 self.postTransaction(envelope: envelope, completion: completion)
@@ -186,19 +225,26 @@ class Stellar {
             .resume()
     }
 
-    private func txEnvelope(source: Data,
-                            destination: Data,
-                            sequence: UInt64,
-                            amount: Int64,
-                            signingKey: Data) throws -> TransactionEnvelope {
-        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(source))
+    private func paymentOp(destination: Data, amount: Int64) -> Operation {
         let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(destination))
 
-        let operation = SwiftyStellar
-            .Operation(sourceAccount: nil,
-                       body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                              asset: .ASSET_TYPE_NATIVE,
-                                                              amount: amount)))
+        return Operation(sourceAccount: nil,
+                         body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
+                                                                asset: Assets.KINAsset,
+                                                                amount: amount)))
+
+    }
+
+    private func trustOp() -> Operation {
+        return Operation(sourceAccount: nil,
+                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: Assets.KINAsset)))
+    }
+
+    private func txEnvelope(source: Data,
+                            sequence: UInt64,
+                            operation: Operation,
+                            signingKey: Data) throws -> TransactionEnvelope {
+        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(source))
 
         let tx = Transaction(sourceAccount: sourcePK,
                              seqNum: sequence + 1,

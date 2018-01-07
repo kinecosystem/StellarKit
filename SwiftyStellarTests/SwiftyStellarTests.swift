@@ -37,7 +37,7 @@ class SwiftyStellarTests: XCTestCase {
 
         stellar.payment(source: keyPair().publicKey,
                         destination: base32KeyToData(key: destination),
-                        amount: Int64.max, //1229,
+                        amount: 1,
                         signingKey: keyPair().secretKey) { txHash, error in
                             defer {
                                 e.fulfill()
@@ -115,4 +115,52 @@ class SwiftyStellarTests: XCTestCase {
         print(publicKeyToBase32(keys.publicKey))
         print(base32KeyToData(key: "GCAQUXSDESO5CYIDEJYGBFUHGLZ6VHZOYWTLZPWNH2HXQNHPR55DA6MT").hexString)
     }
+
+    func test3() {
+        let data = Data(base64Encoded: "AAAAAMz0aA3zam0llfm+6vrjvMfGp9N69xmsOxJ37Fg3vKoVAAAAZABiBBUAAAABAAAAAAAAAAAAAAABAAAAAAAAAAcAAAAAgQpeQySd0WEDInBglocy8+qfLsWmvL7NPo94NO+PejAAAAABS0lOAAAAAAEAAAAAAAAAAA==")!
+
+        print("----")
+        data.withUnsafeBytes { (bp: UnsafePointer<UInt8>) -> Void in
+            for i in 0..<data.count {
+                print(bp.advanced(by: i).pointee)
+            }
+        }
+    }
+
+    func test4() {
+        let e = expectation(description: "")
+
+        stellar.trustKIN(source: keyPair().publicKey, signingKey: keyPair().secretKey) { (txHash, error) in
+            defer {
+                e.fulfill()
+            }
+
+            if let error = error as? StellarError {
+                switch error {
+                case .parseError (let data):
+                    if let data = data {
+                        print("Error: (\(error)): \(data.base64EncodedString())")
+                    }
+                case .unknownError (let json):
+                    if let json = json {
+                        print("Error: (\(error)): \(json)")
+                    }
+                default:
+                    break
+                }
+
+                print("Error: \(error)")
+            }
+            else if let error = error {
+                print(error)
+            }
+
+            guard let txHash = txHash else {
+                return
+            }
+
+            print(txHash)
+        }
+
+        wait(for: [e], timeout: 20)    }
 }
