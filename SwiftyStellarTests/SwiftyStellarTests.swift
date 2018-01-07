@@ -33,7 +33,8 @@ class SwiftyStellarTests: XCTestCase {
     func testPayment() {
         let e = expectation(description: "")
 
-        let destination = "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K"
+//        let destination = "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K"
+        let destination = "GDNWYH3JA4QQINJZY655JRZQLGITDG6G6PMC7SQKUQG76SZ2TZ6TFVE6"
 
         stellar.payment(source: keyPair().publicKey,
                         destination: base32KeyToData(key: destination),

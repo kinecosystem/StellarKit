@@ -11,22 +11,22 @@ import Sodium
 
 typealias Completion = (String?, Error?) -> Void
 
-private struct Assets {
-    static let KINAssetIssuer = "GBGFNADX2FTYVCLDCVFY5ZRTVEMS4LV6HKMWOY7XJKVXMBIWVDESCJW5"
-
-    private static let kinAssetPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(base32KeyToData(key: KINAssetIssuer))))
-
-    static let KINAsset = Asset
-        .ASSET_TYPE_CREDIT_ALPHANUM4(Asset
-            .Alpha4(assetCode: FixedLengthDataWrapper("KIN\0".data(using: .utf8)!),
-                    issuer: kinAssetPK))
-}
-
 class Stellar {
     private let baseURL: URL
+    private let kinAsset: Asset
+    private let kinIssuer: String
 
-    init(baseURL: URL) {
+    init(baseURL: URL, kinIssuer: String = "GBGFNADX2FTYVCLDCVFY5ZRTVEMS4LV6HKMWOY7XJKVXMBIWVDESCJW5") {
         self.baseURL = baseURL
+        self.kinIssuer = kinIssuer
+
+        let kinAssetPK = PublicKey
+            .PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(base32KeyToData(key: kinIssuer))))
+
+        self.kinAsset = Asset
+            .ASSET_TYPE_CREDIT_ALPHANUM4(Asset
+                .Alpha4(assetCode: FixedLengthDataWrapper("KIN\0".data(using: .utf8)!),
+                        issuer: kinAssetPK))
     }
 
     func payment(source: Data,
@@ -34,62 +34,35 @@ class Stellar {
                  amount: Int64,
                  signingKey: Data,
                  completion: @escaping Completion) {
-        sequence(account: source) { sequence, error in
-            guard error == nil else {
-                completion(nil, error)
+        balance(account: destination) { (balance, error) in
+            if let error = error as? StellarError {
+                switch error {
+                case .missingBalance:
+                    completion(nil, StellarError.destinationNotReadyForKIN)
 
-                return
+                    return
+
+                default:
+                    break
+                }
             }
 
-            guard let sequence = sequence else {
-                completion(nil, StellarError.missingSequence)
+            self.issueOperation(source: source,
+                                operation: self.paymentOp(destination: destination,
+                                                          amount: amount),
+                                signingKey: signingKey,
+                                completion: completion)
 
-                return
-            }
-
-            do {
-                let envelope = try self.txEnvelope(source: source,
-                                                   sequence: sequence,
-                                                   operation: self.paymentOp(destination: destination,
-                                                                             amount: amount),
-                                                   signingKey: signingKey)
-
-                self.postTransaction(envelope: envelope, completion: completion)
-            }
-            catch {
-                completion(nil, error)
-            }
         }
     }
 
     func trustKIN(source: Data,
                  signingKey: Data,
                  completion: @escaping Completion) {
-        sequence(account: source) { sequence, error in
-            guard error == nil else {
-                completion(nil, error)
-
-                return
-            }
-
-            guard let sequence = sequence else {
-                completion(nil, StellarError.missingSequence)
-
-                return
-            }
-
-            do {
-                let envelope = try self.txEnvelope(source: source,
-                                                   sequence: sequence,
-                                                   operation: self.trustOp(),
-                                                   signingKey: signingKey)
-
-                self.postTransaction(envelope: envelope, completion: completion)
-            }
-            catch {
-                completion(nil, error)
-            }
-        }
+        issueOperation(source: source,
+                       operation: trustOp(),
+                       signingKey: signingKey,
+                       completion: completion)
     }
 
     func balance(account: Data, completion: @escaping (Decimal?, Error?) -> Void) {
@@ -123,7 +96,7 @@ class Stellar {
 
                 for balance in balances {
                     if balance["asset_code"] as? String == "KIN" &&
-                        balance["asset_issuer"] as? String == Assets.KINAssetIssuer {
+                        balance["asset_issuer"] as? String == self.kinIssuer {
                         if let amountStr = balance["balance"] as? String, let amount = Decimal(string: amountStr) {
                             completion(amount, nil)
 
@@ -135,6 +108,34 @@ class Stellar {
                 completion(nil, StellarError.missingBalance)
             })
             .resume()
+    }
+
+    private func issueOperation(source: Data, operation: Operation, signingKey: Data, completion: @escaping Completion) {
+        sequence(account: source) { sequence, error in
+            guard error == nil else {
+                completion(nil, error)
+
+                return
+            }
+
+            guard let sequence = sequence else {
+                completion(nil, StellarError.missingSequence)
+
+                return
+            }
+
+            do {
+                let envelope = try self.txEnvelope(source: source,
+                                                   sequence: sequence,
+                                                   operation: operation,
+                                                   signingKey: signingKey)
+
+                self.postTransaction(envelope: envelope, completion: completion)
+            }
+            catch {
+                completion(nil, error)
+            }
+        }
     }
 
     private func sequence(account: Data, completion: @escaping (UInt64?, Error?) -> Void) {
@@ -233,14 +234,14 @@ class Stellar {
 
         return Operation(sourceAccount: nil,
                          body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                                asset: Assets.KINAsset,
+                                                                asset: self.kinAsset,
                                                                 amount: amount)))
 
     }
 
     private func trustOp() -> Operation {
         return Operation(sourceAccount: nil,
-                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: Assets.KINAsset)))
+                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: self.kinAsset)))
     }
 
     private func txEnvelope(source: Data,
