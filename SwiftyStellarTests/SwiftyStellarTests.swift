@@ -76,7 +76,10 @@ class SwiftyStellarTests: XCTestCase {
     func testBalance() {
         let e = expectation(description: "")
 
-        stellar.balance(account: keyPair().publicKey) { amount, error in
+//        let account = keyPair().publicKey
+        let account = base32KeyToData(key: "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K")
+
+        stellar.balance(account: account) { amount, error in
             defer {
                 e.fulfill()
             }
@@ -127,10 +130,19 @@ class SwiftyStellarTests: XCTestCase {
         }
     }
 
-    func test4() {
+    func testTrust() {
         let e = expectation(description: "")
 
-        stellar.trustKIN(source: keyPair().publicKey, signingKey: keyPair().secretKey) { (txHash, error) in
+//        let source = keyPair().publicKey
+//        let signingKey = keyPair().secretKey
+
+        let seed = base32KeyToData(key: "SCWANWGKVFISGCVRGIT2RMD6MUCK3EFC563COHW5M7HJJXWJB3YDRYFA")
+        let keyPair = Sign().keyPair(seed: seed)!
+
+        let source = base32KeyToData(key: "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K")
+        let signingKey = keyPair.secretKey
+
+        stellar.trustKIN(source: source, signingKey: signingKey) { (txHash, error) in
             defer {
                 e.fulfill()
             }

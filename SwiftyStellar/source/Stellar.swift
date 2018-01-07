@@ -12,7 +12,9 @@ import Sodium
 typealias Completion = (String?, Error?) -> Void
 
 private struct Assets {
-    private static let kinAssetPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(base32KeyToData(key: "GBOJSMAO3YZ3CQYUJOUWWFV37IFLQVNVKHVRQDEJ4M3O364H5FEGGMBH"))))
+    static let KINAssetIssuer = "GBGFNADX2FTYVCLDCVFY5ZRTVEMS4LV6HKMWOY7XJKVXMBIWVDESCJW5"
+
+    private static let kinAssetPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(base32KeyToData(key: KINAssetIssuer))))
 
     static let KINAsset = Asset
         .ASSET_TYPE_CREDIT_ALPHANUM4(Asset
@@ -120,7 +122,8 @@ class Stellar {
                 }
 
                 for balance in balances {
-                    if balance["asset_code"] as? String == "KIN" {
+                    if balance["asset_code"] as? String == "KIN" &&
+                        balance["asset_issuer"] as? String == Assets.KINAssetIssuer {
                         if let amountStr = balance["balance"] as? String, let amount = Decimal(string: amountStr) {
                             completion(amount, nil)
 
