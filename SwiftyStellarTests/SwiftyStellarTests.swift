@@ -177,4 +177,11 @@ class SwiftyStellarTests: XCTestCase {
             }
         }
     }
+
+    func test4() {
+//        let account = try? KeyStore.newAccount(passphrase: "passphrase")
+        let account = KeyStore.account(at: 0)
+
+        print(String(describing: account?.secretSeed(passphrase: "passphrase")))
+    }
 }

@@ -46,6 +46,12 @@ struct KeyUtils {
     }
 
     static func keyPair(from passphrase: String, hash: String, salt: String) throws -> Sign.KeyPair? {
+        let seed = try self.seed(from: passphrase, hash: hash, salt: salt)
+
+        return keyPair(from: seed)
+    }
+
+    static func seed(from passphrase: String, hash: String, salt: String) throws -> Data {
         guard try verifyPassphrase(passphrase: passphrase, hash: hash) else {
             throw KeyUtilsError.passphraseIncorrect
         }
@@ -54,7 +60,7 @@ struct KeyUtils {
             throw KeyUtilsError.encodingFailed(passphrase)
         }
 
-        guard let saltData = salt.data(using: .utf8) else {
+        guard let saltData = Data(hexString: salt) else {
             throw KeyUtilsError.encodingFailed(salt)
         }
 
@@ -68,7 +74,7 @@ struct KeyUtils {
                                                 throw KeyUtilsError.hashingFailed
         }
 
-        return keyPair(from: seed)
+        return seed
     }
 
     static func base32(publicKey: Data) -> String {

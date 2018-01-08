@@ -100,6 +100,26 @@ extension UInt8 {
 }
 
 extension Data {
+    init?(hexString: String) {
+        var hex = hexString
+        var data = Data()
+
+        while hex.count > 0 {
+            let c: String = hex[0..<2]
+            hex = hex[2..<hex.count]
+            var ch: UInt32 = 0
+            Scanner(string: c).scanHexInt32(&ch)
+            var char = UInt8(ch)
+            data.append(&char, count: 1)
+        }
+
+        if data.count * 2 != hexString.count {
+            return nil
+        }
+        
+        self = data
+    }
+
     var binaryString: String {
         var s = ""
 
