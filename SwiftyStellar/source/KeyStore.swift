@@ -18,7 +18,7 @@ enum KeyStoreErrors: Error {
 private let keychainPrefix = "__swifty_stellar_"
 private let keychain = KeychainSwift(keyPrefix: keychainPrefix)
 
-class StellarAccount {
+public class StellarAccount {
     private(set) fileprivate var keychainKey: String
 
     var publicKey: String? {
@@ -79,7 +79,7 @@ class StellarAccount {
     }
 }
 
-class KeyStore {
+public struct KeyStore {
     static func newAccount(passphrase: String) throws -> StellarAccount {
         let keychainKey = nextKeychainKey()
 

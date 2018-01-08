@@ -9,14 +9,14 @@
 import Foundation
 import Sodium
 
-typealias Completion = (String?, Error?) -> Void
+public typealias Completion = (String?, Error?) -> Void
 
-class Stellar {
+public class Stellar {
     private let baseURL: URL
     private let kinAsset: Asset
     private let kinIssuer: String
 
-    init(baseURL: URL, kinIssuer: String = "GBGFNADX2FTYVCLDCVFY5ZRTVEMS4LV6HKMWOY7XJKVXMBIWVDESCJW5") {
+    public init(baseURL: URL, kinIssuer: String = "GBGFNADX2FTYVCLDCVFY5ZRTVEMS4LV6HKMWOY7XJKVXMBIWVDESCJW5") {
         self.baseURL = baseURL
         self.kinIssuer = kinIssuer
 
@@ -29,11 +29,11 @@ class Stellar {
                         issuer: kinAssetPK))
     }
 
-    func payment(source: StellarAccount,
-                 destination: String,
-                 amount: Int64,
-                 passphrase: String,
-                 completion: @escaping Completion) {
+    public func payment(source: StellarAccount,
+                        destination: String,
+                        amount: Int64,
+                        passphrase: String,
+                        completion: @escaping Completion) {
         balance(account: destination) { (balance, error) in
             if let error = error as? StellarError {
                 switch error {
@@ -70,9 +70,9 @@ class Stellar {
         }
     }
 
-    func trustKIN(source: StellarAccount,
-                  passphrase: String,
-                  completion: @escaping Completion) {
+    public func trustKIN(source: StellarAccount,
+                         passphrase: String,
+                         completion: @escaping Completion) {
         guard let sourceKey = source.publicKey else {
             completion(nil, StellarError.missingPublicKey)
 
@@ -91,7 +91,7 @@ class Stellar {
                        completion: completion)
     }
 
-    func balance(account: String, completion: @escaping (Decimal?, Error?) -> Void) {
+    public func balance(account: String, completion: @escaping (Decimal?, Error?) -> Void) {
         let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         URLSession
