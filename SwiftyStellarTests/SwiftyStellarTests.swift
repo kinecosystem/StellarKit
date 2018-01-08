@@ -103,8 +103,8 @@ class SwiftyStellarTests: XCTestCase {
     func testTrust() {
         let e = expectation(description: "")
 
-        //        let source = keyPair().publicKey
-        //        let signingKey = keyPair().secretKey
+//        let source = keyPair().publicKey
+//        let signingKey = keyPair().secretKey
 
         let seed = base32KeyToData(key: "SCWANWGKVFISGCVRGIT2RMD6MUCK3EFC563COHW5M7HJJXWJB3YDRYFA")
         let keyPair = Sign().keyPair(seed: seed)!
