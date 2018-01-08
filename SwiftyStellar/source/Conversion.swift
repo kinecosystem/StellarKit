@@ -26,6 +26,15 @@ func publicKeyToBase32(_ key: Data) -> String {
     return dataToBase32(d)
 }
 
+func seedToBase32(_ seed: Data) -> String {
+    var d = Data([VersionBytes.ed25519SecretSeed])
+
+    d.append(seed)
+    d.append(contentsOf: d.crc16)
+
+    return dataToBase32(d)
+}
+
 private let fromTable: [String: String] = [
     "A": "00000", "B": "00001", "C": "00010", "D": "00011", "E": "00100", "F": "00101",
     "G": "00110", "H": "00111", "I": "01000", "J": "01001", "K": "01010", "L": "01011",
