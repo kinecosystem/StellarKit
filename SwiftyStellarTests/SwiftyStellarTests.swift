@@ -11,35 +11,52 @@ import XCTest
 @testable import Sodium
 
 class SwiftyStellarTests: XCTestCase {
-    let stellar = Stellar(baseURL: URL(string: "https://horizon-testnet.stellar.org")!)
+    let passphrase = "a phrase"
+
+    let stellar = Stellar(baseURL: URL(string: "https://horizon-testnet.stellar.org")!,
+                          kinIssuer: "GBOJSMAO3YZ3CQYUJOUWWFV37IFLQVNVKHVRQDEJ4M3O364H5FEGGMBH")
+    var account: StellarAccount?
+    var account2: StellarAccount?
 
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+
+        guard let account = KeyStore.account(at: 0) else {
+            self.account = try? KeyStore.newAccount(passphrase: passphrase)
+
+            return
+        }
+
+        self.account = account
+
+        guard let account2 = KeyStore.account(at: 1) else {
+            self.account2 = try? KeyStore.newAccount(passphrase: passphrase)
+
+            return
+        }
+
+        self.account2 = account2
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
 
-    func keyPair() -> Sign.KeyPair {
-        let publicKey = Data(base64Encoded: "gQpeQySd0WEDInBglocy8+qfLsWmvL7NPo94NO+PejA=")!
-        let secretKey = Data(base64Encoded: "r8r3grK5KYpWo3oeTOHi13FVVVLYKZwzD3vdD1tQO+GBCl5DJJ3RYQMicGCWhzLz6p8uxaa8vs0+j3g07496MA==")!
-
-        return Sign.KeyPair(publicKey: publicKey, secretKey: secretKey)
-    }
-    
     func testPayment() {
         let e = expectation(description: "")
 
-//        let destination = "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K"
         let destination = "GDNWYH3JA4QQINJZY655JRZQLGITDG6G6PMC7SQKUQG76SZ2TZ6TFVE6"
 
-        stellar.payment(source: keyPair().publicKey,
-                        destination: base32KeyToData(key: destination),
+        guard let account = self.account, let account2 = self.account2, let destPK = account2.publicKey else {
+            XCTAssertTrue(false)
+
+            return
+        }
+
+        stellar.payment(source: account,
+                        destination: destPK,
                         amount: 1,
-                        signingKey: keyPair().secretKey) { txHash, error in
+                        passphrase: passphrase) { txHash, error in
                             defer {
                                 e.fulfill()
                             }
@@ -77,8 +94,7 @@ class SwiftyStellarTests: XCTestCase {
     func testBalance() {
         let e = expectation(description: "")
 
-//        let account = keyPair().publicKey
-        let account = base32KeyToData(key: "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K")
+        let account = "GC74JHKY7HXAD3YDEU6MQNQGKV4HDY2NI4J76P3M7AZLNKKL2NTSXY2N"
 
         stellar.balance(account: account) { amount, error in
             defer {
@@ -103,16 +119,13 @@ class SwiftyStellarTests: XCTestCase {
     func testTrust() {
         let e = expectation(description: "")
 
-//        let source = keyPair().publicKey
-//        let signingKey = keyPair().secretKey
+        guard let account = self.account2 else {
+            XCTAssertTrue(false)
 
-        let seed = base32KeyToData(key: "SCWANWGKVFISGCVRGIT2RMD6MUCK3EFC563COHW5M7HJJXWJB3YDRYFA")
-        let keyPair = Sign().keyPair(seed: seed)!
+            return
+        }
 
-        let source = base32KeyToData(key: "GDGPI2AN6NVG2JMV7G7OV6XDXTD4NJ6TPL3RTLB3CJ36YWBXXSVBKS6K")
-        let signingKey = keyPair.secretKey
-
-        stellar.trustKIN(source: source, signingKey: signingKey) { (txHash, error) in
+        stellar.trustKIN(source: account, passphrase: passphrase) { txHash, error in
             defer {
                 e.fulfill()
             }
@@ -159,12 +172,15 @@ class SwiftyStellarTests: XCTestCase {
     }
 
     func test2() {
-        let keys = keyPair()
+        guard let account = self.account, let account2 = self.account2 else {
+            return
+        }
 
-        print(keys.publicKey.crc16)
+        print(String(describing: account.publicKey))
+        print(String(describing: account.secretSeed(passphrase: passphrase)))
 
-        print(publicKeyToBase32(keys.publicKey))
-        print(base32KeyToData(key: "GCAQUXSDESO5CYIDEJYGBFUHGLZ6VHZOYWTLZPWNH2HXQNHPR55DA6MT").hexString)
+        print(String(describing: account2.publicKey))
+        print(String(describing: account2.secretSeed(passphrase: passphrase)))
     }
 
     func test3() {

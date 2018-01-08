@@ -31,6 +31,18 @@ class StellarAccount {
         return key
     }
 
+    func secretKey(passphrase: String) -> Data? {
+        guard let seed = seed(passphrase: passphrase) else {
+            return nil
+        }
+
+        guard let keypair = KeyUtils.keyPair(from: seed) else {
+            return nil
+        }
+
+        return keypair.secretKey
+    }
+
     func secretSeed(passphrase: String) -> String? {
         guard let seed = seed(passphrase: passphrase) else {
             return nil

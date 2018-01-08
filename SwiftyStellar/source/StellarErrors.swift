@@ -9,6 +9,8 @@
 import Foundation
 
 enum StellarError: Error {
+    case missingPublicKey
+    case missingSecretKey
     case missingHash
     case missingSequence
     case missingBalance

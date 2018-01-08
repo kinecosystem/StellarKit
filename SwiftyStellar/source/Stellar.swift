@@ -29,10 +29,10 @@ class Stellar {
                         issuer: kinAssetPK))
     }
 
-    func payment(source: Data,
-                 destination: Data,
+    func payment(source: StellarAccount,
+                 destination: String,
                  amount: Int64,
-                 signingKey: Data,
+                 passphrase: String,
                  completion: @escaping Completion) {
         balance(account: destination) { (balance, error) in
             if let error = error as? StellarError {
@@ -47,27 +47,52 @@ class Stellar {
                 }
             }
 
-            self.issueOperation(source: source,
-                                operation: self.paymentOp(destination: destination,
+            guard let sourceKey = source.publicKey else {
+                completion(nil, StellarError.missingPublicKey)
+
+                return
+            }
+
+            guard let secretKey = source.secretKey(passphrase: passphrase) else {
+                completion(nil, StellarError.missingSecretKey)
+
+                return
+            }
+
+            let destinationData = KeyUtils.key(base32: destination)
+
+            self.issueOperation(source: KeyUtils.key(base32: sourceKey),
+                                operation: self.paymentOp(destination: destinationData,
                                                           amount: amount),
-                                signingKey: signingKey,
+                                signingKey: secretKey,
                                 completion: completion)
 
         }
     }
 
-    func trustKIN(source: Data,
-                 signingKey: Data,
-                 completion: @escaping Completion) {
-        issueOperation(source: source,
+    func trustKIN(source: StellarAccount,
+                  passphrase: String,
+                  completion: @escaping Completion) {
+        guard let sourceKey = source.publicKey else {
+            completion(nil, StellarError.missingPublicKey)
+
+            return
+        }
+
+        guard let secretKey = source.secretKey(passphrase: passphrase) else {
+            completion(nil, StellarError.missingSecretKey)
+
+            return
+        }
+
+        issueOperation(source: KeyUtils.key(base32: sourceKey),
                        operation: trustOp(),
-                       signingKey: signingKey,
+                       signingKey: secretKey,
                        completion: completion)
     }
 
-    func balance(account: Data, completion: @escaping (Decimal?, Error?) -> Void) {
-        let base32 = publicKeyToBase32(account)
-        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(base32)
+    func balance(account: String, completion: @escaping (Decimal?, Error?) -> Void) {
+        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         URLSession
             .shared
