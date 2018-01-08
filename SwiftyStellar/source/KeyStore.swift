@@ -12,6 +12,7 @@ import Sodium
 enum KeyStoreErrors: Error {
     case keychainStoreFailed
     case noSalt
+    case keypairGenerationFailed
 }
 
 private let keychainPrefix = "__swifty_stellar_"
@@ -20,14 +21,14 @@ private let keychain = KeychainSwift(keyPrefix: keychainPrefix)
 class StellarAccount {
     private(set) fileprivate var keychainKey: String
 
-    func publicKey(passphrase: String) -> String? {
+    var publicKey: String? {
         guard
-            let seed = seed(passphrase: passphrase),
-            let keypair = KeyUtils.keyPair(from: seed) else {
+            let json = json(),
+            let key = json["pkey"] else {
                 return nil
         }
 
-        return KeyUtils.base32(publicKey: keypair.publicKey)
+        return key
     }
 
     func secretSeed(passphrase: String) -> String? {
@@ -42,11 +43,20 @@ class StellarAccount {
         self.keychainKey = keychainKey
     }
 
-    private func seed(passphrase: String) -> Data? {
+    private func json() -> [String: String]? {
         guard
             let data = keychain.getData(keychainKey),
             let jsonOpt = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String],
-            let json = jsonOpt,
+            let json = jsonOpt else {
+                return nil
+        }
+
+        return json
+    }
+
+    private func seed(passphrase: String) -> Data? {
+        guard
+            let json = json(),
             let hash = json["hash"],
             let salt = json["salt"],
             let seed = try? KeyUtils.seed(from: passphrase, hash: hash, salt: salt) else {
@@ -66,9 +76,16 @@ class KeyStore {
             throw KeyStoreErrors.noSalt
         }
 
+        guard
+            let seed = try? KeyUtils.seed(from: passphrase, hash: hash, salt: salt),
+            let keypair = KeyUtils.keyPair(from: seed) else {
+                throw KeyStoreErrors.keypairGenerationFailed
+        }
+
         let dict = [
             "hash" : hash,
             "salt" : salt,
+            "pkey" : KeyUtils.base32(publicKey: keypair.publicKey)
         ]
 
         let data = try JSONSerialization.data(withJSONObject: dict, options: [])

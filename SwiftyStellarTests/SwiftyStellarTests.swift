@@ -183,5 +183,10 @@ class SwiftyStellarTests: XCTestCase {
         let account = KeyStore.account(at: 0)
 
         print(String(describing: account?.secretSeed(passphrase: "passphrase")))
+        print(String(describing: account?.publicKey))
+    }
+
+    func test5() {
+        KeyStore.remove(at: 0)
     }
 }
