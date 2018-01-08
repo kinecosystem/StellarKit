@@ -1,3 +1,6 @@
 [submodule "swift-sodium"]
 	path = swift-sodium
 	url = git@github.com:jedisct1/swift-sodium.git
+[submodule "keychain-swift"]
+	path = keychain-swift
+	url = https://github.com/evgenyneu/keychain-swift.git

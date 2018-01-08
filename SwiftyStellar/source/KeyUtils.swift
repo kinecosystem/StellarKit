@@ -11,24 +11,24 @@ import Sodium
 
 /*
  Create:
- 1. hash password using hashed(string: String)
+ 1. hash passphrase using hashed(string: String)
  2. generate salt using salt()
 
  Save:
- 1. save file containing password hash and salt
+ 1. save file containing passphrase hash and salt
 
  Load:
- 1. obtain password
- 2. obtain password hash
+ 1. obtain passphrase
+ 2. obtain passphrase hash
  3. obtain salt
- 4. generate key-pair using keyPair(from password: String, hash: String, salt: String)
+ 4. generate key-pair using keyPair(from passphrase: String, hash: String, salt: String)
 */
 
 
 enum KeyUtilsError: Error {
     case encodingFailed (String)
     case hashingFailed
-    case passwordIncorrect
+    case passphraseIncorrect
     case unknownError
 }
 
@@ -45,13 +45,13 @@ struct KeyUtils {
         return Sodium().sign.keyPair(seed: base32KeyToData(key: seed))
     }
 
-    static func keyPair(from password: String, hash: String, salt: String) throws -> Sign.KeyPair? {
-        guard try verifyPassword(password: password, hash: hash) else {
-            throw KeyUtilsError.passwordIncorrect
+    static func keyPair(from passphrase: String, hash: String, salt: String) throws -> Sign.KeyPair? {
+        guard try verifyPassphrase(passphrase: passphrase, hash: hash) else {
+            throw KeyUtilsError.passphraseIncorrect
         }
 
-        guard let passwordData = password.data(using: .utf8) else {
-            throw KeyUtilsError.encodingFailed(password)
+        guard let passphraseData = passphrase.data(using: .utf8) else {
+            throw KeyUtilsError.encodingFailed(passphrase)
         }
 
         guard let saltData = salt.data(using: .utf8) else {
@@ -61,7 +61,7 @@ struct KeyUtils {
         let sodium = Sodium()
 
         guard let seed = sodium.pwHash.hash(outputLength: 32,
-                                            passwd: passwordData,
+                                            passwd: passphraseData,
                                             salt: saltData,
                                             opsLimit: sodium.pwHash.OpsLimitInteractive,
                                             memLimit: sodium.pwHash.MemLimitInteractive) else {
@@ -83,10 +83,6 @@ struct KeyUtils {
         return base32KeyToData(key: base32)
     }
 
-    static func seed() -> Data? {
-        return Sodium().randomBytes.buf(length: 32)
-    }
-
     static func hashed(string: String) throws -> String {
         guard let stringData = string.data(using: .utf8) else {
             throw KeyUtilsError.encodingFailed(string)
@@ -103,14 +99,14 @@ struct KeyUtils {
         return hash
     }
 
-    static func verifyPassword(password: String, hash: String) throws -> Bool {
-        guard let passwordData = password.data(using: .utf8) else {
-            throw KeyUtilsError.encodingFailed(password)
+    static func verifyPassphrase(passphrase: String, hash: String) throws -> Bool {
+        guard let passphraseData = passphrase.data(using: .utf8) else {
+            throw KeyUtilsError.encodingFailed(passphrase)
         }
 
         let sodium = Sodium()
 
-        return sodium.pwHash.strVerify(hash: hash, passwd: passwordData)
+        return sodium.pwHash.strVerify(hash: hash, passwd: passphraseData)
     }
 
     static func salt() -> String? {
