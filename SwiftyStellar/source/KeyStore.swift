@@ -67,7 +67,7 @@ public class StellarAccount {
         return json
     }
 
-    fileprivate func seed(passphrase: String) -> Data? {
+    private func seed(passphrase: String) -> Data? {
         guard
             let json = json(),
             let eseed = json["seed"],
