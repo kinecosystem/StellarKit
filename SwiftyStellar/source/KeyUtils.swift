@@ -9,22 +9,6 @@
 import Foundation
 import Sodium
 
-/*
- Create:
- 1. hash passphrase using hashed(string: String)
- 2. generate salt using salt()
-
- Save:
- 1. save file containing passphrase hash and salt
-
- Load:
- 1. obtain passphrase
- 2. obtain passphrase hash
- 3. obtain salt
- 4. generate key-pair using keyPair(from passphrase: String, hash: String, salt: String)
-*/
-
-
 enum KeyUtilsError: Error {
     case encodingFailed (String)
     case decodingFailed (String)
