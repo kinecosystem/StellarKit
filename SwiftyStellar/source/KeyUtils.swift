@@ -80,14 +80,12 @@ struct KeyUtils {
         return hash
     }
 
-    static func verifyPassphrase(passphrase: String, hash: String) throws -> Bool {
-        guard let passphraseData = passphrase.data(using: .utf8) else {
-            throw KeyUtilsError.encodingFailed(passphrase)
-        }
+    static func encryptSeed(_ seed: Data, passphrase: String, secretKey: Data) -> Data? {
+        return Sodium().secretBox.seal(message: seed, secretKey: secretKey)
+    }
 
-        let sodium = Sodium()
-
-        return sodium.pwHash.strVerify(hash: hash, passwd: passphraseData)
+    static func seed() -> Data? {
+        return Sodium().randomBytes.buf(length: 32)
     }
 
     static func salt() -> String? {

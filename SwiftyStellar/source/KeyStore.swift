@@ -83,22 +83,21 @@ public class StellarAccount {
 
 public struct KeyStore {
     public static func newAccount(passphrase: String) throws -> StellarAccount {
-        let sodium = Sodium()
-
-        let keychainKey = nextKeychainKey()
-
         guard let salt = KeyUtils.salt() else {
             throw KeyStoreErrors.noSalt
         }
 
-        guard let seed = sodium.randomBytes.buf(length: 32) else {
+        guard let seed = KeyUtils.seed() else {
             throw KeyStoreErrors.noSeed
         }
 
         let skey = try KeyUtils.keyHash(passphrase: passphrase, salt: salt)
 
-        guard let encryptedSeed: Data = sodium.secretBox.seal(message: seed, secretKey: skey) else {
-            throw KeyStoreErrors.encryptionFailed
+        guard let encryptedSeed: Data = KeyUtils.encryptSeed(seed,
+                                                             passphrase: passphrase,
+                                                             secretKey: skey)
+            else {
+                throw KeyStoreErrors.encryptionFailed
         }
 
         guard let keypair = KeyUtils.keyPair(from: seed) else {
@@ -112,6 +111,8 @@ public struct KeyStore {
         ]
 
         let data = try JSONSerialization.data(withJSONObject: dict, options: [])
+
+        let keychainKey = nextKeychainKey()
 
         guard keychain.set(data, forKey: keychainKey) else {
             throw KeyStoreErrors.keychainStoreFailed
@@ -178,7 +179,7 @@ public struct KeyStore {
             let salt = json["salt"],
             let pkey = json["pkey"],
             let skey = try? KeyUtils.keyHash(passphrase: passphrase, salt: salt),
-            let encryptedSeed: Data = Sodium().secretBox.seal(message: seed, secretKey: skey)
+            let encryptedSeed = KeyUtils.encryptSeed(seed, passphrase: newPassphrase, secretKey: skey)
             else {
                 return nil
         }
