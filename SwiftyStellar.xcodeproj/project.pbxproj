@@ -200,8 +200,8 @@
 			isa = PBXGroup;
 			children = (
 				82340BAA1FFDF2DA0034204F /* SwiftyStellarTests.swift */,
-				82340BAC1FFDF2DA0034204F /* Info.plist */,
 				82ECAB892002A2880010E31F /* XDRTests.swift */,
+				82340BAC1FFDF2DA0034204F /* Info.plist */,
 			);
 			path = SwiftyStellarTests;
 			sourceTree = "<group>";
