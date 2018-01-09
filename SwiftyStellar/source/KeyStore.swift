@@ -12,7 +12,9 @@ import Sodium
 enum KeyStoreErrors: Error {
     case keychainStoreFailed
     case noSalt
+    case noSeed
     case keypairGenerationFailed
+    case encryptionFailed
 }
 
 private let keychainPrefix = "__swifty_stellar_"
@@ -69,9 +71,9 @@ public class StellarAccount {
     private func seed(passphrase: String) -> Data? {
         guard
             let json = json(),
-            let hash = json["hash"],
+            let eseed = json["seed"],
             let salt = json["salt"],
-            let seed = try? KeyUtils.seed(from: passphrase, hash: hash, salt: salt) else {
+            let seed = try? KeyUtils.seed(from: passphrase, encryptedSeed: eseed, salt: salt) else {
                 return nil
         }
 
@@ -80,22 +82,31 @@ public class StellarAccount {
 }
 
 public struct KeyStore {
-    static func newAccount(passphrase: String) throws -> StellarAccount {
+    public static func newAccount(passphrase: String) throws -> StellarAccount {
+        let sodium = Sodium()
+
         let keychainKey = nextKeychainKey()
 
-        let hash = try KeyUtils.hashed(string: passphrase)
         guard let salt = KeyUtils.salt() else {
             throw KeyStoreErrors.noSalt
         }
 
-        guard
-            let seed = try? KeyUtils.seed(from: passphrase, hash: hash, salt: salt),
-            let keypair = KeyUtils.keyPair(from: seed) else {
-                throw KeyStoreErrors.keypairGenerationFailed
+        guard let seed = sodium.randomBytes.buf(length: 32) else {
+            throw KeyStoreErrors.noSeed
+        }
+
+        let skey = try KeyUtils.keyHash(passphrase: passphrase, salt: salt)
+
+        guard let encryptedSeed: Data = sodium.secretBox.seal(message: seed, secretKey: skey) else {
+            throw KeyStoreErrors.encryptionFailed
+        }
+
+        guard let keypair = KeyUtils.keyPair(from: seed) else {
+            throw KeyStoreErrors.keypairGenerationFailed
         }
 
         let dict = [
-            "hash" : hash,
+            "seed" : encryptedSeed.hexString,
             "salt" : salt,
             "pkey" : KeyUtils.base32(publicKey: keypair.publicKey)
         ]
@@ -111,7 +122,7 @@ public struct KeyStore {
         return account
     }
 
-    static func account(at index: Int) -> StellarAccount? {
+    public static func account(at index: Int) -> StellarAccount? {
         let keys = self.keys()
 
         guard index < keys.count else {
@@ -126,8 +137,17 @@ public struct KeyStore {
     }
 
     @discardableResult
-    static func remove(at index: Int) -> Bool {
+    public static func remove(at index: Int) -> Bool {
         return keychain.delete(String(format: "%06d", index))
+    }
+
+    // WARNING: Do not use this method!  Ever!  Except in unit tests.
+    public static func removeAll() {
+        keychain.clear()
+    }
+
+    public static func count() -> Int {
+        return keys().count
     }
 
     private static func nextKeychainKey() -> String {

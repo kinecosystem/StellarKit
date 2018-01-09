@@ -21,21 +21,21 @@ class SwiftyStellarTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        guard let account = KeyStore.account(at: 0) else {
+        print("count: \(KeyStore.count())")
+
+        if let account = KeyStore.account(at: 0) {
+            self.account = account
+        }
+        else {
             self.account = try? KeyStore.newAccount(passphrase: passphrase)
-
-            return
         }
 
-        self.account = account
-
-        guard let account2 = KeyStore.account(at: 1) else {
+        if let account2 = KeyStore.account(at: 1) {
+            self.account2 = account2
+        }
+        else {
             self.account2 = try? KeyStore.newAccount(passphrase: passphrase)
-
-            return
         }
-
-        self.account2 = account2
     }
     
     override func tearDown() {
@@ -45,7 +45,7 @@ class SwiftyStellarTests: XCTestCase {
     func testPayment() {
         let e = expectation(description: "")
 
-        let destination = "GDNWYH3JA4QQINJZY655JRZQLGITDG6G6PMC7SQKUQG76SZ2TZ6TFVE6"
+        let destination = "GCJBAMWZPFLO3E37I2SMJ7GCSI7JKK7XEAVFPIHSFFCQ3BMS6SZIO7TN"
 
         guard let account = self.account, let account2 = self.account2, let destPK = account2.publicKey else {
             XCTAssertTrue(false)
@@ -94,7 +94,7 @@ class SwiftyStellarTests: XCTestCase {
     func testBalance() {
         let e = expectation(description: "")
 
-        let account = "GC74JHKY7HXAD3YDEU6MQNQGKV4HDY2NI4J76P3M7AZLNKKL2NTSXY2N"
+        let account = "GANMSMOCHLLHKIWHV2MOC7TVPRNK22UT2CNZGYVRAQOTOHCKJZS5I2JQ"
 
         stellar.balance(account: account) { amount, error in
             defer {
@@ -119,7 +119,7 @@ class SwiftyStellarTests: XCTestCase {
     func testTrust() {
         let e = expectation(description: "")
 
-        guard let account = self.account2 else {
+        guard let account = self.account else {
             XCTAssertTrue(false)
 
             return
@@ -196,13 +196,21 @@ class SwiftyStellarTests: XCTestCase {
 
     func test4() {
 //        let account = try? KeyStore.newAccount(passphrase: "passphrase")
-        let account = KeyStore.account(at: 0)
+        let account = KeyStore.account(at: 0)!
 
-        print(String(describing: account?.secretSeed(passphrase: "passphrase")))
-        print(String(describing: account?.publicKey))
+        print(String(describing: account.publicKey!))
+        print(String(describing: account.secretSeed(passphrase: passphrase)!))
     }
 
     func test5() {
-        KeyStore.remove(at: 0)
+        KeyStore.removeAll()
+    }
+
+    func test6() {
+        _ = try! KeyStore.newAccount(passphrase: passphrase)
+        let account = KeyStore.account(at: KeyStore.count() - 1)
+
+        print(String(describing: account?.secretSeed(passphrase: passphrase)))
+        print(String(describing: account?.publicKey))
     }
 }
