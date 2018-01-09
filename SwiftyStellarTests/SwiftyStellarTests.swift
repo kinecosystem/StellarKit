@@ -161,9 +161,20 @@ class SwiftyStellarTests: XCTestCase {
     }
 
     func testExport() {
-        let store = KeyStore.export(passphrase: passphrase, newPassphrase: passphrase)
+        let store = KeyStore.exportKeystore(passphrase: passphrase, newPassphrase: passphrase)
 
         print(store)
+    }
+
+
+    func testImport() {
+        let store = KeyStore.exportKeystore(passphrase: passphrase, newPassphrase: "new phrase")
+
+        print(store)
+
+        try? KeyStore.importKeystore(store, passphrase: "new phrase", newPassphrase: passphrase)
+
+        print("new count: \(KeyStore.count())")
     }
 
     func test1() {
@@ -209,8 +220,9 @@ class SwiftyStellarTests: XCTestCase {
     }
 
     func test5() {
-        KeyStore.remove(at: 2)
-        KeyStore.remove(at: 3)
+        for _ in 3..<KeyStore.count() {
+            KeyStore.remove(at: 3)
+        }
     }
 
     func test6() {

@@ -82,40 +82,9 @@ public class StellarAccount {
 
 public struct KeyStore {
     public static func newAccount(passphrase: String) throws -> StellarAccount {
-        guard let salt = KeyUtils.salt() else {
-            throw KeyStoreErrors.noSalt
-        }
-
-        guard let seed = KeyUtils.seed() else {
-            throw KeyStoreErrors.noSeed
-        }
-
-        let skey = try KeyUtils.keyHash(passphrase: passphrase, salt: salt)
-
-        guard let encryptedSeed: Data = KeyUtils.encryptSeed(seed,
-                                                             passphrase: passphrase,
-                                                             secretKey: skey)
-            else {
-                throw KeyStoreErrors.encryptionFailed
-        }
-
-        guard let keypair = KeyUtils.keyPair(from: seed) else {
-            throw KeyStoreErrors.keypairGenerationFailed
-        }
-
-        let dict = [
-            "seed" : encryptedSeed.hexString,
-            "salt" : salt,
-            "pkey" : KeyUtils.base32(publicKey: keypair.publicKey)
-        ]
-
-        let data = try JSONSerialization.data(withJSONObject: dict, options: [])
-
         let keychainKey = nextKeychainKey()
 
-        guard keychain.set(data, forKey: keychainKey) else {
-            throw KeyStoreErrors.keychainStoreFailed
-        }
+        try save(accountData: try accountData(passphrase: passphrase), key: keychainKey)
 
         let account = StellarAccount(keychainKey: keychainKey)
 
@@ -138,21 +107,51 @@ public struct KeyStore {
 
     @discardableResult
     public static func remove(at index: Int) -> Bool {
-        return keychain.delete(String(format: "%06d", index))
+        let key = keys()[index]
+
+        guard
+            index < keys().count,
+            let indexStr = key.split(separator: "_").last else {
+                return false
+        }
+
+        return keychain.delete(String(indexStr))
     }
 
     public static func count() -> Int {
         return keys().count
     }
 
-    public static func export(passphrase: String, newPassphrase: String) -> [[String: String]] {
+    public static func importKeystore(_ keystore: [[String: String]],
+                              passphrase: String,
+                              newPassphrase: String) throws {
+        for accountData in keystore {
+            let reencryptedJSON: [String: String]?
+            if passphrase != newPassphrase {
+                reencryptedJSON = reencrypt(accountData,
+                                            passphrase: passphrase,
+                                            newPassphrase: newPassphrase)
+            } else {
+                reencryptedJSON = accountData
+            }
+
+            if let accountData = reencryptedJSON {
+                try save(accountData: accountData, key: nextKeychainKey())
+            }
+        }
+    }
+
+    public static func exportKeystore(passphrase: String,
+                                      newPassphrase: String) -> [[String: String]] {
         var output = [[String: String]]()
 
         for i in 0..<count() {
             if let a = account(at: i), let json = a.json() {
                 let reencryptedJSON: [String: String]?
                 if passphrase != newPassphrase {
-                    reencryptedJSON = reencrypt(a, passphrase: passphrase, newPassphrase: newPassphrase)
+                    reencryptedJSON = reencrypt(json,
+                                                passphrase: passphrase,
+                                                newPassphrase: newPassphrase)
                 } else {
                     reencryptedJSON = json
                 }
@@ -166,18 +165,44 @@ public struct KeyStore {
         return output
     }
 
-    private static func reencrypt(_ account: StellarAccount,
-                                  passphrase: String,
-                                  newPassphrase: String) -> [String: String]? {
-        guard let seed = account.seed(passphrase: passphrase) else {
-            return nil
+    private static func accountData(passphrase: String) throws -> [String: String] {
+        guard let salt = KeyUtils.salt() else {
+            throw KeyStoreErrors.noSalt
         }
 
+        guard let seed = KeyUtils.seed() else {
+            throw KeyStoreErrors.noSeed
+        }
+
+        let skey = try KeyUtils.keyHash(passphrase: passphrase, salt: salt)
+
+        guard let encryptedSeed: Data = KeyUtils.encryptSeed(seed,
+                                                             passphrase: passphrase,
+                                                             secretKey: skey)
+            else {
+                throw KeyStoreErrors.encryptionFailed
+        }
+
+        guard let keypair = KeyUtils.keyPair(from: seed) else {
+            throw KeyStoreErrors.keypairGenerationFailed
+        }
+
+        return [
+            "seed" : encryptedSeed.hexString,
+            "salt" : salt,
+            "pkey" : KeyUtils.base32(publicKey: keypair.publicKey)
+        ]
+    }
+
+    private static func reencrypt(_ json: [String: String],
+                                  passphrase: String,
+                                  newPassphrase: String) -> [String: String]? {
         guard
-            let json = account.json(),
+            let eseed = json["seed"],
             let salt = json["salt"],
             let pkey = json["pkey"],
-            let skey = try? KeyUtils.keyHash(passphrase: passphrase, salt: salt),
+            let skey = try? KeyUtils.keyHash(passphrase: newPassphrase, salt: salt),
+            let seed = try? KeyUtils.seed(from: passphrase, encryptedSeed: eseed, salt: salt),
             let encryptedSeed = KeyUtils.encryptSeed(seed, passphrase: newPassphrase, secretKey: skey)
             else {
                 return nil
@@ -188,6 +213,16 @@ public struct KeyStore {
             "salt": salt,
             "pkey": pkey,
         ]
+    }
+
+    private static func save(accountData: [String: String], key: String) throws {
+        let data = try JSONSerialization.data(withJSONObject: accountData, options: [])
+
+        let keychainKey = nextKeychainKey()
+
+        guard keychain.set(data, forKey: keychainKey) else {
+            throw KeyStoreErrors.keychainStoreFailed
+        }
     }
 
     private static func nextKeychainKey() -> String {
