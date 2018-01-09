@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Sodium
 
 enum KeyStoreErrors: Error {
     case keychainStoreFailed
