@@ -160,6 +160,12 @@ class SwiftyStellarTests: XCTestCase {
         wait(for: [e], timeout: 20)
     }
 
+    func testExport() {
+        let store = KeyStore.export(passphrase: passphrase, newPassphrase: passphrase)
+
+        print(store)
+    }
+
     func test1() {
         let keys = Sodium().sign.keyPair()!
 

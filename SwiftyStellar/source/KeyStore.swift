@@ -23,7 +23,7 @@ private let keychain = KeychainSwift(keyPrefix: keychainPrefix)
 public class StellarAccount {
     private(set) fileprivate var keychainKey: String
 
-    var publicKey: String? {
+    public var publicKey: String? {
         guard
             let json = json(),
             let key = json["pkey"] else {
@@ -57,7 +57,7 @@ public class StellarAccount {
         self.keychainKey = keychainKey
     }
 
-    private func json() -> [String: String]? {
+    func json() -> [String: String]? {
         guard
             let data = keychain.getData(keychainKey),
             let jsonOpt = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String],
@@ -68,7 +68,7 @@ public class StellarAccount {
         return json
     }
 
-    private func seed(passphrase: String) -> Data? {
+    fileprivate func seed(passphrase: String) -> Data? {
         guard
             let json = json(),
             let eseed = json["seed"],
@@ -141,13 +141,53 @@ public struct KeyStore {
         return keychain.delete(String(format: "%06d", index))
     }
 
-    // WARNING: Do not use this method!  Ever!  Except in unit tests.
-    public static func removeAll() {
-        keychain.clear()
-    }
-
     public static func count() -> Int {
         return keys().count
+    }
+
+    public static func export(passphrase: String, newPassphrase: String) -> [[String: String]] {
+        var output = [[String: String]]()
+
+        for i in 0..<count() {
+            if let a = account(at: i), let json = a.json() {
+                let reencryptedJSON: [String: String]?
+                if passphrase != newPassphrase {
+                    reencryptedJSON = reencrypt(a, passphrase: passphrase, newPassphrase: newPassphrase)
+                } else {
+                    reencryptedJSON = json
+                }
+
+                if let json = reencryptedJSON {
+                    output.append(json)
+                }
+            }
+        }
+
+        return output
+    }
+
+    private static func reencrypt(_ account: StellarAccount,
+                                  passphrase: String,
+                                  newPassphrase: String) -> [String: String]? {
+        guard let seed = account.seed(passphrase: passphrase) else {
+            return nil
+        }
+
+        guard
+            let json = account.json(),
+            let salt = json["salt"],
+            let pkey = json["pkey"],
+            let skey = try? KeyUtils.keyHash(passphrase: passphrase, salt: salt),
+            let encryptedSeed: Data = Sodium().secretBox.seal(message: seed, secretKey: skey)
+            else {
+                return nil
+        }
+
+        return [
+            "seed": encryptedSeed.hexString,
+            "salt": salt,
+            "pkey": pkey,
+        ]
     }
 
     private static func nextKeychainKey() -> String {
