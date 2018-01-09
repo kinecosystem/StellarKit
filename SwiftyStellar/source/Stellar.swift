@@ -70,16 +70,16 @@ public class Stellar {
         }
     }
 
-    public func trustKIN(source: StellarAccount,
+    public func trustKIN(account: StellarAccount,
                          passphrase: String,
                          completion: @escaping Completion) {
-        guard let sourceKey = source.publicKey else {
+        guard let sourceKey = account.publicKey else {
             completion(nil, StellarError.missingPublicKey)
 
             return
         }
 
-        guard let secretKey = source.secretKey(passphrase: passphrase) else {
+        guard let secretKey = account.secretKey(passphrase: passphrase) else {
             completion(nil, StellarError.missingSecretKey)
 
             return

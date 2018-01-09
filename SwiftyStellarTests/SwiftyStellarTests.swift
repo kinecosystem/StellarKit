@@ -125,7 +125,7 @@ class SwiftyStellarTests: XCTestCase {
             return
         }
 
-        stellar.trustKIN(source: account, passphrase: passphrase) { txHash, error in
+        stellar.trustKIN(account: account, passphrase: passphrase) { txHash, error in
             defer {
                 e.fulfill()
             }
