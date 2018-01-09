@@ -195,15 +195,16 @@ class SwiftyStellarTests: XCTestCase {
     }
 
     func test4() {
-//        let account = try? KeyStore.newAccount(passphrase: "passphrase")
-        let account = KeyStore.account(at: 0)!
+//        let account = try! KeyStore.newAccount(passphrase: passphrase)
+        let account = KeyStore.account(at: 1)!
 
         print(String(describing: account.publicKey!))
         print(String(describing: account.secretSeed(passphrase: passphrase)!))
     }
 
     func test5() {
-        KeyStore.removeAll()
+        KeyStore.remove(at: 2)
+        KeyStore.remove(at: 3)
     }
 
     func test6() {

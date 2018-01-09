@@ -172,21 +172,8 @@ public struct KeyStore {
     }
 
     private static func keys() -> [String] {
-        var keys = [String]()
-        var latest = -1
-        var moreKeys = true
-
-        while moreKeys {
-            latest += 1
-
-            let key = String(format: "%06d", latest)
-
-            if keychain.getData(key) == nil {
-                moreKeys = false
-            }
-            else {
-                keys.append(key)
-            }
+        let keys = (keychain.getAllKeys() ?? []).filter {
+            $0.starts(with: keychainPrefix)
         }
 
         return keys.sorted()
