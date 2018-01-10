@@ -136,6 +136,34 @@ public class Stellar {
             .resume()
     }
 
+    public func trustTransaction(account: StellarAccount,
+                                 passphrase: String,
+                                 completion: @escaping (Data?, Error?) -> Void) {
+        guard let sourceKey = account.publicKey else {
+            completion(nil, StellarError.missingPublicKey)
+
+            return
+        }
+
+        guard let secretKey = account.secretKey(passphrase: passphrase) else {
+            completion(nil, StellarError.missingSecretKey)
+
+            return
+        }
+
+        createTransaction(source: KeyUtils.key(base32: sourceKey),
+                          operation: trustOp(),
+                          signingKey: secretKey) { (envelope, error) in
+                            guard error == nil else {
+                                completion(nil, error)
+
+                                return
+                            }
+
+                            completion(envelope?.toXDR(), nil)
+        }
+    }
+
     // This is for testing only.
     func fund(account: String, completion: @escaping (Bool) -> Void) {
         let url = baseURL.appendingPathComponent("friendbot")
@@ -176,7 +204,10 @@ public class Stellar {
             .resume()
     }
 
-    private func issueOperation(source: Data, operation: Operation, signingKey: Data, completion: @escaping Completion) {
+    private func createTransaction(source: Data,
+                                   operation: Operation,
+                                   signingKey: Data,
+                                   completion: @escaping (TransactionEnvelope?, Error?) -> Void) {
         sequence(account: source) { sequence, error in
             guard error == nil else {
                 completion(nil, error)
@@ -196,11 +227,27 @@ public class Stellar {
                                                    operation: operation,
                                                    signingKey: signingKey)
 
-                self.postTransaction(envelope: envelope, completion: completion)
+                completion(envelope, nil)
             }
             catch {
                 completion(nil, error)
             }
+        }
+    }
+
+    private func issueOperation(source: Data, operation: Operation, signingKey: Data, completion: @escaping Completion) {
+        createTransaction(source: source,
+                          operation: operation,
+                          signingKey: signingKey) { (envelope, error) in
+                            guard error == nil else {
+                                completion(nil, error)
+
+                                return
+                            }
+
+                            if let envelope = envelope {
+                                self.postTransaction(envelope: envelope, completion: completion)
+                            }
         }
     }
 

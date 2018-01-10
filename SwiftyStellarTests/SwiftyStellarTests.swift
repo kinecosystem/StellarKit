@@ -206,6 +206,24 @@ class SwiftyStellarTests: XCTestCase {
         wait(for: [e], timeout: 20)
     }
 
+    func testTrustTransaction() {
+        let e = expectation(description: "")
+
+        guard let account = self.account else {
+            XCTAssertTrue(false)
+
+            return
+        }
+
+        stellar.trustTransaction(account: account, passphrase: passphrase) { (data, error) in
+            print("data: \(data?.base64EncodedString() ?? "")")
+
+            e.fulfill()
+        }
+
+        wait(for: [e], timeout: 20)
+    }
+
     func test1() {
         let keys = Sodium().sign.keyPair()!
 
