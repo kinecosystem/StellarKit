@@ -38,6 +38,13 @@ enum TransactionError: Int32, Error {
     case txINTERNAL_ERROR = -11      // an unknown error occured
 }
 
+enum CreateAccountError: Int32, Error {
+    case CREATE_ACCOUNT_MALFORMED = -1     // invalid destination
+    case CREATE_ACCOUNT_UNDERFUNDED = -2   // not enough funds in source account
+    case CREATE_ACCOUNT_LOW_RESERVE = -3   // would create an account below the min reserve
+    case CREATE_ACCOUNT_ALREADY_EXIST = -4 // account already exists
+}
+
 enum PaymentError: Int32, Error {
     case PAYMENT_MALFORMED = -1          // bad input
     case PAYMENT_UNDERFUNDED = -2        // not enough funds in source account
@@ -91,6 +98,21 @@ func errorFromResponse(response: [String: Any]) -> Error? {
                     default:
                         break
                     }
+                case .CREATE_ACCOUNT (let createAccountResult):
+                    switch createAccountResult {
+                    case .failure (let code):
+                        if let createAccountError = CreateAccountError(rawValue: code) {
+                            return createAccountError
+                        }
+
+                        return StellarError.unknownError(response)
+
+                    default:
+                        break
+                    }
+
+                default:
+                    break
                 }
 
             default:

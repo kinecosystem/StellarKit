@@ -70,12 +70,21 @@ enum OperationResult: XDRDecodable {
 
     // Add cases as necessary.
     enum Tr: XDRDecodable {
+        case CREATE_ACCOUNT (CreateAccountResult)
         case PAYMENT (PaymentResult)
+        case unknown
 
         init(xdrData: inout Data, count: Int32) {
-            _ = Int32(xdrData: &xdrData)
+            let discriminant = Int32(xdrData: &xdrData)
 
-            self = .PAYMENT(PaymentResult(xdrData: &xdrData, count: 0))
+            switch discriminant {
+            case OperationType.PAYMENT:
+                self = .PAYMENT(PaymentResult(xdrData: &xdrData, count: 0))
+            case OperationType.CREATE_ACCOUNT:
+                self = .CREATE_ACCOUNT(CreateAccountResult(xdrData: &xdrData, count: 0))
+            default:
+                self = .unknown
+            }
         }
     }
 
@@ -95,6 +104,24 @@ enum OperationResult: XDRDecodable {
     }
 }
 
+struct CreateAccountResultCode {
+    static let CREATE_ACCOUNT_MALFORMED: Int32 = -1     // invalid destination
+    static let CREATE_ACCOUNT_UNDERFUNDED: Int32 = -2   // not enough funds in source account
+    static let CREATE_ACCOUNT_LOW_RESERVE: Int32 = -3   // would create an account below the min reserve
+    static let CREATE_ACCOUNT_ALREADY_EXIST: Int32 = -4 // account already exists
+}
+
+enum CreateAccountResult: XDRDecodable {
+    case success
+    case failure (Int32)
+
+    init(xdrData: inout Data, count: Int32) {
+        let value = Int32(xdrData: &xdrData)
+
+        self = value == 0 ? .success : .failure(value)
+    }
+}
+
 struct PaymentResultCode {
     // codes considered as "success" for the operation
     static let PAYMENT_SUCCESS: Int32 = 0 // payment successfuly completed
@@ -111,7 +138,7 @@ struct PaymentResultCode {
     static let PAYMENT_NO_ISSUER: Int32 = -9          // missing issuer on asset
 }
 
-enum PaymentResult: XDRCodable {
+enum PaymentResult: XDRDecodable {
     case success
     case failure (Int32)
 

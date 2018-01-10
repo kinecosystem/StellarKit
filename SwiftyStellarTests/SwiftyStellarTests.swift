@@ -188,14 +188,20 @@ class SwiftyStellarTests: XCTestCase {
     func testFund() {
         let e = expectation(description: "")
 
-        let keys = Sodium().sign.keyPair()!
-        let account = KeyUtils.base32(publicKey: keys.publicKey)
+        guard let account = self.account else {
+            XCTAssertTrue(false)
 
-        stellar.fund(account: account) {
-            e.fulfill()
+            return
         }
 
-        print("account: \(account)")
+//        let keys = Sodium().sign.keyPair()!
+//        let account = KeyUtils.base32(publicKey: keys.publicKey)
+
+        stellar.fund(account: account.publicKey!) { success in
+            print("success: \(success)")
+
+            e.fulfill()
+        }
 
         wait(for: [e], timeout: 20)
     }
