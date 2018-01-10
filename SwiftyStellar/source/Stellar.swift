@@ -107,7 +107,8 @@ public class Stellar {
                     let d = data,
                     let jsonOpt = try? JSONSerialization.jsonObject(with: d,
                                                                     options: []) as? [String: Any],
-                    let json = jsonOpt else {
+                    let json = jsonOpt
+                    else {
                         completion(nil, StellarError.parseError(data))
 
                         return
@@ -131,6 +132,33 @@ public class Stellar {
                 }
 
                 completion(nil, StellarError.missingBalance)
+            })
+            .resume()
+    }
+
+    // This is for testing only.
+    func fund(account: String, completion: @escaping () -> Void) {
+        let url = baseURL.appendingPathComponent("friendbot")
+        var comps = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        comps.query = "addr=\(account)"
+
+        URLSession
+            .shared
+            .dataTask(with: comps.url!, completionHandler: { (data, response, error) in
+                defer {
+                    completion()
+                }
+
+                guard
+                    let d = data,
+                    let jsonOpt = try? JSONSerialization.jsonObject(with: d,
+                                                                    options: []) as? [String: Any],
+                    let json = jsonOpt
+                    else {
+                        return
+                }
+
+                print("response: \(json)")
             })
             .resume()
     }

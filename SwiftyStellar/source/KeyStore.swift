@@ -122,6 +122,19 @@ public struct KeyStore {
         return keys().count
     }
 
+    @discardableResult
+    public static func importSecretSeed(_ seed: String, passphrase: String) throws -> StellarAccount {
+        let seedData = KeyUtils.key(base32: seed)
+
+        let keychainKey = nextKeychainKey()
+
+        try save(accountData: try accountData(passphrase: passphrase, seed: seedData), key: keychainKey)
+
+        let account = StellarAccount(keychainKey: keychainKey)
+
+        return account
+    }
+
     public static func importKeystore(_ keystore: [[String: String]],
                               passphrase: String,
                               newPassphrase: String) throws {
@@ -165,12 +178,13 @@ public struct KeyStore {
         return output
     }
 
-    private static func accountData(passphrase: String) throws -> [String: String] {
+    private static func accountData(passphrase: String,
+                                    seed: Data? = nil) throws -> [String: String] {
         guard let salt = KeyUtils.salt() else {
             throw KeyStoreErrors.noSalt
         }
 
-        guard let seed = KeyUtils.seed() else {
+        guard let seed = seed ?? KeyUtils.seed() else {
             throw KeyStoreErrors.noSeed
         }
 

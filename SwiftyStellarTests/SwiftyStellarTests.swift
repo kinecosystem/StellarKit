@@ -177,6 +177,29 @@ class SwiftyStellarTests: XCTestCase {
         print("new count: \(KeyStore.count())")
     }
 
+    func testAccountImport() {
+        let account = try! KeyStore.importSecretSeed("SCML43HASLG5IIN34KCJLDQ6LPWYQ3HIROP5CRBHVC46YRMJ6QLOYQJS",
+                                                     passphrase: passphrase)
+
+        print(String(describing: account.publicKey!))
+        print(String(describing: account.secretSeed(passphrase: passphrase)!))
+    }
+
+    func testFund() {
+        let e = expectation(description: "")
+
+        let keys = Sodium().sign.keyPair()!
+        let account = KeyUtils.base32(publicKey: keys.publicKey)
+
+        stellar.fund(account: account) {
+            e.fulfill()
+        }
+
+        print("account: \(account)")
+
+        wait(for: [e], timeout: 20)
+    }
+
     func test1() {
         let keys = Sodium().sign.keyPair()!
 
@@ -189,7 +212,7 @@ class SwiftyStellarTests: XCTestCase {
     }
 
     func test2() {
-        guard let account = self.account, let account2 = self.account2 else {
+        guard let account = self.account, let account2 = self.account2, let issuer = KeyStore.account(at: 3) else {
             return
         }
 
@@ -198,6 +221,9 @@ class SwiftyStellarTests: XCTestCase {
 
         print(String(describing: account2.publicKey))
         print(String(describing: account2.secretSeed(passphrase: passphrase)))
+
+        print(String(describing: issuer.publicKey))
+        print(String(describing: issuer.secretSeed(passphrase: passphrase)))
     }
 
     func test3() {
