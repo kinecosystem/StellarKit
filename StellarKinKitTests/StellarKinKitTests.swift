@@ -347,93 +347,62 @@ class StellarKinKitTests: XCTestCase {
         wait(for: [e], timeout: 60)
     }
 
-    func test_export() {
-        let count = KeyStore.count()
-
-        let store = KeyStore.exportKeystore(passphrase: passphrase, newPassphrase: passphrase)
-
-        XCTAssert(store.count == count, "Unexpected number of exported accounts: \(store)")
-    }
-
-    func test_import() {
-        let count = KeyStore.count()
-
-        let store = KeyStore.exportKeystore(passphrase: passphrase, newPassphrase: "new phrase")
-
-        try? KeyStore.importKeystore(store, passphrase: "new phrase", newPassphrase: passphrase)
-
-        XCTAssert(KeyStore.count() == count * 2, "One or more accounts failed to import")
-    }
-
-    func test_account_import() {
-        let count = KeyStore.count()
-
-        let account = try? KeyStore.importSecretSeed("SCML43HASLG5IIN34KCJLDQ6LPWYQ3HIROP5CRBHVC46YRMJ6QLOYQJS",
-                                                     passphrase: passphrase)
-
-        XCTAssertNotNil(account)
-
-        let storedAccount = KeyStore.account(at: count)
-
-        XCTAssertEqual(account!.publicKey!, storedAccount!.publicKey!)
-    }
-
-    func test1() {
-        let keys = Sodium().sign.keyPair()!
-
-        let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(keys.publicKey))
-
-        print(pk.toXDR().base64EncodedString())
-
-        print(keys.publicKey.base64EncodedString())
-        print(keys.secretKey.base64EncodedString())
-    }
-
-    func test2() {
-        guard let account = self.account, let account2 = self.account2, let issuer = KeyStore.account(at: 3) else {
-            return
-        }
-
-        print(String(describing: account.publicKey))
-        print(String(describing: account.secretSeed(passphrase: passphrase)))
-
-        print(String(describing: account2.publicKey))
-        print(String(describing: account2.secretSeed(passphrase: passphrase)))
-
-        print(String(describing: issuer.publicKey))
-        print(String(describing: issuer.secretSeed(passphrase: passphrase)))
-    }
-
-    func test3() {
-        let data = Data(base64Encoded: "AAAAAMz0aA3zam0llfm+6vrjvMfGp9N69xmsOxJ37Fg3vKoVAAAAZABiBBUAAAABAAAAAAAAAAAAAAABAAAAAAAAAAcAAAAAgQpeQySd0WEDInBglocy8+qfLsWmvL7NPo94NO+PejAAAAABS0lOAAAAAAEAAAAAAAAAAA==")!
-
-        print("----")
-        data.withUnsafeBytes { (bp: UnsafePointer<UInt8>) -> Void in
-            for i in 0..<data.count {
-                print(bp.advanced(by: i).pointee)
-            }
-        }
-    }
-
-    func test4() {
-//        let account = try! KeyStore.newAccount(passphrase: passphrase)
-        let account = KeyStore.account(at: 1)!
-
-        print(String(describing: account.publicKey!))
-        print(String(describing: account.secretSeed(passphrase: passphrase)!))
-    }
-
-    func test5() {
-        for _ in 3..<KeyStore.count() {
-            KeyStore.remove(at: 3)
-        }
-    }
-
-    func test6() {
-        _ = try! KeyStore.newAccount(passphrase: passphrase)
-        let account = KeyStore.account(at: KeyStore.count() - 1)
-
-        print(String(describing: account?.secretSeed(passphrase: passphrase)))
-        print(String(describing: account?.publicKey))
-    }
+//    func test1() {
+//        let keys = Sodium().sign.keyPair()!
+//
+//        let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(keys.publicKey))
+//
+//        print(pk.toXDR().base64EncodedString())
+//
+//        print(keys.publicKey.base64EncodedString())
+//        print(keys.secretKey.base64EncodedString())
+//    }
+//
+//    func test2() {
+//        guard let account = self.account, let account2 = self.account2, let issuer = KeyStore.account(at: 3) else {
+//            return
+//        }
+//
+//        print(String(describing: account.publicKey))
+//        print(String(describing: account.secretSeed(passphrase: passphrase)))
+//
+//        print(String(describing: account2.publicKey))
+//        print(String(describing: account2.secretSeed(passphrase: passphrase)))
+//
+//        print(String(describing: issuer.publicKey))
+//        print(String(describing: issuer.secretSeed(passphrase: passphrase)))
+//    }
+//
+//    func test3() {
+//        let data = Data(base64Encoded: "AAAAAMz0aA3zam0llfm+6vrjvMfGp9N69xmsOxJ37Fg3vKoVAAAAZABiBBUAAAABAAAAAAAAAAAAAAABAAAAAAAAAAcAAAAAgQpeQySd0WEDInBglocy8+qfLsWmvL7NPo94NO+PejAAAAABS0lOAAAAAAEAAAAAAAAAAA==")!
+//
+//        print("----")
+//        data.withUnsafeBytes { (bp: UnsafePointer<UInt8>) -> Void in
+//            for i in 0..<data.count {
+//                print(bp.advanced(by: i).pointee)
+//            }
+//        }
+//    }
+//
+//    func test4() {
+////        let account = try! KeyStore.newAccount(passphrase: passphrase)
+//        let account = KeyStore.account(at: 1)!
+//
+//        print(String(describing: account.publicKey!))
+//        print(String(describing: account.secretSeed(passphrase: passphrase)!))
+//    }
+//
+//    func test5() {
+//        for _ in 3..<KeyStore.count() {
+//            KeyStore.remove(at: 3)
+//        }
+//    }
+//
+//    func test6() {
+//        _ = try! KeyStore.newAccount(passphrase: passphrase)
+//        let account = KeyStore.account(at: KeyStore.count() - 1)
+//
+//        print(String(describing: account?.secretSeed(passphrase: passphrase)))
+//        print(String(describing: account?.publicKey))
+//    }
 }

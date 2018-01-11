@@ -36,6 +36,7 @@
 		82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BDC1FFE24EE0034204F /* Stellar.swift */; };
 		82340C45200138E50034204F /* StellarResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C44200138E50034204F /* StellarResults.swift */; };
 		82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C4A20014BFC0034204F /* StellarErrors.swift */; };
+		825BD8922007CFCB00AF981A /* KeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BD8912007CFCB00AF981A /* KeyStoreTests.swift */; };
 		82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB892002A2880010E31F /* XDRTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		82ECAB90200367660010E31F /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8F200367660010E31F /* KeyStore.swift */; };
@@ -129,6 +130,7 @@
 		82340BDC1FFE24EE0034204F /* Stellar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stellar.swift; sourceTree = "<group>"; };
 		82340C44200138E50034204F /* StellarResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarResults.swift; sourceTree = "<group>"; };
 		82340C4A20014BFC0034204F /* StellarErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarErrors.swift; sourceTree = "<group>"; };
+		825BD8912007CFCB00AF981A /* KeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStoreTests.swift; sourceTree = "<group>"; };
 		82ECAB892002A2880010E31F /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		82ECAB8F200367660010E31F /* KeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				82340BAA1FFDF2DA0034204F /* StellarKinKitTests.swift */,
 				82ECAB892002A2880010E31F /* XDRTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
+				825BD8912007CFCB00AF981A /* KeyStoreTests.swift */,
 			);
 			path = StellarKinKitTests;
 			sourceTree = "<group>";
@@ -495,6 +498,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */,
+				825BD8922007CFCB00AF981A /* KeyStoreTests.swift in Sources */,
 				82340BAB1FFDF2DA0034204F /* StellarKinKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
