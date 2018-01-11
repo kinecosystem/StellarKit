@@ -1,16 +1,16 @@
 //
-//  SwiftyStellarTests.swift
-//  SwiftyStellarTests
+//  StellarKinKitTests.swift
+//  StellarKinKitTests
 //
-//  Created by Avi Shevin on 04/01/2018.
+//  Created by Kin Foundation
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 
 import XCTest
-@testable import SwiftyStellar
+@testable import StellarKinKit
 @testable import Sodium
 
-class SwiftyStellarTests: XCTestCase {
+class StellarKinKitTests: XCTestCase {
     let passphrase = "a phrase"
 
     let stellar = Stellar(baseURL: URL(string: "https://horizon-testnet.stellar.org")!,

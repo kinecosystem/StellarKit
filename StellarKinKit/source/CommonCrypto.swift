@@ -1,8 +1,8 @@
 //
 //  CommonCrypto.swift
-//  SwiftyStellar
+//  StellarKinKit
 //
-//  Created by Avi Shevin on 04/01/2018.
+//  Created by Kin Foundation
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 

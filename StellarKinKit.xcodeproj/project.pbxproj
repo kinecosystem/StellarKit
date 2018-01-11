@@ -21,9 +21,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		82340BA61FFDF2DA0034204F /* SwiftyStellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340B9C1FFDF2DA0034204F /* SwiftyStellar.framework */; };
-		82340BAB1FFDF2DA0034204F /* SwiftyStellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BAA1FFDF2DA0034204F /* SwiftyStellarTests.swift */; };
-		82340BAD1FFDF2DA0034204F /* SwiftyStellar.h in Headers */ = {isa = PBXBuildFile; fileRef = 82340B9F1FFDF2DA0034204F /* SwiftyStellar.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		82340BA61FFDF2DA0034204F /* StellarKinKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340B9C1FFDF2DA0034204F /* StellarKinKit.framework */; };
+		82340BAB1FFDF2DA0034204F /* StellarKinKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BAA1FFDF2DA0034204F /* StellarKinKitTests.swift */; };
+		82340BAD1FFDF2DA0034204F /* StellarKinKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 82340B9F1FFDF2DA0034204F /* StellarKinKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		82340BBA1FFDF3390034204F /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB71FFDF3390034204F /* Conversion.swift */; };
 		82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB81FFDF3390034204F /* XDRCodable.swift */; };
 		82340BBC1FFDF3390034204F /* StellarTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB91FFDF3390034204F /* StellarTypes.swift */; };
@@ -109,16 +109,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		82340B9C1FFDF2DA0034204F /* SwiftyStellar.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyStellar.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		82340B9F1FFDF2DA0034204F /* SwiftyStellar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftyStellar.h; sourceTree = "<group>"; };
-		82340BA01FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		82340BA51FFDF2DA0034204F /* SwiftyStellarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftyStellarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		82340BAA1FFDF2DA0034204F /* SwiftyStellarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyStellarTests.swift; sourceTree = "<group>"; };
+		82340B9C1FFDF2DA0034204F /* StellarKinKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKinKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		82340B9F1FFDF2DA0034204F /* StellarKinKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StellarKinKit.h; sourceTree = "<group>"; };
+		82340BA01FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../StellarKinKit/Info.plist; sourceTree = "<group>"; };
+		82340BA51FFDF2DA0034204F /* StellarKinKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StellarKinKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		82340BAA1FFDF2DA0034204F /* StellarKinKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarKinKitTests.swift; sourceTree = "<group>"; };
 		82340BAC1FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82340BB71FFDF3390034204F /* Conversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversion.swift; sourceTree = "<group>"; };
 		82340BB81FFDF3390034204F /* XDRCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRCodable.swift; sourceTree = "<group>"; };
 		82340BB91FFDF3390034204F /* StellarTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarTypes.swift; sourceTree = "<group>"; };
-		82340BC11FFDF3F30034204F /* SwiftyStellarHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftyStellarHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		82340BC11FFDF3F30034204F /* StellarKinKitHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StellarKinKitHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82340BC31FFDF3F30034204F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		82340BC51FFDF3F30034204F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		82340BC81FFDF3F30034204F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -149,7 +149,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82340BA61FFDF2DA0034204F /* SwiftyStellar.framework in Frameworks */,
+				82340BA61FFDF2DA0034204F /* StellarKinKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,9 +167,9 @@
 			isa = PBXGroup;
 			children = (
 				E983D2412002223C00E917FA /* Sodium.xcodeproj */,
-				82340B9E1FFDF2DA0034204F /* SwiftyStellar */,
-				82340BA91FFDF2DA0034204F /* SwiftyStellarTests */,
-				82340BC21FFDF3F30034204F /* SwiftyStellarHost */,
+				82340B9E1FFDF2DA0034204F /* StellarKinKit */,
+				82340BA91FFDF2DA0034204F /* StellarKinKitTests */,
+				82340BC21FFDF3F30034204F /* StellarKinKitHost */,
 				82340B9D1FFDF2DA0034204F /* Products */,
 				82340BFC1FFE41AA0034204F /* Frameworks */,
 			);
@@ -178,32 +178,32 @@
 		82340B9D1FFDF2DA0034204F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				82340B9C1FFDF2DA0034204F /* SwiftyStellar.framework */,
-				82340BA51FFDF2DA0034204F /* SwiftyStellarTests.xctest */,
-				82340BC11FFDF3F30034204F /* SwiftyStellarHost.app */,
+				82340B9C1FFDF2DA0034204F /* StellarKinKit.framework */,
+				82340BA51FFDF2DA0034204F /* StellarKinKitTests.xctest */,
+				82340BC11FFDF3F30034204F /* StellarKinKitHost.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		82340B9E1FFDF2DA0034204F /* SwiftyStellar */ = {
+		82340B9E1FFDF2DA0034204F /* StellarKinKit */ = {
 			isa = PBXGroup;
 			children = (
 				82ECAB91200368480010E31F /* other_source */,
 				82340BB61FFDF3030034204F /* source */,
-				82340B9F1FFDF2DA0034204F /* SwiftyStellar.h */,
+				82340B9F1FFDF2DA0034204F /* StellarKinKit.h */,
 				82340BA01FFDF2DA0034204F /* Info.plist */,
 			);
-			path = SwiftyStellar;
+			path = StellarKinKit;
 			sourceTree = "<group>";
 		};
-		82340BA91FFDF2DA0034204F /* SwiftyStellarTests */ = {
+		82340BA91FFDF2DA0034204F /* StellarKinKitTests */ = {
 			isa = PBXGroup;
 			children = (
-				82340BAA1FFDF2DA0034204F /* SwiftyStellarTests.swift */,
+				82340BAA1FFDF2DA0034204F /* StellarKinKitTests.swift */,
 				82ECAB892002A2880010E31F /* XDRTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
 			);
-			path = SwiftyStellarTests;
+			path = StellarKinKitTests;
 			sourceTree = "<group>";
 		};
 		82340BB61FFDF3030034204F /* source */ = {
@@ -219,10 +219,11 @@
 				82ECAB8B2003290F0010E31F /* KeyUtils.swift */,
 				82ECAB8F200367660010E31F /* KeyStore.swift */,
 			);
-			path = source;
+			name = source;
+			path = ../StellarKinKit/source;
 			sourceTree = "<group>";
 		};
-		82340BC21FFDF3F30034204F /* SwiftyStellarHost */ = {
+		82340BC21FFDF3F30034204F /* StellarKinKitHost */ = {
 			isa = PBXGroup;
 			children = (
 				82340BC31FFDF3F30034204F /* AppDelegate.swift */,
@@ -232,7 +233,7 @@
 				82340BCC1FFDF3F30034204F /* LaunchScreen.storyboard */,
 				82340BCF1FFDF3F30034204F /* Info.plist */,
 			);
-			path = SwiftyStellarHost;
+			path = StellarKinKitHost;
 			sourceTree = "<group>";
 		};
 		82340BFC1FFE41AA0034204F /* Frameworks */ = {
@@ -270,16 +271,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82340BAD1FFDF2DA0034204F /* SwiftyStellar.h in Headers */,
+				82340BAD1FFDF2DA0034204F /* StellarKinKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		82340B9B1FFDF2DA0034204F /* SwiftyStellar */ = {
+		82340B9B1FFDF2DA0034204F /* StellarKinKit */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 82340BB01FFDF2DA0034204F /* Build configuration list for PBXNativeTarget "SwiftyStellar" */;
+			buildConfigurationList = 82340BB01FFDF2DA0034204F /* Build configuration list for PBXNativeTarget "StellarKinKit" */;
 			buildPhases = (
 				82340B971FFDF2DA0034204F /* Sources */,
 				82340B981FFDF2DA0034204F /* Frameworks */,
@@ -292,14 +293,14 @@
 				E983D2542002227E00E917FA /* PBXTargetDependency */,
 				82340BDB1FFE04AC0034204F /* PBXTargetDependency */,
 			);
-			name = SwiftyStellar;
+			name = StellarKinKit;
 			productName = SwiftyStellar;
-			productReference = 82340B9C1FFDF2DA0034204F /* SwiftyStellar.framework */;
+			productReference = 82340B9C1FFDF2DA0034204F /* StellarKinKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		82340BA41FFDF2DA0034204F /* SwiftyStellarTests */ = {
+		82340BA41FFDF2DA0034204F /* StellarKinKitTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 82340BB31FFDF2DA0034204F /* Build configuration list for PBXNativeTarget "SwiftyStellarTests" */;
+			buildConfigurationList = 82340BB31FFDF2DA0034204F /* Build configuration list for PBXNativeTarget "StellarKinKitTests" */;
 			buildPhases = (
 				82340BA11FFDF2DA0034204F /* Sources */,
 				82340BA21FFDF2DA0034204F /* Frameworks */,
@@ -311,14 +312,14 @@
 				82340BA81FFDF2DA0034204F /* PBXTargetDependency */,
 				82ECAB95200380290010E31F /* PBXTargetDependency */,
 			);
-			name = SwiftyStellarTests;
+			name = StellarKinKitTests;
 			productName = SwiftyStellarTests;
-			productReference = 82340BA51FFDF2DA0034204F /* SwiftyStellarTests.xctest */;
+			productReference = 82340BA51FFDF2DA0034204F /* StellarKinKitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		82340BC01FFDF3F30034204F /* SwiftyStellarHost */ = {
+		82340BC01FFDF3F30034204F /* StellarKinKitHost */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 82340BD01FFDF3F30034204F /* Build configuration list for PBXNativeTarget "SwiftyStellarHost" */;
+			buildConfigurationList = 82340BD01FFDF3F30034204F /* Build configuration list for PBXNativeTarget "StellarKinKitHost" */;
 			buildPhases = (
 				82340BBD1FFDF3F30034204F /* Sources */,
 				82340BBE1FFDF3F30034204F /* Frameworks */,
@@ -328,9 +329,9 @@
 			);
 			dependencies = (
 			);
-			name = SwiftyStellarHost;
+			name = StellarKinKitHost;
 			productName = SwiftyStellarHost;
-			productReference = 82340BC11FFDF3F30034204F /* SwiftyStellarHost.app */;
+			productReference = 82340BC11FFDF3F30034204F /* StellarKinKitHost.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -363,7 +364,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 82340B961FFDF2DA0034204F /* Build configuration list for PBXProject "SwiftyStellar" */;
+			buildConfigurationList = 82340B961FFDF2DA0034204F /* Build configuration list for PBXProject "StellarKinKit" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -382,9 +383,9 @@
 			);
 			projectRoot = "";
 			targets = (
-				82340B9B1FFDF2DA0034204F /* SwiftyStellar */,
-				82340BA41FFDF2DA0034204F /* SwiftyStellarTests */,
-				82340BC01FFDF3F30034204F /* SwiftyStellarHost */,
+				82340B9B1FFDF2DA0034204F /* StellarKinKit */,
+				82340BA41FFDF2DA0034204F /* StellarKinKitTests */,
+				82340BC01FFDF3F30034204F /* StellarKinKitHost */,
 				82340BD51FFE046D0034204F /* CommonCryptoModuleMap */,
 			);
 		};
@@ -494,7 +495,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */,
-				82340BAB1FFDF2DA0034204F /* SwiftyStellarTests.swift in Sources */,
+				82340BAB1FFDF2DA0034204F /* StellarKinKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -512,7 +513,7 @@
 /* Begin PBXTargetDependency section */
 		82340BA81FFDF2DA0034204F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 82340B9B1FFDF2DA0034204F /* SwiftyStellar */;
+			target = 82340B9B1FFDF2DA0034204F /* StellarKinKit */;
 			targetProxy = 82340BA71FFDF2DA0034204F /* PBXContainerItemProxy */;
 		};
 		82340BDB1FFE04AC0034204F /* PBXTargetDependency */ = {
@@ -522,7 +523,7 @@
 		};
 		82ECAB95200380290010E31F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 82340BC01FFDF3F30034204F /* SwiftyStellarHost */;
+			target = 82340BC01FFDF3F30034204F /* StellarKinKitHost */;
 			targetProxy = 82ECAB94200380290010E31F /* PBXContainerItemProxy */;
 		};
 		E983D2542002227E00E917FA /* PBXTargetDependency */ = {
@@ -682,10 +683,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap";
-				INFOPLIST_FILE = SwiftyStellar/Info.plist;
+				INFOPLIST_FILE = StellarKinKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellar;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKinKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -707,10 +708,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap";
-				INFOPLIST_FILE = SwiftyStellar/Info.plist;
+				INFOPLIST_FILE = StellarKinKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellar;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKinKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;
@@ -724,13 +725,13 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MZAK745F32;
-				INFOPLIST_FILE = SwiftyStellarTests/Info.plist;
+				INFOPLIST_FILE = StellarKinKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellarTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKinKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftyStellarHost.app/SwiftyStellarHost";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StellarKinKitHost.app/StellarKinKitHost";
 			};
 			name = Debug;
 		};
@@ -740,13 +741,13 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MZAK745F32;
-				INFOPLIST_FILE = SwiftyStellarTests/Info.plist;
+				INFOPLIST_FILE = StellarKinKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellarTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKinKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftyStellarHost.app/SwiftyStellarHost";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StellarKinKitHost.app/StellarKinKitHost";
 			};
 			name = Release;
 		};
@@ -756,9 +757,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MZAK745F32;
-				INFOPLIST_FILE = SwiftyStellarHost/Info.plist;
+				INFOPLIST_FILE = StellarKinKitHost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellarHost;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKinKitHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -771,9 +772,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MZAK745F32;
-				INFOPLIST_FILE = SwiftyStellarHost/Info.plist;
+				INFOPLIST_FILE = StellarKinKitHost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.SwiftyStellarHost;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKinKitHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -801,7 +802,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		82340B961FFDF2DA0034204F /* Build configuration list for PBXProject "SwiftyStellar" */ = {
+		82340B961FFDF2DA0034204F /* Build configuration list for PBXProject "StellarKinKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				82340BAE1FFDF2DA0034204F /* Debug */,
@@ -810,7 +811,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		82340BB01FFDF2DA0034204F /* Build configuration list for PBXNativeTarget "SwiftyStellar" */ = {
+		82340BB01FFDF2DA0034204F /* Build configuration list for PBXNativeTarget "StellarKinKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				82340BB11FFDF2DA0034204F /* Debug */,
@@ -819,7 +820,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		82340BB31FFDF2DA0034204F /* Build configuration list for PBXNativeTarget "SwiftyStellarTests" */ = {
+		82340BB31FFDF2DA0034204F /* Build configuration list for PBXNativeTarget "StellarKinKitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				82340BB41FFDF2DA0034204F /* Debug */,
@@ -828,7 +829,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		82340BD01FFDF3F30034204F /* Build configuration list for PBXNativeTarget "SwiftyStellarHost" */ = {
+		82340BD01FFDF3F30034204F /* Build configuration list for PBXNativeTarget "StellarKinKitHost" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				82340BD11FFDF3F30034204F /* Debug */,
