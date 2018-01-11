@@ -347,112 +347,35 @@ class StellarKinKitTests: XCTestCase {
         wait(for: [e], timeout: 60)
     }
 
-    func testTrust() {
-        let e = expectation(description: "")
+    func test_export() {
+        let count = KeyStore.count()
 
-        guard let account = self.account else {
-            XCTAssertTrue(false)
-
-            return
-        }
-
-        stellar.trustKIN(account: account, passphrase: passphrase) { txHash, error in
-            defer {
-                e.fulfill()
-            }
-
-            if let error = error as? StellarError {
-                switch error {
-                case .parseError (let data):
-                    if let data = data {
-                        print("Error: (\(error)): \(data.base64EncodedString())")
-                    }
-                case .unknownError (let json):
-                    if let json = json {
-                        print("Error: (\(error)): \(json)")
-                    }
-                default:
-                    break
-                }
-
-                print("Error: \(error)")
-            }
-            else if let error = error {
-                print(error)
-            }
-
-            guard let txHash = txHash else {
-                return
-            }
-
-            print(txHash)
-        }
-
-        wait(for: [e], timeout: 20)
-    }
-
-    func testExport() {
         let store = KeyStore.exportKeystore(passphrase: passphrase, newPassphrase: passphrase)
 
-        print(store)
+        XCTAssert(store.count == count, "Unexpected number of exported accounts: \(store)")
     }
 
+    func test_import() {
+        let count = KeyStore.count()
 
-    func testImport() {
         let store = KeyStore.exportKeystore(passphrase: passphrase, newPassphrase: "new phrase")
-
-        print(store)
 
         try? KeyStore.importKeystore(store, passphrase: "new phrase", newPassphrase: passphrase)
 
-        print("new count: \(KeyStore.count())")
+        XCTAssert(KeyStore.count() == count * 2, "One or more accounts failed to import")
     }
 
-    func testAccountImport() {
-        let account = try! KeyStore.importSecretSeed("SCML43HASLG5IIN34KCJLDQ6LPWYQ3HIROP5CRBHVC46YRMJ6QLOYQJS",
+    func test_account_import() {
+        let count = KeyStore.count()
+
+        let account = try? KeyStore.importSecretSeed("SCML43HASLG5IIN34KCJLDQ6LPWYQ3HIROP5CRBHVC46YRMJ6QLOYQJS",
                                                      passphrase: passphrase)
 
-        print(String(describing: account.publicKey!))
-        print(String(describing: account.secretSeed(passphrase: passphrase)!))
-    }
+        XCTAssertNotNil(account)
 
-    func testFund() {
-        let e = expectation(description: "")
+        let storedAccount = KeyStore.account(at: count)
 
-        guard let account = self.account else {
-            XCTAssertTrue(false)
-
-            return
-        }
-
-//        let keys = Sodium().sign.keyPair()!
-//        let account = KeyUtils.base32(publicKey: keys.publicKey)
-
-        stellar.fund(account: account.publicKey!) { success in
-            print("success: \(success)")
-
-            e.fulfill()
-        }
-
-        wait(for: [e], timeout: 20)
-    }
-
-    func testTrustTransaction() {
-        let e = expectation(description: "")
-
-        guard let account = self.account else {
-            XCTAssertTrue(false)
-
-            return
-        }
-
-        stellar.trustTransaction(account: account, passphrase: passphrase) { (data, error) in
-            print("data: \(data?.base64EncodedString() ?? "")")
-
-            e.fulfill()
-        }
-
-        wait(for: [e], timeout: 20)
+        XCTAssertEqual(account!.publicKey!, storedAccount!.publicKey!)
     }
 
     func test1() {
