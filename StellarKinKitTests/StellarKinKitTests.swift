@@ -17,11 +17,16 @@ class StellarKinKitTests: XCTestCase {
                           kinIssuer: "GBOJSMAO3YZ3CQYUJOUWWFV37IFLQVNVKHVRQDEJ4M3O364H5FEGGMBH")
     var account: StellarAccount?
     var account2: StellarAccount?
+    var issuer: StellarAccount?
 
     override func setUp() {
         super.setUp()
 
-        print("count: \(KeyStore.count())")
+        KeyStore.removeAll()
+
+        if KeyStore.count() > 0 {
+            XCTAssertTrue(false, "Unable to clear existing accounts!")
+        }
 
         if let account = KeyStore.account(at: 0) {
             self.account = account
@@ -36,84 +41,310 @@ class StellarKinKitTests: XCTestCase {
         else {
             self.account2 = try? KeyStore.newAccount(passphrase: passphrase)
         }
+
+        if account == nil || account2 == nil {
+            XCTAssertTrue(false, "Unable to create account(s)!")
+        }
+
+        issuer = try? KeyStore.importSecretSeed("SCML43HASLG5IIN34KCJLDQ6LPWYQ3HIROP5CRBHVC46YRMJ6QLOYQJS",
+                                                passphrase: passphrase)
+
+        if issuer == nil {
+            XCTAssertTrue(false, "Unable to import issuer account!")
+        }
     }
     
     override func tearDown() {
         super.tearDown()
     }
 
-    func testPayment() {
+    func test_payment_to_untrusting_account() {
         let e = expectation(description: "")
 
-        let destination = "GCJBAMWZPFLO3E37I2SMJ7GCSI7JKK7XEAVFPIHSFFCQ3BMS6SZIO7TN"
+        guard
+            let account = account,
+            let account2 = account2
+            else {
+                XCTAssertTrue(false, "Missing account(s)!")
 
-        guard let account = self.account, let account2 = self.account2, let destPK = account2.publicKey else {
-            XCTAssertTrue(false)
-
-            return
+                return
         }
 
         stellar.payment(source: account,
-                        destination: destPK,
+                        destination: account2.publicKey!,
                         amount: 1,
                         passphrase: passphrase) { txHash, error in
                             defer {
                                 e.fulfill()
                             }
 
-                            if let error = error as? StellarError {
-                                switch error {
-                                case .parseError (let data):
-                                    if let data = data {
-                                        print("Error: (\(error)): \(data.base64EncodedString())")
-                                    }
-                                case .unknownError (let json):
-                                    if let json = json {
-                                        print("Error: (\(error)): \(json)")
-                                    }
-                                default:
-                                    break
-                                }
+                            guard let error = error else {
+                                XCTAssertTrue(false, "Expected error!")
 
-                                print("Error: \(error)")
-                            }
-                            else if let error = error {
-                                print(error)
-                            }
-
-                            guard let txHash = txHash else {
                                 return
                             }
 
-                            print(txHash)
+                            guard let stellarError = error as? StellarError else {
+                                XCTAssertTrue(false, "Received unexpected error: \(error)!")
+
+                                return
+                            }
+                            switch stellarError {
+                            case .destinationNotReadyForKIN: break
+                            default:
+                                XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                            }
         }
 
-        wait(for: [e], timeout: 20)
+        wait(for: [e], timeout: 60)
     }
 
-    func testBalance() {
+    func test_payment_from_unfunded_account() {
         let e = expectation(description: "")
 
-        let account = "GANMSMOCHLLHKIWHV2MOC7TVPRNK22UT2CNZGYVRAQOTOHCKJZS5I2JQ"
+        guard
+            let account = account,
+            let account2 = account2
+            else {
+                XCTAssertTrue(false, "Missing account(s)!")
 
-        stellar.balance(account: account) { amount, error in
-            defer {
+                return
+        }
+
+        stellar.fund(account: account2.publicKey!) { success in
+            if !success {
+                XCTAssertTrue(false, "Unable to fund account!")
+
                 e.fulfill()
-            }
 
-            if let error = error {
-                print("Error: \(error)")
-            }
-
-            guard let amount = amount else {
                 return
             }
 
-            print(amount)
+            self
+                .stellar
+                .trustKIN(account: account2,
+                          passphrase: self.passphrase) { txHash, error in
+                            if let error = error {
+                                XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                e.fulfill()
 
+                                return
+                            }
+
+                            self
+                                .stellar
+                                .payment(source: account,
+                                         destination: account2.publicKey!,
+                                         amount: 1,
+                                         passphrase: self.passphrase) { txHash, error in
+                                            defer {
+                                                e.fulfill()
+                                            }
+
+                                            guard let error = error else {
+                                                XCTAssertTrue(false, "Expected error!")
+
+                                                return
+                                            }
+
+                                            guard let stellarError = error as? StellarError else {
+                                                XCTAssertTrue(false, "Received unexpected error: \(error)!")
+
+                                                return
+                                            }
+                                            switch stellarError {
+                                            case .missingSequence: break
+                                            default:
+                                                XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                                            }
+                            }
+            }
         }
 
-        wait(for: [e], timeout: 10)
+        wait(for: [e], timeout: 60)
+    }
+
+    func test_payment_from_empty_account() {
+        let e = expectation(description: "")
+        let stellar = self.stellar
+
+        guard
+            let account = account,
+            let account2 = account2
+            else {
+                XCTAssertTrue(false, "Missing account(s)!")
+
+                return
+        }
+
+        stellar.fund(account: account.publicKey!) { success in
+            if !success {
+                XCTAssertTrue(false, "Unable to fund account!")
+
+                e.fulfill()
+
+                return
+            }
+
+            stellar.fund(account: account2.publicKey!) { success in
+                if !success {
+                    XCTAssertTrue(false, "Unable to fund account!")
+
+                    e.fulfill()
+
+                    return
+                }
+
+                stellar
+                    .trustKIN(account: account,
+                              passphrase: self.passphrase) { txHash, error in
+                                if let error = error {
+                                    XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                    e.fulfill()
+
+                                    return
+                                }
+
+                                stellar
+                                    .trustKIN(account: account2,
+                                              passphrase: self.passphrase) { txHash, error in
+
+                                                if let error = error {
+                                                    XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                                    e.fulfill()
+
+                                                    return
+                                                }
+
+                                                stellar
+                                                    .payment(source: account,
+                                                             destination: account2.publicKey!,
+                                                             amount: 1,
+                                                             passphrase: self.passphrase) { txHash, error in
+                                                                defer {
+                                                                    e.fulfill()
+                                                                }
+
+                                                                guard let error = error else {
+                                                                    XCTAssertTrue(false, "Expected error!")
+
+                                                                    return
+                                                                }
+
+                                                                guard let paymentError = error as? PaymentError else {
+                                                                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+
+                                                                    return
+                                                                }
+                                                                switch paymentError {
+                                                                case .PAYMENT_UNDERFUNDED: break
+                                                                default:
+                                                                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                                                                }
+                                                }
+                                }
+                }
+            }
+        }
+
+        wait(for: [e], timeout: 60)
+    }
+
+    func test_payment_to_trusting_account() {
+        let e = expectation(description: "")
+        let stellar = self.stellar
+
+        guard
+            let account = account,
+            let issuer = issuer
+            else {
+                XCTAssertTrue(false, "Missing account(s)!")
+
+                return
+        }
+
+        stellar.fund(account: account.publicKey!) { success in
+            if !success {
+                XCTAssertTrue(false, "Unable to fund account!")
+
+                e.fulfill()
+
+                return
+            }
+
+            stellar
+                .trustKIN(account: account,
+                          passphrase: self.passphrase) { txHash, error in
+                            if let error = error {
+                                XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                e.fulfill()
+
+                                return
+                            }
+
+                            stellar
+                                .payment(source: issuer,
+                                         destination: account.publicKey!,
+                                         amount: 1,
+                                         passphrase: self.passphrase) { txHash, error in
+                                            defer {
+                                                e.fulfill()
+                                            }
+
+                                            XCTAssertNotNil(txHash)
+                            }
+            }
+        }
+
+        wait(for: [e], timeout: 60)
+    }
+
+    func test_balance() {
+        let e = expectation(description: "")
+        let stellar = self.stellar
+
+        guard
+            let account = account
+            else {
+                XCTAssertTrue(false, "Missing account(s)!")
+
+                return
+        }
+
+        stellar.fund(account: account.publicKey!) { success in
+            if !success {
+                XCTAssertTrue(false, "Unable to fund account!")
+
+                e.fulfill()
+
+                return
+            }
+
+            stellar
+                .trustKIN(account: account,
+                          passphrase: self.passphrase) { txHash, error in
+                            if let error = error {
+                                XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                e.fulfill()
+
+                                return
+                            }
+
+                            stellar.balance(account: account.publicKey!, completion: { balance, error in
+                                defer {
+                                    e.fulfill()
+                                }
+
+                                if let error = error {
+                                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+
+                                    return
+                                }
+                            })
+            }
+        }
+
+        wait(for: [e], timeout: 60)
     }
 
     func testTrust() {

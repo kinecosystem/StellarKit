@@ -198,8 +198,6 @@ public class Stellar {
                         success = false
                     }
                 }
-
-                print("response: \(json)")
             })
             .resume()
     }

@@ -268,3 +268,13 @@ public struct KeyStore {
         return keys.sorted()
     }
 }
+
+extension KeyStore {
+    // WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!
+    // This is for internal use, only.  It will delete ALL keychain entries for the app, not just
+    // those used by this SDk.
+    // It is intended for use by unit tests.
+    static func removeAll() {
+        keychain.clear()
+    }
+}
