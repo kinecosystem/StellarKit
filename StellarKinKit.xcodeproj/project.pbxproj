@@ -37,10 +37,10 @@
 		82340C45200138E50034204F /* StellarResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C44200138E50034204F /* StellarResults.swift */; };
 		82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C4A20014BFC0034204F /* StellarErrors.swift */; };
 		825BD8922007CFCB00AF981A /* KeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BD8912007CFCB00AF981A /* KeyStoreTests.swift */; };
+		825BD8B52007D21700AF981A /* KeychainSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 825BD8A42007D1B500AF981A /* KeychainSwift.framework */; };
 		82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB892002A2880010E31F /* XDRTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		82ECAB90200367660010E31F /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8F200367660010E31F /* KeyStore.swift */; };
-		82ECAB93200368640010E31F /* KeychainSwiftDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB92200368640010E31F /* KeychainSwiftDistrib.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +57,69 @@
 			proxyType = 1;
 			remoteGlobalIDString = 82340BD51FFE046D0034204F;
 			remoteInfo = CommonCryptoModuleMap;
+		};
+		825BD8A32007D1B500AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7ED6C96C1B1C118F00FE8090;
+			remoteInfo = KeychainSwift;
+		};
+		825BD8A52007D1B500AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 232B4C7A1BC29950001F2B7A;
+			remoteInfo = "KeychainSwift-macOS";
+		};
+		825BD8A72007D1B500AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 232B4C8A1BC29984001F2B7A;
+			remoteInfo = "KeychainSwift-watchOS";
+		};
+		825BD8A92007D1B500AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 23E785601BDA410C00B7564A;
+			remoteInfo = "KeychainSwift-tvOS";
+		};
+		825BD8AB2007D1B500AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7ED6C9771B1C118F00FE8090;
+			remoteInfo = KeychainSwiftTests;
+		};
+		825BD8AD2007D1B500AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7ED6C99D1B1C133500FE8090;
+			remoteInfo = Demo;
+		};
+		825BD8AF2007D1B500AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7E3A6B601D3F62C2007C5B1F;
+			remoteInfo = "macOS Tests";
+		};
+		825BD8B12007D1B500AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7E3A6B7B1D3F6779007C5B1F;
+			remoteInfo = "macOS Demo";
+		};
+		825BD8B32007D1F800AF981A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7ED6C96B1B1C118F00FE8090;
+			remoteInfo = KeychainSwift;
 		};
 		82ECAB94200380290010E31F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -131,10 +194,10 @@
 		82340C44200138E50034204F /* StellarResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarResults.swift; sourceTree = "<group>"; };
 		82340C4A20014BFC0034204F /* StellarErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarErrors.swift; sourceTree = "<group>"; };
 		825BD8912007CFCB00AF981A /* KeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStoreTests.swift; sourceTree = "<group>"; };
+		825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KeychainSwift.xcodeproj; path = "keychain-swift/KeychainSwift.xcodeproj"; sourceTree = "<group>"; };
 		82ECAB892002A2880010E31F /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		82ECAB8F200367660010E31F /* KeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
-		82ECAB92200368640010E31F /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeychainSwiftDistrib.swift; path = "keychain-swift/Distrib/KeychainSwiftDistrib.swift"; sourceTree = SOURCE_ROOT; };
 		E983D2412002223C00E917FA /* Sodium.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sodium.xcodeproj; path = "swift-sodium/Sodium.xcodeproj"; sourceTree = "<group>"; };
 		E983D25520023F0E00E917FA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -144,6 +207,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				825BD8B52007D21700AF981A /* KeychainSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +232,7 @@
 		82340B921FFDF2DA0034204F = {
 			isa = PBXGroup;
 			children = (
+				825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */,
 				E983D2412002223C00E917FA /* Sodium.xcodeproj */,
 				82340B9E1FFDF2DA0034204F /* StellarKinKit */,
 				82340BA91FFDF2DA0034204F /* StellarKinKitTests */,
@@ -190,7 +255,6 @@
 		82340B9E1FFDF2DA0034204F /* StellarKinKit */ = {
 			isa = PBXGroup;
 			children = (
-				82ECAB91200368480010E31F /* other_source */,
 				82340BB61FFDF3030034204F /* source */,
 				82340B9F1FFDF2DA0034204F /* StellarKinKit.h */,
 				82340BA01FFDF2DA0034204F /* Info.plist */,
@@ -202,9 +266,9 @@
 			isa = PBXGroup;
 			children = (
 				82340BAA1FFDF2DA0034204F /* StellarKinKitTests.swift */,
+				825BD8912007CFCB00AF981A /* KeyStoreTests.swift */,
 				82ECAB892002A2880010E31F /* XDRTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
-				825BD8912007CFCB00AF981A /* KeyStoreTests.swift */,
 			);
 			path = StellarKinKitTests;
 			sourceTree = "<group>";
@@ -247,12 +311,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		82ECAB91200368480010E31F /* other_source */ = {
+		825BD8982007D1B400AF981A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				82ECAB92200368640010E31F /* KeychainSwiftDistrib.swift */,
+				825BD8A42007D1B500AF981A /* KeychainSwift.framework */,
+				825BD8A62007D1B500AF981A /* KeychainSwift.framework */,
+				825BD8A82007D1B500AF981A /* KeychainSwift.framework */,
+				825BD8AA2007D1B500AF981A /* KeychainSwift.framework */,
+				825BD8AC2007D1B500AF981A /* KeychainSwiftTests.xctest */,
+				825BD8AE2007D1B500AF981A /* Keychain Swift.app */,
+				825BD8B02007D1B500AF981A /* macOS Tests.xctest */,
+				825BD8B22007D1B500AF981A /* macOS Demo.app */,
 			);
-			path = other_source;
+			name = Products;
 			sourceTree = "<group>";
 		};
 		E983D2422002223C00E917FA /* Products */ = {
@@ -293,6 +364,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				825BD8B42007D1F800AF981A /* PBXTargetDependency */,
 				E983D2542002227E00E917FA /* PBXTargetDependency */,
 				82340BDB1FFE04AC0034204F /* PBXTargetDependency */,
 			);
@@ -380,6 +452,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 825BD8982007D1B400AF981A /* Products */;
+					ProjectRef = 825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */;
+				},
+				{
 					ProductGroup = E983D2422002223C00E917FA /* Products */;
 					ProjectRef = E983D2412002223C00E917FA /* Sodium.xcodeproj */;
 				},
@@ -395,6 +471,62 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		825BD8A42007D1B500AF981A /* KeychainSwift.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = KeychainSwift.framework;
+			remoteRef = 825BD8A32007D1B500AF981A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		825BD8A62007D1B500AF981A /* KeychainSwift.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = KeychainSwift.framework;
+			remoteRef = 825BD8A52007D1B500AF981A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		825BD8A82007D1B500AF981A /* KeychainSwift.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = KeychainSwift.framework;
+			remoteRef = 825BD8A72007D1B500AF981A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		825BD8AA2007D1B500AF981A /* KeychainSwift.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = KeychainSwift.framework;
+			remoteRef = 825BD8A92007D1B500AF981A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		825BD8AC2007D1B500AF981A /* KeychainSwiftTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = KeychainSwiftTests.xctest;
+			remoteRef = 825BD8AB2007D1B500AF981A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		825BD8AE2007D1B500AF981A /* Keychain Swift.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Keychain Swift.app";
+			remoteRef = 825BD8AD2007D1B500AF981A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		825BD8B02007D1B500AF981A /* macOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "macOS Tests.xctest";
+			remoteRef = 825BD8AF2007D1B500AF981A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		825BD8B22007D1B500AF981A /* macOS Demo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "macOS Demo.app";
+			remoteRef = 825BD8B12007D1B500AF981A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E983D24A2002223D00E917FA /* Sodium.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -485,7 +617,6 @@
 				82340BBA1FFDF3390034204F /* Conversion.swift in Sources */,
 				82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */,
 				82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */,
-				82ECAB93200368640010E31F /* KeychainSwiftDistrib.swift in Sources */,
 				82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */,
 				82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */,
 				82340C45200138E50034204F /* StellarResults.swift in Sources */,
@@ -524,6 +655,11 @@
 			isa = PBXTargetDependency;
 			target = 82340BD51FFE046D0034204F /* CommonCryptoModuleMap */;
 			targetProxy = 82340BDA1FFE04AC0034204F /* PBXContainerItemProxy */;
+		};
+		825BD8B42007D1F800AF981A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = KeychainSwift;
+			targetProxy = 825BD8B32007D1F800AF981A /* PBXContainerItemProxy */;
 		};
 		82ECAB95200380290010E31F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

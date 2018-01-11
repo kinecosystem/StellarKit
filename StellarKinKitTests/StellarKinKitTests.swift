@@ -28,19 +28,8 @@ class StellarKinKitTests: XCTestCase {
             XCTAssertTrue(false, "Unable to clear existing accounts!")
         }
 
-        if let account = KeyStore.account(at: 0) {
-            self.account = account
-        }
-        else {
-            self.account = try? KeyStore.newAccount(passphrase: passphrase)
-        }
-
-        if let account2 = KeyStore.account(at: 1) {
-            self.account2 = account2
-        }
-        else {
-            self.account2 = try? KeyStore.newAccount(passphrase: passphrase)
-        }
+        self.account = try? KeyStore.newAccount(passphrase: passphrase)
+        self.account2 = try? KeyStore.newAccount(passphrase: passphrase)
 
         if account == nil || account2 == nil {
             XCTAssertTrue(false, "Unable to create account(s)!")

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KeychainSwift
 
 enum KeyStoreErrors: Error {
     case keychainStoreFailed
