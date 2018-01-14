@@ -68,21 +68,23 @@ class KeyStoreTests: XCTestCase {
     }
 
     func test_export() {
-        let count = KeyStore.count()
+        let store = KeyStore.exportAccount(account: account!,
+                                           passphrase: passphrase,
+                                           newPassphrase: passphrase)
 
-        let store = KeyStore.exportKeystore(passphrase: passphrase, newPassphrase: passphrase)
-
-        XCTAssert(store.count == count, "Unexpected number of exported accounts: \(store)")
+        XCTAssertNotNil(store)
     }
 
     func test_import() {
         let count = KeyStore.count()
 
-        let store = KeyStore.exportKeystore(passphrase: passphrase, newPassphrase: "new phrase")
+        let store = KeyStore.exportAccount(account: account!,
+                                           passphrase: passphrase,
+                                           newPassphrase: "new phrase")
+        
+        try? KeyStore.importAccount(store!, passphrase: "new phrase", newPassphrase: passphrase)
 
-        try? KeyStore.importKeystore(store, passphrase: "new phrase", newPassphrase: passphrase)
-
-        XCTAssert(KeyStore.count() == count * 2, "One or more accounts failed to import")
+        XCTAssert(KeyStore.count() == count + 1)
     }
 
     func test_account_import() {

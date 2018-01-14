@@ -136,31 +136,27 @@ public struct KeyStore {
         return account
     }
 
-    public static func importKeystore(_ keystore: [[String: String]],
+    public static func importAccount(_ accountData: [String: String],
                               passphrase: String,
                               newPassphrase: String) throws {
-        for accountData in keystore {
-            let reencryptedJSON: [String: String]?
-            if passphrase != newPassphrase {
-                reencryptedJSON = reencrypt(accountData,
-                                            passphrase: passphrase,
-                                            newPassphrase: newPassphrase)
-            } else {
-                reencryptedJSON = accountData
-            }
+        let reencryptedJSON: [String: String]?
+        if passphrase != newPassphrase {
+            reencryptedJSON = reencrypt(accountData,
+                                        passphrase: passphrase,
+                                        newPassphrase: newPassphrase)
+        } else {
+            reencryptedJSON = accountData
+        }
 
-            if let accountData = reencryptedJSON {
-                try save(accountData: accountData, key: nextKeychainKey())
-            }
+        if let accountData = reencryptedJSON {
+            try save(accountData: accountData, key: nextKeychainKey())
         }
     }
 
-    public static func exportKeystore(passphrase: String,
-                                      newPassphrase: String) -> [[String: String]] {
-        var output = [[String: String]]()
-
-        for i in 0..<count() {
-            if let a = account(at: i), let json = a.json() {
+    public static func exportAccount(account: StellarAccount,
+                                     passphrase: String,
+                                     newPassphrase: String) -> [String: String]? {
+            if let json = account.json() {
                 let reencryptedJSON: [String: String]?
                 if passphrase != newPassphrase {
                     reencryptedJSON = reencrypt(json,
@@ -171,12 +167,11 @@ public struct KeyStore {
                 }
 
                 if let json = reencryptedJSON {
-                    output.append(json)
+                    return json
                 }
             }
-        }
 
-        return output
+        return nil
     }
 
     private static func accountData(passphrase: String,
