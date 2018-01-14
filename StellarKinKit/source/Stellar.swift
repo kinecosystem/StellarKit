@@ -165,7 +165,7 @@ public class Stellar {
     }
 
     // This is for testing only.
-    func fund(account: String, completion: @escaping (Bool) -> Void) {
+    public func fund(account: String, completion: @escaping (Bool) -> Void) {
         let url = baseURL.appendingPathComponent("friendbot")
         var comps = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         comps.query = "addr=\(account)"

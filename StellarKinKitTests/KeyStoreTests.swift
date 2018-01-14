@@ -2,7 +2,7 @@
 //  KeyStoreTests.swift
 //  StellarKinKitTests
 //
-//  Created by Avi Shevin on 11/01/2018.
+//  Created by Kin Foundation
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 
@@ -43,6 +43,28 @@ class KeyStoreTests: XCTestCase {
 
     override func tearDown() {
         super.tearDown()
+    }
+
+    func test_remove() {
+        let account_pkey = account!.publicKey!
+
+        KeyStore.remove(at: 1)
+
+        let account_0_pkey = KeyStore.account(at: 0)!.publicKey!
+
+        XCTAssertEqual(account_pkey, account_0_pkey, "It looks like the wrong account was removed!")
+    }
+
+    func test_removing_middle_account_fills_hole() {
+        let issuer_pkey = issuer!.publicKey!
+
+        XCTAssertNotEqual(issuer_pkey, KeyStore.account(at: 1)!.publicKey!,
+                          "Issuer should not be at index 1!")
+
+        KeyStore.remove(at: 1)
+
+        XCTAssertEqual(issuer_pkey, KeyStore.account(at: 1)!.publicKey!,
+                       "Issuer should be at index 1!")
     }
 
     func test_export() {
