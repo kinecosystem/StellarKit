@@ -12,7 +12,7 @@ import Sodium
 public typealias Completion = (String?, Error?) -> Void
 
 public class Stellar {
-    private let baseURL: URL
+    public let baseURL: URL
     private let kinAsset: Asset
     private let kinIssuer: String
 
