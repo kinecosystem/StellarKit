@@ -59,13 +59,11 @@ public class Stellar {
                 return
             }
 
-            let destinationData = KeyUtils.key(base32: destination)
-
-            self.issueOperation(source: KeyUtils.key(base32: sourceKey),
-                                operation: self.paymentOp(destination: destinationData,
-                                                          amount: amount),
-                                signingKey: secretKey,
-                                completion: completion)
+            self.issueOperations(source: sourceKey,
+                                 operations: [self.paymentOp(destination: destination,
+                                                             amount: amount, source: source)],
+                                 signingKey: secretKey,
+                                 completion: completion)
 
         }
     }
@@ -85,10 +83,10 @@ public class Stellar {
             return
         }
 
-        issueOperation(source: KeyUtils.key(base32: sourceKey),
-                       operation: trustOp(),
-                       signingKey: secretKey,
-                       completion: completion)
+        issueOperations(source: sourceKey,
+                        operations: [trustOp()],
+                        signingKey: secretKey,
+                        completion: completion)
     }
 
     public func balance(account: String, completion: @escaping (Decimal?, Error?) -> Void) {
@@ -152,7 +150,7 @@ public class Stellar {
         }
 
         createTransaction(source: KeyUtils.key(base32: sourceKey),
-                          operation: trustOp(),
+                          operations: [trustOp()],
                           signingKey: secretKey) { (envelope, error) in
                             guard error == nil else {
                                 completion(nil, error)
@@ -162,6 +160,31 @@ public class Stellar {
 
                             completion(envelope?.toXDR(), nil)
         }
+    }
+
+    public func paymentOp(destination: String, amount: Int64, source: StellarAccount? = nil) -> Operation {
+        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(KeyUtils.key(base32: destination)))
+
+        var sourcePK: PublicKey? = nil
+        if let source = source, let pk = source.publicKey {
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(KeyUtils.key(base32: pk)))
+        }
+
+        return Operation(sourceAccount: sourcePK,
+                         body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
+                                                                asset: self.kinAsset,
+                                                                amount: amount)))
+
+    }
+
+    public func trustOp(source: StellarAccount? = nil, asset: Asset? = nil) -> Operation {
+        var sourcePK: PublicKey? = nil
+        if let source = source, let pk = source.publicKey {
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(KeyUtils.key(base32: pk)))
+        }
+
+        return Operation(sourceAccount: sourcePK,
+                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.kinAsset)))
     }
 
     // This is for testing only.
@@ -203,7 +226,7 @@ public class Stellar {
     }
 
     private func createTransaction(source: Data,
-                                   operation: Operation,
+                                   operations: [Operation],
                                    signingKey: Data,
                                    completion: @escaping (TransactionEnvelope?, Error?) -> Void) {
         sequence(account: source) { sequence, error in
@@ -222,7 +245,7 @@ public class Stellar {
             do {
                 let envelope = try self.txEnvelope(source: source,
                                                    sequence: sequence,
-                                                   operation: operation,
+                                                   operations: operations,
                                                    signingKey: signingKey)
 
                 completion(envelope, nil)
@@ -233,9 +256,12 @@ public class Stellar {
         }
     }
 
-    private func issueOperation(source: Data, operation: Operation, signingKey: Data, completion: @escaping Completion) {
-        createTransaction(source: source,
-                          operation: operation,
+    private func issueOperations(source: String,
+                                 operations: [Operation],
+                                 signingKey: Data,
+                                 completion: @escaping Completion) {
+        createTransaction(source: KeyUtils.key(base32: source),
+                          operations: operations,
                           signingKey: signingKey) { (envelope, error) in
                             guard error == nil else {
                                 completion(nil, error)
@@ -341,24 +367,9 @@ public class Stellar {
             .resume()
     }
 
-    private func paymentOp(destination: Data, amount: Int64) -> Operation {
-        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(destination))
-
-        return Operation(sourceAccount: nil,
-                         body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                                asset: self.kinAsset,
-                                                                amount: amount)))
-
-    }
-
-    private func trustOp() -> Operation {
-        return Operation(sourceAccount: nil,
-                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: self.kinAsset)))
-    }
-
     private func txEnvelope(source: Data,
                             sequence: UInt64,
-                            operation: Operation,
+                            operations: [Operation],
                             signingKey: Data) throws -> TransactionEnvelope {
         let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(source))
 
@@ -366,9 +377,7 @@ public class Stellar {
                              seqNum: sequence + 1,
                              timeBounds: nil,
                              memo: .MEMO_NONE,
-                             operations: [
-                                operation,
-                                ])
+                             operations: operations)
 
         return try sign(transaction: tx, signingKey: signingKey, hint: source.suffix(4))
     }

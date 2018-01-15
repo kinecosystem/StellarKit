@@ -37,12 +37,12 @@ struct AssetType {
     static let ASSET_TYPE_CREDIT_ALPHANUM12: Int32 = 2
 }
 
-enum Asset: XDREncodable {
+public enum Asset: XDREncodable {
     case ASSET_TYPE_NATIVE
     case ASSET_TYPE_CREDIT_ALPHANUM4 (Alpha4)
     case ASSET_TYPE_CREDIT_ALPHANUM12 (Alpha12)
 
-    struct Alpha4: XDREncodableStruct {
+    public struct Alpha4: XDREncodableStruct {
         let assetCode: FixedLengthDataWrapper
         let issuer: PublicKey
 
@@ -52,7 +52,7 @@ enum Asset: XDREncodable {
         }
     }
 
-    struct Alpha12: XDREncodableStruct {
+    public struct Alpha12: XDREncodableStruct {
         let assetCode: FixedLengthDataWrapper
         let issuer: PublicKey
     }
@@ -65,7 +65,7 @@ enum Asset: XDREncodable {
         }
     }
 
-    func toXDR(count: Int32 = 0) -> Data {
+    public func toXDR(count: Int32 = 0) -> Data {
         var xdr = discriminant().toXDR()
 
         switch self {
@@ -112,7 +112,7 @@ struct OperationType {
     static let MANAGE_DATA: Int32 = 10
 }
 
-struct Operation: XDREncodableStruct {
+public struct Operation: XDREncodableStruct {
     let sourceAccount: PublicKey?
     let body: Body
 

@@ -38,6 +38,7 @@
 		82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C4A20014BFC0034204F /* StellarErrors.swift */; };
 		825BD8922007CFCB00AF981A /* KeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BD8912007CFCB00AF981A /* KeyStoreTests.swift */; };
 		825BD8B52007D21700AF981A /* KeychainSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 825BD8A42007D1B500AF981A /* KeychainSwift.framework */; };
+		825BD8E3200B5DB800AF981A /* AES.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BD8E2200B5DB800AF981A /* AES.swift */; };
 		82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB892002A2880010E31F /* XDRTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		82ECAB90200367660010E31F /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8F200367660010E31F /* KeyStore.swift */; };
@@ -195,6 +196,7 @@
 		82340C4A20014BFC0034204F /* StellarErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarErrors.swift; sourceTree = "<group>"; };
 		825BD8912007CFCB00AF981A /* KeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStoreTests.swift; sourceTree = "<group>"; };
 		825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KeychainSwift.xcodeproj; path = "keychain-swift/KeychainSwift.xcodeproj"; sourceTree = "<group>"; };
+		825BD8E2200B5DB800AF981A /* AES.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AES.swift; sourceTree = "<group>"; };
 		82ECAB892002A2880010E31F /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		82ECAB8F200367660010E31F /* KeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
@@ -285,6 +287,7 @@
 				82340C4A20014BFC0034204F /* StellarErrors.swift */,
 				82ECAB8B2003290F0010E31F /* KeyUtils.swift */,
 				82ECAB8F200367660010E31F /* KeyStore.swift */,
+				825BD8E2200B5DB800AF981A /* AES.swift */,
 			);
 			name = source;
 			path = ../StellarKinKit/source;
@@ -621,6 +624,7 @@
 				82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */,
 				82340C45200138E50034204F /* StellarResults.swift in Sources */,
 				82340BD41FFDF7780034204F /* CommonCrypto.swift in Sources */,
+				825BD8E3200B5DB800AF981A /* AES.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

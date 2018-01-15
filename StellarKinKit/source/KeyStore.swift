@@ -204,6 +204,10 @@ public struct KeyStore {
         ]
     }
 
+    private static func exportToAES() {
+
+    }
+    
     private static func reencrypt(_ json: [String: String],
                                   passphrase: String,
                                   newPassphrase: String) -> [String: String]? {
