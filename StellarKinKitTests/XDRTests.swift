@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import StellarKinKit
 
 class XDRTests: XCTestCase {
     
@@ -67,9 +68,13 @@ class XDRTests: XCTestCase {
     }
 
     func test_encode_Bool() {
-        let xdr = Bool(true).toXDR()
+        var xdr = Bool(true).toXDR()
 
         XCTAssertEqual(xdr.base64EncodedString(), "AAAAAQ==")
+
+        xdr = Bool(false).toXDR()
+
+        XCTAssertEqual(xdr.base64EncodedString(), "AAAAAA==")
     }
 
     func test_decode_Bool() {
@@ -88,6 +93,22 @@ class XDRTests: XCTestCase {
         var xdr = Data(base64Encoded: "AAAABQABAwUH")!
 
         XCTAssertEqual(Data([0, 1, 3, 5, 7]), Data(xdrData: &xdr))
+    }
+
+    func test_encode_String() {
+        let xdr = "two strings".toXDR()
+
+        XCTAssertEqual(xdr.base64EncodedString(), "AAAAC3R3byBzdHJpbmdzAA==")
+    }
+
+    func test_decode_String() {
+        var xdr = Data(base64Encoded: "AAAAC3R3byBzdHJpbmdzAA==")!
+
+        XCTAssertEqual("two strings", String(xdrData: &xdr))
+
+        xdr = Data(base64Encoded: "AAAACGEgc3RyaW5n")!
+
+        XCTAssertEqual("a string", String(xdrData: &xdr))
     }
 
     func test_encode_Array() {
@@ -128,4 +149,43 @@ class XDRTests: XCTestCase {
         XCTAssertEqual(xdr.base64EncodedString(), "AAAAAA==")
     }
 
+    func test_encode_FixedLengthArrayWrapper() {
+        let wrapper = FixedLengthArrayWrapper<Int32>([1, 3, 5])
+
+        let xdr = wrapper.toXDR()
+
+        XCTAssertEqual(xdr.base64EncodedString(), "AAAAAQAAAAMAAAAF")
+
+        XCTAssertNotNil(wrapper.debugDescription)
+
+        for i in wrapper {
+            XCTAssert(i > 0)
+        }
+    }
+
+    func test_decode_FixedLengthArrayWrapper() {
+        var xdr = Data(base64Encoded: "AAAAAQAAAAMAAAAF")!
+
+        XCTAssertEqual([1, 3, 5], Array<Int32>.init(xdrData: &xdr, count: 3))
+    }
+
+    func test_decode_FixedLengthDataWrapper() {
+        let wrapper = FixedLengthDataWrapper(Data([1, 3, 5]))
+        var xdr = wrapper.toXDR()
+
+        XCTAssertEqual(wrapper.wrapped, Data(xdrData: &xdr, count: Int32(wrapper.wrapped.count)))
+
+        XCTAssertNotNil(wrapper.debugDescription)
+    }
+
+    func test_encode_XDREncodableStruct() {
+        struct TestStruct: XDREncodableStruct {
+            let a: Int32
+            let b: Int64
+        }
+
+        let xdr = TestStruct(a: 12, b: 29).toXDR()
+
+        XCTAssertEqual(xdr.base64EncodedString(), "AAAADAAAAAAAAAAd")
+    }
 }

@@ -67,7 +67,15 @@ class KeyStoreTests: XCTestCase {
                        "Issuer should be at index 1!")
     }
 
-    func test_export() {
+    func test_export_with_different_passphrase() {
+        let store = KeyStore.exportAccount(account: account!,
+                                           passphrase: passphrase,
+                                           newPassphrase: "new phrase")
+
+        XCTAssertNotNil(store)
+    }
+
+    func test_export_with_same_passphrase() {
         let store = KeyStore.exportAccount(account: account!,
                                            passphrase: passphrase,
                                            newPassphrase: passphrase)
@@ -75,14 +83,26 @@ class KeyStoreTests: XCTestCase {
         XCTAssertNotNil(store)
     }
 
-    func test_import() {
+    func test_import_with_different_passphrase() {
         let count = KeyStore.count()
 
         let store = KeyStore.exportAccount(account: account!,
                                            passphrase: passphrase,
                                            newPassphrase: "new phrase")
-        
+
         try? KeyStore.importAccount(store!, passphrase: "new phrase", newPassphrase: passphrase)
+
+        XCTAssert(KeyStore.count() == count + 1)
+    }
+
+    func test_import_with_same_passphrase() {
+        let count = KeyStore.count()
+
+        let store = KeyStore.exportAccount(account: account!,
+                                           passphrase: passphrase,
+                                           newPassphrase: passphrase)
+
+        try? KeyStore.importAccount(store!, passphrase: passphrase, newPassphrase: passphrase)
 
         XCTAssert(KeyStore.count() == count + 1)
     }
@@ -100,4 +120,27 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(account!.publicKey!, storedAccount!.publicKey!)
     }
 
+    func test_account_secret_key_with_correct_passphrase() {
+        let skey = account!.secretKey(passphrase: passphrase)
+
+        XCTAssertNotNil(skey)
+    }
+
+    func test_account_secret_key_with_incorrect_passphrase() {
+        let skey = account!.secretKey(passphrase: "incorrect passphrase")
+
+        XCTAssertNil(skey)
+    }
+
+    func test_account_secret_seed_with_correct_passphrase() {
+        let seed = account!.secretSeed(passphrase: passphrase)
+
+        XCTAssertNotNil(seed)
+    }
+
+    func test_account_secret_seed_with_incorrect_passphrase() {
+        let seed = account!.secretSeed(passphrase: "incorrect passphrase")
+
+        XCTAssertNil(seed)
+    }
 }

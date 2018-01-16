@@ -264,7 +264,7 @@ public struct FixedLengthArrayWrapper<T: XDREncodable>: Sequence {
         var index = 0
 
         return AnyIterator {
-            let element = index <= self.wrapped.count ? self[index] : nil
+            let element = index < self.wrapped.count ? self[index] : nil
 
             index += 1
 
