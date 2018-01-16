@@ -80,7 +80,7 @@ struct KeyUtils {
         return hash
     }
 
-    static func encryptSeed(_ seed: Data, passphrase: String, secretKey: Data) -> Data? {
+    static func encryptSeed(_ seed: Data, secretKey: Data) -> Data? {
         return Sodium().secretBox.seal(message: seed, secretKey: secretKey)
     }
 

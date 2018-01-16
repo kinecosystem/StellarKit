@@ -186,11 +186,8 @@ public struct KeyStore {
 
         let skey = try KeyUtils.keyHash(passphrase: passphrase, salt: salt)
 
-        guard let encryptedSeed: Data = KeyUtils.encryptSeed(seed,
-                                                             passphrase: passphrase,
-                                                             secretKey: skey)
-            else {
-                throw KeyStoreErrors.encryptionFailed
+        guard let encryptedSeed: Data = KeyUtils.encryptSeed(seed, secretKey: skey) else {
+            throw KeyStoreErrors.encryptionFailed
         }
 
         guard let keypair = KeyUtils.keyPair(from: seed) else {
@@ -217,7 +214,7 @@ public struct KeyStore {
             let pkey = json["pkey"],
             let skey = try? KeyUtils.keyHash(passphrase: newPassphrase, salt: salt),
             let seed = try? KeyUtils.seed(from: passphrase, encryptedSeed: eseed, salt: salt),
-            let encryptedSeed = KeyUtils.encryptSeed(seed, passphrase: newPassphrase, secretKey: skey)
+            let encryptedSeed = KeyUtils.encryptSeed(seed, secretKey: skey)
             else {
                 return nil
         }
