@@ -95,7 +95,7 @@ struct PaymentOp: XDREncodableStruct {
 
 struct ChangeTrustOp: XDREncodableStruct {
     let asset: Asset
-    let limit: Int64 = Int64.max / 2
+    let limit: Int64 = Int64.max
 }
 
 struct OperationType {
