@@ -112,42 +112,43 @@ class StellarKinKitTests: XCTestCase {
 
             self
                 .stellar
-                .trustKIN(account: account2,
-                          passphrase: self.passphrase) { txHash, error in
-                            if let error = error {
-                                XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
-                                e.fulfill()
+                .trust(asset: self.stellar.asset,
+                       account: account2,
+                       passphrase: self.passphrase) { txHash, error in
+                        if let error = error {
+                            XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                            e.fulfill()
 
-                                return
-                            }
+                            return
+                        }
 
-                            self
-                                .stellar
-                                .payment(source: account,
-                                         destination: account2.publicKey!,
-                                         amount: 1,
-                                         passphrase: self.passphrase) { txHash, error in
-                                            defer {
-                                                e.fulfill()
-                                            }
+                        self
+                            .stellar
+                            .payment(source: account,
+                                     destination: account2.publicKey!,
+                                     amount: 1,
+                                     passphrase: self.passphrase) { txHash, error in
+                                        defer {
+                                            e.fulfill()
+                                        }
 
-                                            guard let error = error else {
-                                                XCTAssertTrue(false, "Expected error!")
+                                        guard let error = error else {
+                                            XCTAssertTrue(false, "Expected error!")
 
-                                                return
-                                            }
+                                            return
+                                        }
 
-                                            guard let stellarError = error as? StellarError else {
-                                                XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                                        guard let stellarError = error as? StellarError else {
+                                            XCTAssertTrue(false, "Received unexpected error: \(error)!")
 
-                                                return
-                                            }
-                                            switch stellarError {
-                                            case .missingSequence: break
-                                            default:
-                                                XCTAssertTrue(false, "Received unexpected error: \(error)!")
-                                            }
-                            }
+                                            return
+                                        }
+                                        switch stellarError {
+                                        case .missingSequence: break
+                                        default:
+                                            XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                                        }
+                        }
             }
         }
 
@@ -186,7 +187,8 @@ class StellarKinKitTests: XCTestCase {
                 }
 
                 stellar
-                    .trustKIN(account: account,
+                    .trust(asset: stellar.asset,
+                           account: account,
                               passphrase: self.passphrase) { txHash, error in
                                 if let error = error {
                                     XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
@@ -196,7 +198,8 @@ class StellarKinKitTests: XCTestCase {
                                 }
 
                                 stellar
-                                    .trustKIN(account: account2,
+                                    .trust(asset: stellar.asset,
+                                           account: account2,
                                               passphrase: self.passphrase) { txHash, error in
 
                                                 if let error = error {
@@ -263,7 +266,8 @@ class StellarKinKitTests: XCTestCase {
             }
 
             stellar
-                .trustKIN(account: account,
+                .trust(asset: stellar.asset,
+                       account: account,
                           passphrase: self.passphrase) { txHash, error in
                             if let error = error {
                                 XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
@@ -311,7 +315,8 @@ class StellarKinKitTests: XCTestCase {
             }
 
             stellar
-                .trustKIN(account: account,
+                .trust(asset: stellar.asset,
+                       account: account,
                           passphrase: self.passphrase) { txHash, error in
                             if let error = error {
                                 XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")

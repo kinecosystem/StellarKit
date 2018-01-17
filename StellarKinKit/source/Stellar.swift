@@ -12,8 +12,10 @@ import Sodium
 public typealias Completion = (String?, Error?) -> Void
 
 public class Stellar {
+    typealias FLDW = FixedLengthDataWrapper
+
     public let baseURL: URL
-    private let asset: Asset
+    public let asset: Asset
 
     public init(baseURL: URL, asset: Asset? = nil) {
         self.baseURL = baseURL
@@ -25,6 +27,7 @@ public class Stellar {
                         destination: String,
                         amount: Int64,
                         passphrase: String,
+                        asset: Asset? = nil,
                         completion: @escaping Completion) {
         balance(account: destination) { (balance, error) in
             if let error = error as? StellarError {
@@ -53,16 +56,19 @@ public class Stellar {
 
             self.issueOperations(source: sourceKey,
                                  operations: [self.paymentOp(destination: destination,
-                                                             amount: amount, source: source)],
+                                                             amount: amount,
+                                                             source: source,
+                                                             asset: asset)],
                                  signingKey: secretKey,
                                  completion: completion)
 
         }
     }
 
-    public func trustKIN(account: StellarAccount,
-                         passphrase: String,
-                         completion: @escaping Completion) {
+    public func trust(asset: Asset,
+                      account: StellarAccount,
+                      passphrase: String,
+                      completion: @escaping Completion) {
         guard let sourceKey = account.publicKey else {
             completion(nil, StellarError.missingPublicKey)
 
@@ -76,12 +82,14 @@ public class Stellar {
         }
 
         issueOperations(source: sourceKey,
-                        operations: [trustOp()],
+                        operations: [trustOp(asset: asset)],
                         signingKey: secretKey,
                         completion: completion)
     }
 
-    public func balance(account: String, completion: @escaping (Decimal?, Error?) -> Void) {
+    public func balance(account: String,
+                        asset: Asset? = nil,
+                        completion: @escaping (Decimal?, Error?) -> Void) {
         let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         URLSession
@@ -116,7 +124,7 @@ public class Stellar {
                         let issuer = balance["asset_issuer"] as? String,
                         let amountStr = balance["balance"] as? String,
                         let amount = Decimal(string: amountStr) {
-                        if code == "native" || Asset(assetCode: code, issuer: issuer) == self.asset {
+                        if code == "native" || Asset(assetCode: code, issuer: issuer) == asset ?? self.asset {
                             completion(amount, nil)
 
                             return
@@ -129,9 +137,10 @@ public class Stellar {
             .resume()
     }
 
-    public func trustTransaction(account: StellarAccount,
-                                 passphrase: String,
-                                 completion: @escaping (Data?, Error?) -> Void) {
+    public func composeTransaction(account: StellarAccount,
+                                   operations: [Operation],
+                                   passphrase: String,
+                                   completion: @escaping (Data?, Error?) -> Void) {
         guard let sourceKey = account.publicKey else {
             completion(nil, StellarError.missingPublicKey)
 
@@ -145,7 +154,7 @@ public class Stellar {
         }
 
         createTransaction(source: KeyUtils.key(base32: sourceKey),
-                          operations: [trustOp()],
+                          operations: operations,
                           signingKey: secretKey) { (envelope, error) in
                             guard error == nil else {
                                 completion(nil, error)
@@ -157,17 +166,20 @@ public class Stellar {
         }
     }
 
-    public func paymentOp(destination: String, amount: Int64, source: StellarAccount? = nil) -> Operation {
-        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(KeyUtils.key(base32: destination)))
+    public func paymentOp(destination: String,
+                          amount: Int64,
+                          source: StellarAccount? = nil,
+                          asset: Asset? = nil) -> Operation {
+        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: destination)))
 
         var sourcePK: PublicKey? = nil
         if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(KeyUtils.key(base32: pk)))
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: pk)))
         }
 
         return Operation(sourceAccount: sourcePK,
                          body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                                asset: self.asset,
+                                                                asset: asset ?? self.asset,
                                                                 amount: amount)))
 
     }
@@ -175,7 +187,7 @@ public class Stellar {
     public func trustOp(source: StellarAccount? = nil, asset: Asset? = nil) -> Operation {
         var sourcePK: PublicKey? = nil
         if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(KeyUtils.key(base32: pk)))
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: pk)))
         }
 
         return Operation(sourceAccount: sourcePK,
@@ -366,7 +378,7 @@ public class Stellar {
                             sequence: UInt64,
                             operations: [Operation],
                             signingKey: Data) throws -> TransactionEnvelope {
-        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(source))
+        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(source))
 
         let tx = Transaction(sourceAccount: sourcePK,
                              seqNum: sequence + 1,
@@ -386,7 +398,7 @@ public class Stellar {
 
         let networkId = data.sha256
 
-        let payload = TransactionSignaturePayload(networkId: FixedLengthDataWrapper(networkId),
+        let payload = TransactionSignaturePayload(networkId: FLDW(networkId),
                                                   taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
         let sodium = Sodium()
@@ -397,7 +409,7 @@ public class Stellar {
         }
 
         return TransactionEnvelope(tx: tx,
-                                   signatures: [DecoratedSignature(hint: FixedLengthDataWrapper(hint),
+                                   signatures: [DecoratedSignature(hint: FLDW(hint),
                                                                    signature: signature)])
     }
 }
