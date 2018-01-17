@@ -17,7 +17,7 @@ enum StellarError: Error {
     case urlEncodingFailed
     case dataEncodingFailed
     case signingFailed
-    case destinationNotReadyForKIN
+    case destinationNotReadyForAsset (Asset)
     case parseError (Data?)
     case unknownError ([String: Any]?)
 }

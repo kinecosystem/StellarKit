@@ -29,11 +29,11 @@ public class Stellar {
                         passphrase: String,
                         asset: Asset? = nil,
                         completion: @escaping Completion) {
-        balance(account: destination) { (balance, error) in
+        balance(account: destination, asset: asset) { (balance, error) in
             if let error = error as? StellarError {
                 switch error {
                 case .missingBalance:
-                    completion(nil, StellarError.destinationNotReadyForKIN)
+                    completion(nil, StellarError.destinationNotReadyForAsset(asset ?? self.asset))
 
                     return
 

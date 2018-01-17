@@ -80,7 +80,7 @@ class StellarKinKitTests: XCTestCase {
                                 return
                             }
                             switch stellarError {
-                            case .destinationNotReadyForKIN: break
+                            case .destinationNotReadyForAsset: break
                             default:
                                 XCTAssertTrue(false, "Received unexpected error: \(error)!")
                             }
