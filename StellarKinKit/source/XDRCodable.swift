@@ -285,7 +285,7 @@ extension FixedLengthArrayWrapper: XDREncodable {
     }
 }
 
-public struct FixedLengthDataWrapper {
+public struct FixedLengthDataWrapper: Equatable {
     public private(set) var wrapped: Data
 
     public init() {
@@ -294,6 +294,10 @@ public struct FixedLengthDataWrapper {
 
     public init(_ data: Data) {
         wrapped = data
+    }
+
+    public static func ==(lhs: FixedLengthDataWrapper, rhs: FixedLengthDataWrapper) -> Bool {
+        return lhs.wrapped == rhs.wrapped
     }
 }
 

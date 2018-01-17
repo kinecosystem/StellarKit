@@ -14,7 +14,8 @@ class StellarKinKitTests: XCTestCase {
     let passphrase = "a phrase"
 
     let stellar = Stellar(baseURL: URL(string: "https://horizon-testnet.stellar.org")!,
-                          kinIssuer: "GBOJSMAO3YZ3CQYUJOUWWFV37IFLQVNVKHVRQDEJ4M3O364H5FEGGMBH")
+                          asset: Asset(assetCode: "KIN",
+                                       issuer: "GBOJSMAO3YZ3CQYUJOUWWFV37IFLQVNVKHVRQDEJ4M3O364H5FEGGMBH"))
     var account: StellarAccount?
     var account2: StellarAccount?
     var issuer: StellarAccount?

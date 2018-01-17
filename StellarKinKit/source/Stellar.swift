@@ -13,20 +13,12 @@ public typealias Completion = (String?, Error?) -> Void
 
 public class Stellar {
     public let baseURL: URL
-    private let kinAsset: Asset
-    private let kinIssuer: String
+    private let asset: Asset
 
-    public init(baseURL: URL, kinIssuer: String = "GBGFNADX2FTYVCLDCVFY5ZRTVEMS4LV6HKMWOY7XJKVXMBIWVDESCJW5") {
+    public init(baseURL: URL, asset: Asset? = nil) {
         self.baseURL = baseURL
-        self.kinIssuer = kinIssuer
 
-        let kinAssetPK = PublicKey
-            .PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(base32KeyToData(key: kinIssuer))))
-
-        self.kinAsset = Asset
-            .ASSET_TYPE_CREDIT_ALPHANUM4(Asset
-                .Alpha4(assetCode: FixedLengthDataWrapper("KIN\0".data(using: .utf8)!),
-                        issuer: kinAssetPK))
+        self.asset = asset ?? .ASSET_TYPE_NATIVE
     }
 
     public func payment(source: StellarAccount,
@@ -119,9 +111,12 @@ public class Stellar {
                 }
 
                 for balance in balances {
-                    if balance["asset_code"] as? String == "KIN" &&
-                        balance["asset_issuer"] as? String == self.kinIssuer {
-                        if let amountStr = balance["balance"] as? String, let amount = Decimal(string: amountStr) {
+                    if
+                        let code = balance["asset_code"] as? String,
+                        let issuer = balance["asset_issuer"] as? String,
+                        let amountStr = balance["balance"] as? String,
+                        let amount = Decimal(string: amountStr) {
+                        if code == "native" || Asset(assetCode: code, issuer: issuer) == self.asset {
                             completion(amount, nil)
 
                             return
@@ -172,7 +167,7 @@ public class Stellar {
 
         return Operation(sourceAccount: sourcePK,
                          body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                                asset: self.kinAsset,
+                                                                asset: self.asset,
                                                                 amount: amount)))
 
     }
@@ -184,7 +179,7 @@ public class Stellar {
         }
 
         return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.kinAsset)))
+                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.asset)))
     }
 
     // This is for testing only.
