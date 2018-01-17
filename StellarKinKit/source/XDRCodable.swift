@@ -248,10 +248,6 @@ extension Optional: XDREncodable {
 public struct FixedLengthArrayWrapper<T: XDREncodable>: Sequence {
     public private(set) var wrapped: Array<T>
 
-    public init() {
-        wrapped = [T]()
-    }
-
     public init(_ array: [T]) {
         wrapped = array
     }
@@ -287,10 +283,6 @@ extension FixedLengthArrayWrapper: XDREncodable {
 
 public struct FixedLengthDataWrapper: Equatable {
     public private(set) var wrapped: Data
-
-    public init() {
-        wrapped = Data()
-    }
 
     public init(_ data: Data) {
         wrapped = data

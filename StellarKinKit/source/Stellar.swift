@@ -16,11 +16,14 @@ public class Stellar {
 
     public let baseURL: URL
     public let asset: Asset
+    private let networkId: String
 
-    public init(baseURL: URL, asset: Asset? = nil) {
+    public init(baseURL: URL,
+                asset: Asset? = nil,
+                networkId: String = "Test SDF Network ; September 2015") {
         self.baseURL = baseURL
-
         self.asset = asset ?? .ASSET_TYPE_NATIVE
+        self.networkId = networkId
     }
 
     public func payment(source: StellarAccount,
@@ -392,7 +395,7 @@ public class Stellar {
     private func sign(transaction tx: Transaction,
                       signingKey: Data,
                       hint: Data) throws -> TransactionEnvelope {
-        guard let data = "Test SDF Network ; September 2015".data(using: .utf8) else {
+        guard let data = self.networkId.data(using: .utf8) else {
             throw StellarError.dataEncodingFailed
         }
 

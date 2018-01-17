@@ -34,8 +34,6 @@ enum PublicKey: XDREncodable, Equatable {
         switch (lhs, rhs) {
         case let (.PUBLIC_KEY_TYPE_ED25519(k1), .PUBLIC_KEY_TYPE_ED25519(k2)):
             return k1 == k2
-        default:
-            return false
         }
     }
 }
