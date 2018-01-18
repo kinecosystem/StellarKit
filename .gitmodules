@@ -3,4 +3,4 @@
 	url = https://github.com/kinfoundation/swift-sodium.git
 [submodule "keychain-swift"]
 	path = keychain-swift
-	url = https://github.com/kinfoundation/keychain-swift.git
+	url = https://github.com/filippovdev/keychain-swift.git
