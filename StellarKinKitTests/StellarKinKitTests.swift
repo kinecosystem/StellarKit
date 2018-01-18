@@ -8,7 +8,6 @@
 
 import XCTest
 @testable import StellarKinKit
-@testable import Sodium
 
 class StellarKinKitTests: XCTestCase {
     let passphrase = "a phrase"
