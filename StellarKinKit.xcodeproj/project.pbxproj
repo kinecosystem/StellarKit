@@ -6,20 +6,6 @@
 	objectVersion = 48;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		82340BD51FFE046D0034204F /* CommonCryptoModuleMap */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 82340BD61FFE046D0034204F /* Build configuration list for PBXAggregateTarget "CommonCryptoModuleMap" */;
-			buildPhases = (
-				82340BD91FFE048C0034204F /* ShellScript */,
-			);
-			dependencies = (
-			);
-			name = CommonCryptoModuleMap;
-			productName = CommonCryptoModuleMap;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
 		82340BA61FFDF2DA0034204F /* StellarKinKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340B9C1FFDF2DA0034204F /* StellarKinKit.framework */; };
 		82340BAB1FFDF2DA0034204F /* StellarKinKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BAA1FFDF2DA0034204F /* StellarKinKitTests.swift */; };
@@ -32,13 +18,12 @@
 		82340BC91FFDF3F30034204F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340BC71FFDF3F30034204F /* Main.storyboard */; };
 		82340BCB1FFDF3F30034204F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82340BCA1FFDF3F30034204F /* Assets.xcassets */; };
 		82340BCE1FFDF3F30034204F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340BCC1FFDF3F30034204F /* LaunchScreen.storyboard */; };
-		82340BD41FFDF7780034204F /* CommonCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BD31FFDF7780034204F /* CommonCrypto.swift */; };
+		82340BD41FFDF7780034204F /* Data+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BD31FFDF7780034204F /* Data+extensions.swift */; };
 		82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BDC1FFE24EE0034204F /* Stellar.swift */; };
 		82340C45200138E50034204F /* StellarResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C44200138E50034204F /* StellarResults.swift */; };
 		82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C4A20014BFC0034204F /* StellarErrors.swift */; };
 		825BD8922007CFCB00AF981A /* KeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BD8912007CFCB00AF981A /* KeyStoreTests.swift */; };
 		825BD8B52007D21700AF981A /* KeychainSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 825BD8A42007D1B500AF981A /* KeychainSwift.framework */; };
-		825BD8E3200B5DB800AF981A /* AES.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BD8E2200B5DB800AF981A /* AES.swift */; };
 		825BD925200E01F000AF981A /* Sodium.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E983D24A2002223D00E917FA /* Sodium.framework */; };
 		82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB892002A2880010E31F /* XDRTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
@@ -52,13 +37,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 82340B9B1FFDF2DA0034204F;
 			remoteInfo = SwiftyStellar;
-		};
-		82340BDA1FFE04AC0034204F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 82340B931FFDF2DA0034204F /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 82340BD51FFE046D0034204F;
-			remoteInfo = CommonCryptoModuleMap;
 		};
 		825BD8A32007D1B500AF981A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -191,13 +169,12 @@
 		82340BCA1FFDF3F30034204F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		82340BCD1FFDF3F30034204F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		82340BCF1FFDF3F30034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		82340BD31FFDF7780034204F /* CommonCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonCrypto.swift; sourceTree = "<group>"; };
+		82340BD31FFDF7780034204F /* Data+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+extensions.swift"; sourceTree = "<group>"; };
 		82340BDC1FFE24EE0034204F /* Stellar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stellar.swift; sourceTree = "<group>"; };
 		82340C44200138E50034204F /* StellarResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarResults.swift; sourceTree = "<group>"; };
 		82340C4A20014BFC0034204F /* StellarErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarErrors.swift; sourceTree = "<group>"; };
 		825BD8912007CFCB00AF981A /* KeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStoreTests.swift; sourceTree = "<group>"; };
 		825BD8972007D1B400AF981A /* KeychainSwift.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KeychainSwift.xcodeproj; path = "keychain-swift/KeychainSwift.xcodeproj"; sourceTree = "<group>"; };
-		825BD8E2200B5DB800AF981A /* AES.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AES.swift; sourceTree = "<group>"; };
 		82ECAB892002A2880010E31F /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		82ECAB8F200367660010E31F /* KeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
@@ -281,15 +258,14 @@
 			isa = PBXGroup;
 			children = (
 				82340BB71FFDF3390034204F /* Conversion.swift */,
+				82340BD31FFDF7780034204F /* Data+extensions.swift */,
+				82ECAB8F200367660010E31F /* KeyStore.swift */,
+				82ECAB8B2003290F0010E31F /* KeyUtils.swift */,
+				82340BDC1FFE24EE0034204F /* Stellar.swift */,
+				82340C4A20014BFC0034204F /* StellarErrors.swift */,
+				82340C44200138E50034204F /* StellarResults.swift */,
 				82340BB91FFDF3390034204F /* StellarTypes.swift */,
 				82340BB81FFDF3390034204F /* XDRCodable.swift */,
-				82340BD31FFDF7780034204F /* CommonCrypto.swift */,
-				82340BDC1FFE24EE0034204F /* Stellar.swift */,
-				82340C44200138E50034204F /* StellarResults.swift */,
-				82340C4A20014BFC0034204F /* StellarErrors.swift */,
-				82ECAB8B2003290F0010E31F /* KeyUtils.swift */,
-				82ECAB8F200367660010E31F /* KeyStore.swift */,
-				825BD8E2200B5DB800AF981A /* AES.swift */,
 			);
 			name = source;
 			path = ../StellarKinKit/source;
@@ -371,7 +347,6 @@
 			dependencies = (
 				825BD8B42007D1F800AF981A /* PBXTargetDependency */,
 				E983D2542002227E00E917FA /* PBXTargetDependency */,
-				82340BDB1FFE04AC0034204F /* PBXTargetDependency */,
 			);
 			name = StellarKinKit;
 			productName = SwiftyStellar;
@@ -438,10 +413,6 @@
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 					};
-					82340BD51FFE046D0034204F = {
-						CreatedOnToolsVersion = 9.2;
-						ProvisioningStyle = Automatic;
-					};
 				};
 			};
 			buildConfigurationList = 82340B961FFDF2DA0034204F /* Build configuration list for PBXProject "StellarKinKit" */;
@@ -470,7 +441,6 @@
 				82340B9B1FFDF2DA0034204F /* StellarKinKit */,
 				82340BA41FFDF2DA0034204F /* StellarKinKitTests */,
 				82340BC01FFDF3F30034204F /* StellarKinKitHost */,
-				82340BD51FFE046D0034204F /* CommonCryptoModuleMap */,
 			);
 		};
 /* End PBXProject section */
@@ -596,22 +566,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		82340BD91FFE048C0034204F /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This if-statement means we'll only run the main script if the CommonCryptoModuleMap directory doesn't exist\n# Because otherwise the rest of the script causes a full recompile for anything where CommonCrypto is a dependency\n# Do a \"Clean Build Folder\" to remove this directory and trigger the rest of the script to run\nif [ -d \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap\" ]; then\necho \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap directory already exists, so skipping the rest of the script.\"\nexit 0\nfi\n\nmkdir -p \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap\"\ncat <<EOF > \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap/module.modulemap\"\nmodule CommonCrypto [system] {\n    header \"${SDKROOT}/usr/include/CommonCrypto/CommonCrypto.h\"\n    export *\n}\nEOF";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		82340B971FFDF2DA0034204F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -625,8 +579,7 @@
 				82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */,
 				82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */,
 				82340C45200138E50034204F /* StellarResults.swift in Sources */,
-				82340BD41FFDF7780034204F /* CommonCrypto.swift in Sources */,
-				825BD8E3200B5DB800AF981A /* AES.swift in Sources */,
+				82340BD41FFDF7780034204F /* Data+extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -656,11 +609,6 @@
 			isa = PBXTargetDependency;
 			target = 82340B9B1FFDF2DA0034204F /* StellarKinKit */;
 			targetProxy = 82340BA71FFDF2DA0034204F /* PBXContainerItemProxy */;
-		};
-		82340BDB1FFE04AC0034204F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 82340BD51FFE046D0034204F /* CommonCryptoModuleMap */;
-			targetProxy = 82340BDA1FFE04AC0034204F /* PBXContainerItemProxy */;
 		};
 		825BD8B42007D1F800AF981A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -929,24 +877,6 @@
 			};
 			name = Release;
 		};
-		82340BD71FFE046D0034204F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = MZAK745F32;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		82340BD81FFE046D0034204F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = MZAK745F32;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -982,15 +912,6 @@
 			buildConfigurations = (
 				82340BD11FFDF3F30034204F /* Debug */,
 				82340BD21FFDF3F30034204F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		82340BD61FFE046D0034204F /* Build configuration list for PBXAggregateTarget "CommonCryptoModuleMap" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				82340BD71FFE046D0034204F /* Debug */,
-				82340BD81FFE046D0034204F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
