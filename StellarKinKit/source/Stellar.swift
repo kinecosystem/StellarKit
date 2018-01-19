@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Sodium
 
 public typealias Completion = (String?, Error?) -> Void
 
