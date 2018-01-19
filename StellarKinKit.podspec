@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKinKit"
-  s.version     = "0.0.5"
+  s.version     = "0.0.6"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/marketplacer/keychain-swift"
   s.summary     = "StellarKinKit StellarKinKit StellarKinKit StellarKinKit"
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
     'OTHER_LDFLAGS' => '-lsodium-ios',
     'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/swift-sodium/Sodium/libsodium'
   }
-  s.preserve_paths = 'swift-sodium/Sodium/libsodium/module.modulemap'
+  s.preserve_paths = 'swift-sodium/Sodium/libsodium/module.modulemap', 'swift-sodium/Sodium/libsodium/libsodium-ios.a'
 
   s.vendored_library    = 'swift-sodium/Sodium/libsodium/libsodium-ios.a'
 
