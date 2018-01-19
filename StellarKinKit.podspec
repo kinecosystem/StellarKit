@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKinKit"
-  s.version     = "0.0.3"
+  s.version     = "0.0.4"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/marketplacer/keychain-swift"
   s.summary     = "StellarKinKit StellarKinKit StellarKinKit StellarKinKit"
@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
                 StellarKinKit StellarKinKit StellarKinKit StellarKinKit StellarKinKit
                 DESC
   s.author      = { 'Kin Foundation' => 'kin@kik.com' }
-  s.source      = { :git => "https://github.com/kinfoundation/StellarKinKit.git", :submodules => true}
+  s.source      = { :git => "https://github.com/kinfoundation/StellarKinKit.git", :tag => s.version, :submodules => true }
   s.source_files = "StellarKinKit/source/*.swift"
   s.ios.deployment_target = "8.0"
 
@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'Sodium' do |sod|
     sod.ios.deployment_target = '8.0'
-    sod.source_files = 'swift-sodium/Sodium/*.{swift,h}'
+    sod.source_files = 'swift-sodium/Sodium/*.{swift,h}', 'swift-sodium/Sodium/libsodium/*.h'
     sod.private_header_files = 'swift-sodium/Sodium/libsodium/*.h'
     sod.requires_arc = true
   end
