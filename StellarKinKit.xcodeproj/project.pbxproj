@@ -23,9 +23,6 @@
 		82340C45200138E50034204F /* StellarResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C44200138E50034204F /* StellarResults.swift */; };
 		82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C4A20014BFC0034204F /* StellarErrors.swift */; };
 		825BD8922007CFCB00AF981A /* KeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BD8912007CFCB00AF981A /* KeyStoreTests.swift */; };
-		8268D8E220110959005CF79E /* KeychainSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8268D8DF20110959005CF79E /* KeychainSwift.swift */; };
-		8268D8E320110959005CF79E /* TegKeychainConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8268D8E020110959005CF79E /* TegKeychainConstants.swift */; };
-		8268D8E420110959005CF79E /* KeychainSwiftAccessOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8268D8E120110959005CF79E /* KeychainSwiftAccessOptions.swift */; };
 		82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB892002A2880010E31F /* XDRTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		82ECAB90200367660010E31F /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8F200367660010E31F /* KeyStore.swift */; };
@@ -109,6 +106,9 @@
 		E97A9D772012920B00F6BC4F /* Sodium.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97A9D272012920B00F6BC4F /* Sodium.swift */; };
 		E97A9D782012920B00F6BC4F /* Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97A9D282012920B00F6BC4F /* Stream.swift */; };
 		E97A9D792012920B00F6BC4F /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97A9D292012920B00F6BC4F /* Utils.swift */; };
+		E9E21C932012AB4500170419 /* KeychainSwiftAccessOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E21C902012AB4500170419 /* KeychainSwiftAccessOptions.swift */; };
+		E9E21C942012AB4500170419 /* KeychainSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E21C912012AB4500170419 /* KeychainSwift.swift */; };
+		E9E21C952012AB4500170419 /* TegKeychainConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E21C922012AB4500170419 /* TegKeychainConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -150,9 +150,6 @@
 		82340C44200138E50034204F /* StellarResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarResults.swift; sourceTree = "<group>"; };
 		82340C4A20014BFC0034204F /* StellarErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarErrors.swift; sourceTree = "<group>"; };
 		825BD8912007CFCB00AF981A /* KeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStoreTests.swift; sourceTree = "<group>"; };
-		8268D8DF20110959005CF79E /* KeychainSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeychainSwift.swift; path = "keychain-swift/KeychainSwift/KeychainSwift.swift"; sourceTree = SOURCE_ROOT; };
-		8268D8E020110959005CF79E /* TegKeychainConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TegKeychainConstants.swift; path = "keychain-swift/KeychainSwift/TegKeychainConstants.swift"; sourceTree = SOURCE_ROOT; };
-		8268D8E120110959005CF79E /* KeychainSwiftAccessOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeychainSwiftAccessOptions.swift; path = "keychain-swift/KeychainSwift/KeychainSwiftAccessOptions.swift"; sourceTree = SOURCE_ROOT; };
 		82ECAB892002A2880010E31F /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		82ECAB8F200367660010E31F /* KeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
@@ -238,6 +235,9 @@
 		E97A9D282012920B00F6BC4F /* Stream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stream.swift; sourceTree = "<group>"; };
 		E97A9D292012920B00F6BC4F /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		E983D25520023F0E00E917FA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		E9E21C902012AB4500170419 /* KeychainSwiftAccessOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeychainSwiftAccessOptions.swift; path = "keychain-swift/KeychainSwift/KeychainSwiftAccessOptions.swift"; sourceTree = SOURCE_ROOT; };
+		E9E21C912012AB4500170419 /* KeychainSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeychainSwift.swift; path = "keychain-swift/KeychainSwift/KeychainSwift.swift"; sourceTree = SOURCE_ROOT; };
+		E9E21C922012AB4500170419 /* TegKeychainConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TegKeychainConstants.swift; path = "keychain-swift/KeychainSwift/TegKeychainConstants.swift"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -352,20 +352,10 @@
 		8268D8CF201108BE005CF79E /* third-party */ = {
 			isa = PBXGroup;
 			children = (
+				E9E21C892012AABB00170419 /* keychain-swift */,
 				E97A9CD72012920B00F6BC4F /* Sodium */,
-				8268D8DE20110940005CF79E /* keychain-swift */,
 			);
 			path = "third-party";
-			sourceTree = "<group>";
-		};
-		8268D8DE20110940005CF79E /* keychain-swift */ = {
-			isa = PBXGroup;
-			children = (
-				8268D8DF20110959005CF79E /* KeychainSwift.swift */,
-				8268D8E120110959005CF79E /* KeychainSwiftAccessOptions.swift */,
-				8268D8E020110959005CF79E /* TegKeychainConstants.swift */,
-			);
-			path = "keychain-swift";
 			sourceTree = "<group>";
 		};
 		E97A9CD72012920B00F6BC4F /* Sodium */ = {
@@ -463,6 +453,16 @@
 				E97A9D1F2012920B00F6BC4F /* version.h */,
 			);
 			path = libsodium;
+			sourceTree = "<group>";
+		};
+		E9E21C892012AABB00170419 /* keychain-swift */ = {
+			isa = PBXGroup;
+			children = (
+				E9E21C912012AB4500170419 /* KeychainSwift.swift */,
+				E9E21C902012AB4500170419 /* KeychainSwiftAccessOptions.swift */,
+				E9E21C922012AB4500170419 /* TegKeychainConstants.swift */,
+			);
+			name = "keychain-swift";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -675,10 +675,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9E21C942012AB4500170419 /* KeychainSwift.swift in Sources */,
 				E97A9D712012920B00F6BC4F /* RandomBytes.swift in Sources */,
 				E97A9D2C2012920B00F6BC4F /* GenericHash.swift in Sources */,
 				E97A9D2A2012920B00F6BC4F /* Auth.swift in Sources */,
 				E97A9D2F2012920B00F6BC4F /* KeyExchange.swift in Sources */,
+				E9E21C932012AB4500170419 /* KeychainSwiftAccessOptions.swift in Sources */,
 				E97A9D782012920B00F6BC4F /* Stream.swift in Sources */,
 				E97A9D792012920B00F6BC4F /* Utils.swift in Sources */,
 				E97A9D2B2012920B00F6BC4F /* Box.swift in Sources */,
@@ -687,11 +689,9 @@
 				82340BBA1FFDF3390034204F /* Conversion.swift in Sources */,
 				82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */,
 				E97A9D732012920B00F6BC4F /* SecretStream.swift in Sources */,
-				8268D8E420110959005CF79E /* KeychainSwiftAccessOptions.swift in Sources */,
-				8268D8E320110959005CF79E /* TegKeychainConstants.swift in Sources */,
 				E97A9D742012920B00F6BC4F /* ShortHash.swift in Sources */,
 				82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */,
-				8268D8E220110959005CF79E /* KeychainSwift.swift in Sources */,
+				E9E21C952012AB4500170419 /* TegKeychainConstants.swift in Sources */,
 				E97A9D722012920B00F6BC4F /* SecretBox.swift in Sources */,
 				E97A9D772012920B00F6BC4F /* Sodium.swift in Sources */,
 				E97A9D702012920B00F6BC4F /* PWHash.swift in Sources */,
