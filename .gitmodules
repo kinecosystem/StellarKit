@@ -1,6 +1,6 @@
 [submodule "swift-sodium"]
-	path = swift-sodium
+	path = StellarKinKit/third-party/swift-sodium
 url=https://github.com/jedisct1/swift-sodium.git
 [submodule "keychain-swift"]
-	path = keychain-swift
+	path = StellarKinKit/third-party/keychain-swift
 	url = https://github.com/filippovdev/keychain-swift.git

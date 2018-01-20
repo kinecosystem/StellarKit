@@ -12,15 +12,15 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = "8.0"
 
-  s.preserve_paths        = 'swift-sodium/Sodium/libsodium/module.modulemap', 'swift-sodium/Sodium/libsodium/libsodium-ios.a'
-  s.source_files          = 'StellarKinKit/source/*.swift', 'swift-sodium/Sodium/*.{swift,h}', 'swift-sodium/Sodium/libsodium/*.h', 'keychain-swift/KeychainSwift/*.swift'
-  s.vendored_library      = 'swift-sodium/Sodium/libsodium/libsodium-ios.a'
-  s.private_header_files  = 'swift-sodium/Sodium/libsodium/*.h'
+  s.preserve_paths        = 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/module.modulemap', 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/libsodium-ios.a'
+  s.source_files          = 'StellarKinKit/source/*.swift', 'StellarKinKit/third-party/swift-sodium/Sodium/*.{swift,h}', 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/*.h', 'StellarKinKit/third-party/keychain-swift/KeychainSwift/*.swift'
+  s.vendored_library      = 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/libsodium-ios.a'
+  s.private_header_files  = 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/*.h'
 
   s.pod_target_xcconfig   = {
-    'SWIFT_INCLUDE_PATHS' => '$(PODS_TARGET_SRCROOT)/swift-sodium/Sodium/libsodium',
+    'SWIFT_INCLUDE_PATHS' => '$(PODS_TARGET_SRCROOT)/StellarKinKit/third-party/swift-sodium/Sodium/libsodium',
     'OTHER_LDFLAGS' => '-lsodium-ios',
-    'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/swift-sodium/Sodium/libsodium'
+    'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/StellarKinKit/third-party/swift-sodium/Sodium/libsodium'
   }
 
 end
