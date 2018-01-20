@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKinKit"
-  s.version     = "0.0.7"
+  s.version     = "0.0.8"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/marketplacer/keychain-swift"
   s.summary     = "StellarKinKit StellarKinKit StellarKinKit StellarKinKit"
@@ -18,13 +18,13 @@ Pod::Spec.new do |s|
     'LIBRARY_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/swift-sodium/Sodium/libsodium'
   }
 
-  s.preserve_paths = 'swift-sodium/**/*'
+  s.preserve_paths = 'swift-sodium/Sodium/libsodium/module.modulemap', 'swift-sodium/Sodium/libsodium/libsodium-ios.a'
 
   s.vendored_library    = 'swift-sodium/Sodium/libsodium/libsodium-ios.a'
 
   s.subspec 'Sodium' do |sod|
     sod.ios.deployment_target = '8.0'
-    sod.source_files = 'swift-sodium/Sodium/**/*.{swift,h}', 'swift-sodium/Sodium/libsodium/*.h'
+    sod.source_files = 'swift-sodium/Sodium/*.{swift,h}', 'swift-sodium/Sodium/libsodium/*.h'
     sod.private_header_files = 'swift-sodium/Sodium/libsodium/*.h'
     sod.requires_arc = true
   end
