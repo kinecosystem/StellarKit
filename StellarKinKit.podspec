@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKinKit"
-  s.version     = "0.0.8"
+  s.version     = "0.0.9"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/marketplacer/keychain-swift"
   s.summary     = "StellarKinKit StellarKinKit StellarKinKit StellarKinKit"
