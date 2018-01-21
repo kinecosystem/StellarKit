@@ -16,20 +16,22 @@ enum KeyUtilsError: Error {
     case unknownError
 }
 
-struct KeyUtils {
-    static func keyPair() -> Sign.KeyPair? {
+public struct KeyUtils {
+    public static func keyPair() -> Sign.KeyPair? {
         return Sodium().sign.keyPair()
     }
 
-    static func keyPair(from seed: Data) -> Sign.KeyPair? {
+    public static func keyPair(from seed: Data) -> Sign.KeyPair? {
         return Sodium().sign.keyPair(seed: seed)
     }
 
-    static func keyPair(from seed: String) -> Sign.KeyPair? {
+    public static func keyPair(from seed: String) -> Sign.KeyPair? {
         return Sodium().sign.keyPair(seed: base32KeyToData(key: seed))
     }
 
-    static func seed(from passphrase: String, encryptedSeed: String, salt: String) throws -> Data {
+    public static func seed(from passphrase: String,
+                            encryptedSeed: String,
+                            salt: String) throws -> Data {
         guard let encryptedSeedData = Data(hexString: encryptedSeed) else {
             throw KeyUtilsError.decodingFailed(encryptedSeed)
         }
@@ -38,26 +40,27 @@ struct KeyUtils {
 
         let skey = try KeyUtils.keyHash(passphrase: passphrase, salt: salt)
 
-        guard let seed = sodium.secretBox.open(nonceAndAuthenticatedCipherText: encryptedSeedData, secretKey: skey) else {
+        guard let seed = sodium.secretBox.open(nonceAndAuthenticatedCipherText: encryptedSeedData,
+                                               secretKey: skey) else {
             throw KeyUtilsError.passphraseIncorrect
         }
 
         return seed
     }
 
-    static func base32(publicKey: Data) -> String {
+    public static func base32(publicKey: Data) -> String {
         return publicKeyToBase32(publicKey)
     }
 
-    static func base32(seed: Data) -> String {
+    public static func base32(seed: Data) -> String {
         return seedToBase32(seed)
     }
 
-    static func key(base32: String) -> Data {
+    public static func key(base32: String) -> Data {
         return base32KeyToData(key: base32)
     }
 
-    static func keyHash(passphrase: String, salt: String) throws -> Data {
+    public static func keyHash(passphrase: String, salt: String) throws -> Data {
         guard let passphraseData = passphrase.data(using: .utf8) else {
             throw KeyUtilsError.encodingFailed(passphrase)
         }
@@ -79,15 +82,23 @@ struct KeyUtils {
         return hash
     }
 
-    static func encryptSeed(_ seed: Data, secretKey: Data) -> Data? {
+    public static func encryptSeed(_ seed: Data, secretKey: Data) -> Data? {
         return Sodium().secretBox.seal(message: seed, secretKey: secretKey)
     }
 
-    static func seed() -> Data? {
+    public static func seed() -> Data? {
         return Sodium().randomBytes.buf(length: 32)
     }
 
-    static func salt() -> String? {
+    public static func salt() -> String? {
         return Sodium().randomBytes.buf(length: 16)?.hexString
+    }
+
+    public static func sign(message: Data, signingKey: Data) throws -> Data {
+        guard let signature = Sodium().sign.signature(message: message, secretKey: signingKey) else {
+            throw StellarError.signingFailed
+        }
+
+        return signature
     }
 }

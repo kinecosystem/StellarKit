@@ -7,20 +7,32 @@
 //
 
 import Foundation
+import StellarKinKit
 
 enum KeyStoreErrors: Error {
-    case keychainStoreFailed
+    case storeFailed
     case noSalt
+    case noPepper
     case noSeed
+    case noSecretKey
     case keypairGenerationFailed
     case encryptionFailed
 }
 
-private let keychainPrefix = "__swifty_stellar_"
-private let keychain = KeychainSwift(keyPrefix: keychainPrefix)
+protocol AccountStorage {
+    static func nextStorageKey() -> String
+    static func save(_ accountData: Data, forKey key: String) -> Bool
+    static func retrieve(_ key: String) -> Data?
+    static func account(at index: Int) -> StellarAccount?
+    static func remove(at index: Int) -> Bool
+    static func count() -> Int
+    static func clear()
+}
 
-public class StellarAccount {
-    private(set) fileprivate var keychainKey: String
+private let StorageClass: AccountStorage.Type = KeychainStorage.self
+
+public class StellarAccount: Account {
+    private(set) fileprivate var storageKey: String
 
     public var publicKey: String? {
         guard
@@ -32,7 +44,15 @@ public class StellarAccount {
         return key
     }
 
-    func secretKey(passphrase: String) -> Data? {
+    public func sign(message: Data, passphrase: String) throws -> Data {
+        guard let signingKey = secretKey(passphrase: passphrase) else {
+            throw KeyStoreErrors.noSecretKey
+        }
+
+        return try KeyUtils.sign(message: message, signingKey: signingKey)
+    }
+
+    fileprivate func secretKey(passphrase: String) -> Data? {
         guard let seed = seed(passphrase: passphrase) else {
             return nil
         }
@@ -52,13 +72,13 @@ public class StellarAccount {
         return KeyUtils.base32(seed: seed)
     }
 
-    init(keychainKey: String) {
-        self.keychainKey = keychainKey
+    init(storageKey: String) {
+        self.storageKey = storageKey
     }
 
     func json() -> [String: String]? {
         guard
-            let data = keychain.getData(keychainKey),
+            let data = StorageClass.retrieve(storageKey),
             let jsonOpt = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: String],
             let json = jsonOpt else {
                 return nil
@@ -82,55 +102,37 @@ public class StellarAccount {
 
 public struct KeyStore {
     public static func newAccount(passphrase: String) throws -> StellarAccount {
-        let keychainKey = nextKeychainKey()
+        let storageKey = StorageClass.nextStorageKey()
 
-        try save(accountData: try accountData(passphrase: passphrase), key: keychainKey)
+        try save(accountData: try accountData(passphrase: passphrase), key: storageKey)
 
-        let account = StellarAccount(keychainKey: keychainKey)
+        let account = StellarAccount(storageKey: storageKey)
 
         return account
     }
 
     public static func account(at index: Int) -> StellarAccount? {
-        let keys = self.keys()
-
-        guard index < keys.count else {
-            return nil
-        }
-
-        guard let indexStr = keys[index].split(separator: "_").last else {
-            return nil
-        }
-
-        return StellarAccount(keychainKey: String(indexStr))
+        return StorageClass.account(at: index)
     }
 
     @discardableResult
     public static func remove(at index: Int) -> Bool {
-        let key = keys()[index]
-
-        guard
-            index < keys().count,
-            let indexStr = key.split(separator: "_").last else {
-                return false
-        }
-
-        return keychain.delete(String(indexStr))
+        return StorageClass.remove(at: index)
     }
 
     public static func count() -> Int {
-        return keys().count
+        return StorageClass.count()
     }
 
     @discardableResult
     public static func importSecretSeed(_ seed: String, passphrase: String) throws -> StellarAccount {
         let seedData = KeyUtils.key(base32: seed)
 
-        let keychainKey = nextKeychainKey()
+        let storageKey = StorageClass.nextStorageKey()
 
-        try save(accountData: try accountData(passphrase: passphrase, seed: seedData), key: keychainKey)
+        try save(accountData: try accountData(passphrase: passphrase, seed: seedData), key: storageKey)
 
-        let account = StellarAccount(keychainKey: keychainKey)
+        let account = StellarAccount(storageKey: storageKey)
 
         return account
     }
@@ -148,7 +150,7 @@ public struct KeyStore {
         }
 
         if let accountData = reencryptedJSON {
-            try save(accountData: accountData, key: nextKeychainKey())
+            try save(accountData: accountData, key: StorageClass.nextStorageKey())
         }
     }
 
@@ -224,14 +226,27 @@ public struct KeyStore {
     private static func save(accountData: [String: String], key: String) throws {
         let data = try JSONSerialization.data(withJSONObject: accountData, options: [])
 
-        let keychainKey = nextKeychainKey()
-
-        guard keychain.set(data, forKey: keychainKey) else {
-            throw KeyStoreErrors.keychainStoreFailed
+        guard StorageClass.save(data, forKey: key) else {
+            throw KeyStoreErrors.storeFailed
         }
     }
+}
 
-    private static func nextKeychainKey() -> String {
+extension KeyStore {
+    // WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!
+    // This is for internal use, only.  It will delete ALL keychain entries for the app, not just
+    // those used by this SDk.
+    // It is intended for use by unit tests.
+    static func removeAll() {
+        StorageClass.clear()
+    }
+}
+
+private struct KeychainStorage: AccountStorage {
+    private static let keychainPrefix = "__swifty_stellar_"
+    private static let keychain = KeychainSwift(keyPrefix: keychainPrefix)
+
+    static func nextStorageKey() -> String {
         let keys = self.keys()
 
         if keys.count == 0 {
@@ -252,6 +267,49 @@ public struct KeyStore {
         }
     }
 
+    static func save(_ accountData: Data, forKey key: String) -> Bool {
+        return keychain.set(accountData, forKey: key)
+    }
+
+    static func retrieve(_ key: String) -> Data? {
+        return keychain.getData(key)
+    }
+
+    static func delete(_ key: String) -> Bool {
+        return keychain.delete(key)
+    }
+
+    static func account(at index: Int) -> StellarAccount? {
+        let keys = self.keys()
+        
+        guard index < keys.count else {
+            return nil
+        }
+        
+        guard let indexStr = keys[index].split(separator: "_").last else {
+            return nil
+        }
+        
+        return StellarAccount(storageKey: String(indexStr))
+    }
+    
+    @discardableResult
+    static func remove(at index: Int) -> Bool {
+        let key = keys()[index]
+        
+        guard
+            index < keys().count,
+            let indexStr = key.split(separator: "_").last else {
+                return false
+        }
+        
+        return delete(String(indexStr))
+    }
+
+    static func count() -> Int {
+        return keys().count
+    }
+
     private static func keys() -> [String] {
         let keys = (keychain.getAllKeys() ?? []).filter {
             $0.starts(with: keychainPrefix)
@@ -259,14 +317,8 @@ public struct KeyStore {
 
         return keys.sorted()
     }
-}
 
-extension KeyStore {
-    // WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!  WARNING!
-    // This is for internal use, only.  It will delete ALL keychain entries for the app, not just
-    // those used by this SDk.
-    // It is intended for use by unit tests.
-    static func removeAll() {
+    fileprivate static func clear() {
         keychain.clear()
     }
 }

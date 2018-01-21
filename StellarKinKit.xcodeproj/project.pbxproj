@@ -12,7 +12,6 @@
 		82340BAD1FFDF2DA0034204F /* StellarKinKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 82340B9F1FFDF2DA0034204F /* StellarKinKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		82340BBA1FFDF3390034204F /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB71FFDF3390034204F /* Conversion.swift */; };
 		82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB81FFDF3390034204F /* XDRCodable.swift */; };
-		82340BBC1FFDF3390034204F /* StellarTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB91FFDF3390034204F /* StellarTypes.swift */; };
 		82340BC41FFDF3F30034204F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BC31FFDF3F30034204F /* AppDelegate.swift */; };
 		82340BC61FFDF3F30034204F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BC51FFDF3F30034204F /* ViewController.swift */; };
 		82340BC91FFDF3F30034204F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340BC71FFDF3F30034204F /* Main.storyboard */; };
@@ -22,10 +21,14 @@
 		82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BDC1FFE24EE0034204F /* Stellar.swift */; };
 		82340C45200138E50034204F /* StellarResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C44200138E50034204F /* StellarResults.swift */; };
 		82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C4A20014BFC0034204F /* StellarErrors.swift */; };
-		825BD8922007CFCB00AF981A /* KeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BD8912007CFCB00AF981A /* KeyStoreTests.swift */; };
+		824063B120147DCD0055D70A /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AC20147DCD0055D70A /* Asset.swift */; };
+		824063B220147DCD0055D70A /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AD20147DCD0055D70A /* Operation.swift */; };
+		824063B320147DCD0055D70A /* Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AE20147DCD0055D70A /* Operations.swift */; };
+		824063B420147DCD0055D70A /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AF20147DCD0055D70A /* PublicKey.swift */; };
+		824063B520147DCD0055D70A /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063B020147DCD0055D70A /* Transaction.swift */; };
+		824063B720147DDA0055D70A /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063B620147DDA0055D70A /* KeyStore.swift */; };
 		82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB892002A2880010E31F /* XDRTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
-		82ECAB90200367660010E31F /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8F200367660010E31F /* KeyStore.swift */; };
 		E96F241B2013D6C60017EF68 /* KeychainSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24162013D6C60017EF68 /* KeychainSwift.swift */; };
 		E96F241C2013D6C60017EF68 /* KeychainSwiftAccessOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24172013D6C60017EF68 /* KeychainSwiftAccessOptions.swift */; };
 		E96F241D2013D6C60017EF68 /* TegKeychainConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24182013D6C60017EF68 /* TegKeychainConstants.swift */; };
@@ -137,7 +140,6 @@
 		82340BAC1FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82340BB71FFDF3390034204F /* Conversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversion.swift; sourceTree = "<group>"; };
 		82340BB81FFDF3390034204F /* XDRCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRCodable.swift; sourceTree = "<group>"; };
-		82340BB91FFDF3390034204F /* StellarTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarTypes.swift; sourceTree = "<group>"; };
 		82340BC11FFDF3F30034204F /* StellarKinKitHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StellarKinKitHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82340BC31FFDF3F30034204F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		82340BC51FFDF3F30034204F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -149,10 +151,14 @@
 		82340BDC1FFE24EE0034204F /* Stellar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stellar.swift; sourceTree = "<group>"; };
 		82340C44200138E50034204F /* StellarResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarResults.swift; sourceTree = "<group>"; };
 		82340C4A20014BFC0034204F /* StellarErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarErrors.swift; sourceTree = "<group>"; };
-		825BD8912007CFCB00AF981A /* KeyStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStoreTests.swift; sourceTree = "<group>"; };
+		824063AC20147DCD0055D70A /* Asset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
+		824063AD20147DCD0055D70A /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
+		824063AE20147DCD0055D70A /* Operations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operations.swift; sourceTree = "<group>"; };
+		824063AF20147DCD0055D70A /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
+		824063B020147DCD0055D70A /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		824063B620147DDA0055D70A /* KeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
 		82ECAB892002A2880010E31F /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
-		82ECAB8F200367660010E31F /* KeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
 		E96F24162013D6C60017EF68 /* KeychainSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwift.swift; sourceTree = "<group>"; };
 		E96F24172013D6C60017EF68 /* KeychainSwiftAccessOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwiftAccessOptions.swift; sourceTree = "<group>"; };
 		E96F24182013D6C60017EF68 /* TegKeychainConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TegKeychainConstants.swift; sourceTree = "<group>"; };
@@ -304,9 +310,9 @@
 			isa = PBXGroup;
 			children = (
 				82340BAA1FFDF2DA0034204F /* StellarKinKitTests.swift */,
-				825BD8912007CFCB00AF981A /* KeyStoreTests.swift */,
 				82ECAB892002A2880010E31F /* XDRTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
+				824063B620147DDA0055D70A /* KeyStore.swift */,
 			);
 			path = StellarKinKitTests;
 			sourceTree = "<group>";
@@ -314,14 +320,13 @@
 		82340BB61FFDF3030034204F /* source */ = {
 			isa = PBXGroup;
 			children = (
+				824063AB20147DCD0055D70A /* types */,
 				82340BB71FFDF3390034204F /* Conversion.swift */,
 				82340BD31FFDF7780034204F /* Data+extensions.swift */,
-				82ECAB8F200367660010E31F /* KeyStore.swift */,
 				82ECAB8B2003290F0010E31F /* KeyUtils.swift */,
 				82340BDC1FFE24EE0034204F /* Stellar.swift */,
 				82340C4A20014BFC0034204F /* StellarErrors.swift */,
 				82340C44200138E50034204F /* StellarResults.swift */,
-				82340BB91FFDF3390034204F /* StellarTypes.swift */,
 				82340BB81FFDF3390034204F /* XDRCodable.swift */,
 			);
 			name = source;
@@ -347,6 +352,18 @@
 				E983D25520023F0E00E917FA /* Foundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		824063AB20147DCD0055D70A /* types */ = {
+			isa = PBXGroup;
+			children = (
+				824063AC20147DCD0055D70A /* Asset.swift */,
+				824063AD20147DCD0055D70A /* Operation.swift */,
+				824063AE20147DCD0055D70A /* Operations.swift */,
+				824063AF20147DCD0055D70A /* PublicKey.swift */,
+				824063B020147DCD0055D70A /* Transaction.swift */,
+			);
+			path = types;
 			sourceTree = "<group>";
 		};
 		8268D8CF201108BE005CF79E /* third-party */ = {
@@ -679,22 +696,25 @@
 				E96F24B82013D6D90017EF68 /* RandomBytes.swift in Sources */,
 				E96F24732013D6D90017EF68 /* GenericHash.swift in Sources */,
 				E96F24712013D6D90017EF68 /* Auth.swift in Sources */,
+				824063B320147DCD0055D70A /* Operations.swift in Sources */,
 				E96F24762013D6D90017EF68 /* KeyExchange.swift in Sources */,
 				E96F24BF2013D6D90017EF68 /* Stream.swift in Sources */,
+				824063B220147DCD0055D70A /* Operation.swift in Sources */,
 				E96F24C02013D6D90017EF68 /* Utils.swift in Sources */,
 				E96F24722013D6D90017EF68 /* Box.swift in Sources */,
 				E96F241C2013D6C60017EF68 /* KeychainSwiftAccessOptions.swift in Sources */,
-				82340BBC1FFDF3390034204F /* StellarTypes.swift in Sources */,
 				E96F241D2013D6C60017EF68 /* TegKeychainConstants.swift in Sources */,
-				82ECAB90200367660010E31F /* KeyStore.swift in Sources */,
 				E96F24BA2013D6D90017EF68 /* SecretStream.swift in Sources */,
 				82340BBA1FFDF3390034204F /* Conversion.swift in Sources */,
+				824063B520147DCD0055D70A /* Transaction.swift in Sources */,
 				82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */,
 				E96F24BB2013D6D90017EF68 /* ShortHash.swift in Sources */,
+				824063B120147DCD0055D70A /* Asset.swift in Sources */,
 				82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */,
 				E96F241B2013D6C60017EF68 /* KeychainSwift.swift in Sources */,
 				E96F24B92013D6D90017EF68 /* SecretBox.swift in Sources */,
 				E96F24BE2013D6D90017EF68 /* Sodium.swift in Sources */,
+				824063B420147DCD0055D70A /* PublicKey.swift in Sources */,
 				E96F24B72013D6D90017EF68 /* PWHash.swift in Sources */,
 				82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */,
 				E96F24BC2013D6D90017EF68 /* Sign.swift in Sources */,
@@ -710,7 +730,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */,
-				825BD8922007CFCB00AF981A /* KeyStoreTests.swift in Sources */,
+				824063B720147DDA0055D70A /* KeyStore.swift in Sources */,
 				82340BAB1FFDF2DA0034204F /* StellarKinKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
