@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
-  s.version     = "0.1.3"
+  s.version     = "0.1.4"
   s.license     = { :type => "MIT" }
   s.homepage    = "http://www.kinecosystem.org/"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
