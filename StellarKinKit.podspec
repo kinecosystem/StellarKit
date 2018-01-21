@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKinKit"
-  s.version     = "0.1.1"
+  s.version     = "0.1.2"
   s.license     = { :type => "MIT" }
   s.homepage    = "http://www.kinecosystem.org/"
   s.summary     = "StellarKinKit StellarKinKit StellarKinKit StellarKinKit"
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "8.0"
 
   s.preserve_paths        = 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/module.modulemap', 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/libsodium-ios.a'
-  s.source_files          = 'StellarKinKit/source/*.swift', 'StellarKinKit/third-party/swift-sodium/Sodium/*.{swift,h}', 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/*.h', 'StellarKinKit/third-party/keychain-swift/KeychainSwift/*.swift'
+  s.source_files          = 'StellarKinKit/source/**/*.swift', 'StellarKinKit/third-party/swift-sodium/Sodium/*.{swift,h}', 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/*.h', 'StellarKinKit/third-party/keychain-swift/KeychainSwift/*.swift'
   s.vendored_library      = 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/libsodium-ios.a'
   s.private_header_files  = 'StellarKinKit/third-party/swift-sodium/Sodium/libsodium/*.h'
 
