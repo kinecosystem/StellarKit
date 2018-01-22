@@ -16,6 +16,10 @@ public protocol Account {
 
 public typealias Completion = (String?, Error?) -> Void
 
+/**
+ `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
+ supporting non-native assets.
+ */
 public class Stellar {
     typealias FLDW = FixedLengthDataWrapper
 
@@ -26,6 +30,13 @@ public class Stellar {
 
     // MARK: -
 
+    /**
+     Instantiates an instance of `Stellar`.
+
+     - parameter baseURL: The `URL` of the Horizon end-point to communicate with.
+     - parameter asset: The asset which will be used by default.
+     - parameter networkId: The identifier for the Stellar network.  The default is the test-net.
+     */
     public init(baseURL: URL,
                 asset: Asset? = nil,
                 networkId: String = "Test SDF Network ; September 2015") {
@@ -36,6 +47,16 @@ public class Stellar {
 
     // MARK: -
 
+    /**
+     Sends a payment to the given account.
+
+     - parameter source: The account from which the payment will be made.
+     - parameter destination: The public key of the receiving account, as a base32 string.
+     - parameter amount: The amount to be sent.
+     - parameter passphrase: The passphrase which will unlock the secret key of the sender.
+     - parameter asset: The `Asset` to be sent.  Defaults to the `Asset` specified in the initializer.
+     - parameter completion: A block which will receive the results of the payment attempt.
+     */
     public func payment(source: Account,
                         destination: String,
                         amount: Int64,
@@ -61,6 +82,14 @@ public class Stellar {
         }
     }
 
+    /**
+     Establishes trust for a non-native asset.
+
+     - parameter asset: The `Asset` to trust.
+     - parameter account: The `Account` which will trust the given asset.
+     - parameter passphrase: The passphrase which will unlock the secret key of the trusting account.
+     - parameter completion: A block which will receive the results of the trust operation.
+     */
     public func trust(asset: Asset,
                       account: Account,
                       passphrase: String,
@@ -71,6 +100,13 @@ public class Stellar {
                          completion: completion)
     }
 
+    /**
+     Obtain the balance for a given asset.
+
+     - parameter account: The `Account` whose balance will be retrieved.
+     - parameter asset: The `Asset` whose balance will be obtained.  Defaults to the `Asset` specified in the initializer.
+     - parameter completion: A block which will receive the results of the balance request.
+     */
     public func balance(account: String,
                         asset: Asset? = nil,
                         completion: @escaping (Decimal?, Error?) -> Void) {
@@ -122,6 +158,7 @@ public class Stellar {
     }
 
     // This is for testing only.
+    /// :nodoc:
     public func fund(account: String, completion: @escaping (Bool) -> Void) {
         let url = baseURL.appendingPathComponent("friendbot")
         var comps = URLComponents(url: url, resolvingAgainstBaseURL: false)!
