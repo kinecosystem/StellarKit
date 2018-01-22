@@ -919,7 +919,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/swift-sodium/Sodium/libsodium",
 					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
@@ -949,7 +948,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/swift-sodium/Sodium/libsodium",
 					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
