@@ -1,8 +1,8 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
-  s.version     = "0.1.4"
+  s.version     = "0.1.5"
   s.license     = { :type => "MIT" }
-  s.homepage    = "http://www.kinecosystem.org/"
+  s.homepage    = "https://github.com/kinfoundation/StellarKit.git"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
   s.description = <<-DESC
 		StellarKit implements a minimum set operations required to implement the KIN crypto-currency on top of Stellar.  Contributions to extend the repertoire of available operations will be considered.
