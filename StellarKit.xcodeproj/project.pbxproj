@@ -921,6 +921,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
 				);
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -950,6 +951,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
 				);
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
