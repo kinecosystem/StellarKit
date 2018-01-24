@@ -64,10 +64,17 @@ public class Stellar {
                         asset: Asset? = nil,
                         completion: @escaping Completion) {
         balance(account: destination, asset: asset) { (balance, error) in
-            if let error = error as? StellarError, case StellarError.missingBalance = error {
-                completion(nil, StellarError.destinationNotReadyForAsset(asset ?? self.asset))
+            if let error = error as? StellarError {
+                switch error {
+                case .missingBalance: fallthrough
+                case .missingAccount:
+                    completion(nil, StellarError.destinationNotReadyForAsset(error, asset ?? self.asset))
 
-                return
+                    return
+
+                default:
+                    break
+                }
             }
 
             let op = self.paymentOp(destination: destination,
@@ -133,7 +140,7 @@ public class Stellar {
                 }
 
                 guard let balances = json["balances"] as? [[String: Any]] else {
-                    completion(nil, StellarError.missingBalance)
+                    completion(nil, StellarError.missingAccount)
 
                     return
                 }

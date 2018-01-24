@@ -9,6 +9,7 @@
 import Foundation
 
 public enum StellarError: Error {
+    case missingAccount
     case missingPublicKey
     case missingHash
     case missingSequence
@@ -16,7 +17,7 @@ public enum StellarError: Error {
     case urlEncodingFailed
     case dataEncodingFailed
     case signingFailed
-    case destinationNotReadyForAsset (Asset)
+    case destinationNotReadyForAsset (Error, Asset)
     case parseError (Data?)
     case unknownError ([String: Any]?)
 }
