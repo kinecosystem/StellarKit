@@ -8,9 +8,8 @@
 
 import Foundation
 
-enum StellarError: Error {
+public enum StellarError: Error {
     case missingPublicKey
-    case missingSecretKey
     case missingHash
     case missingSequence
     case missingBalance
@@ -22,7 +21,7 @@ enum StellarError: Error {
     case unknownError ([String: Any]?)
 }
 
-enum TransactionError: Int32, Error {
+public enum TransactionError: Int32, Error {
     case txFAILED = -1               // one of the operations failed (none were applied)
 
     case txTOO_EARLY = -2            // ledger closeTime before minTime
@@ -38,14 +37,14 @@ enum TransactionError: Int32, Error {
     case txINTERNAL_ERROR = -11      // an unknown error occured
 }
 
-enum CreateAccountError: Int32, Error {
+public enum CreateAccountError: Int32, Error {
     case CREATE_ACCOUNT_MALFORMED = -1     // invalid destination
     case CREATE_ACCOUNT_UNDERFUNDED = -2   // not enough funds in source account
     case CREATE_ACCOUNT_LOW_RESERVE = -3   // would create an account below the min reserve
     case CREATE_ACCOUNT_ALREADY_EXIST = -4 // account already exists
 }
 
-enum PaymentError: Int32, Error {
+public enum PaymentError: Int32, Error {
     case PAYMENT_MALFORMED = -1          // bad input
     case PAYMENT_UNDERFUNDED = -2        // not enough funds in source account
     case PAYMENT_SRC_NO_TRUST = -3       // no trust line on source account
