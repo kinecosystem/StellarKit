@@ -47,6 +47,82 @@ class StellarKitTests: XCTestCase {
         super.tearDown()
     }
 
+    func test_trust() {
+        let e = expectation(description: "")
+
+        guard let account = account else {
+            XCTAssertTrue(false, "Missing account!")
+
+            return
+        }
+
+        self.stellar.fund(account: account.publicKey!) { success in
+            if !success {
+                XCTAssertTrue(false, "Unable to fund account!")
+
+                e.fulfill()
+
+                return
+            }
+
+            self.stellar.trust(asset: self.stellar.asset,
+                               account: account,
+                               passphrase: self.passphrase) { txHash, error in
+                                if let error = error {
+                                    XCTAssertTrue(false, "Failed to trust asset: \(error)")
+                                }
+
+                                e.fulfill()
+            }
+        }
+
+        wait(for: [e], timeout: 60)
+    }
+
+    func test_double_trust() {
+        let e = expectation(description: "")
+
+        guard let account = account else {
+            XCTAssertTrue(false, "Missing account!")
+
+            return
+        }
+
+        stellar.fund(account: account.publicKey!) { success in
+            if !success {
+                XCTAssertTrue(false, "Unable to fund account!")
+
+                e.fulfill()
+
+                return
+            }
+
+            self.stellar.trust(asset: self.stellar.asset,
+                               account: account,
+                               passphrase: self.passphrase) { txHash, error in
+                                if let error = error {
+                                    XCTAssertTrue(false, "Failed to trust asset: \(error)")
+
+                                    e.fulfill()
+
+                                    return
+                                }
+
+                                self.stellar.trust(asset: self.stellar.asset,
+                                                   account: account,
+                                                   passphrase: self.passphrase) { txHash, error in
+                                                    if let error = error {
+                                                        XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                                                    }
+
+                                                    e.fulfill()
+                                }
+            }
+        }
+
+        wait(for: [e], timeout: 60)
+    }
+
     func test_payment_to_untrusting_account() {
         let e = expectation(description: "")
 
@@ -115,7 +191,7 @@ class StellarKitTests: XCTestCase {
                        account: account2,
                        passphrase: self.passphrase) { txHash, error in
                         if let error = error {
-                            XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                            XCTAssertTrue(false, "Failed to trust asset: \(error)")
                             e.fulfill()
 
                             return
@@ -190,7 +266,7 @@ class StellarKitTests: XCTestCase {
                            account: account,
                               passphrase: self.passphrase) { txHash, error in
                                 if let error = error {
-                                    XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                    XCTAssertTrue(false, "Failed to trust asset: \(error)")
                                     e.fulfill()
 
                                     return
@@ -202,7 +278,7 @@ class StellarKitTests: XCTestCase {
                                               passphrase: self.passphrase) { txHash, error in
 
                                                 if let error = error {
-                                                    XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                                    XCTAssertTrue(false, "Failed to trust asset: \(error)")
                                                     e.fulfill()
 
                                                     return
@@ -269,7 +345,7 @@ class StellarKitTests: XCTestCase {
                        account: account,
                           passphrase: self.passphrase) { txHash, error in
                             if let error = error {
-                                XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                XCTAssertTrue(false, "Failed to trust asset: \(error)")
                                 e.fulfill()
 
                                 return
@@ -318,7 +394,7 @@ class StellarKitTests: XCTestCase {
                        account: account,
                           passphrase: self.passphrase) { txHash, error in
                             if let error = error {
-                                XCTAssertTrue(false, "Failed to trust KIN asset: \(error)")
+                                XCTAssertTrue(false, "Failed to trust asset: \(error)")
                                 e.fulfill()
 
                                 return

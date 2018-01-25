@@ -101,10 +101,28 @@ public class Stellar {
                       account: Account,
                       passphrase: String,
                       completion: @escaping Completion) {
-        issueTransaction(source: account,
-                         passphrase: passphrase,
-                         operations: [trustOp(asset: asset)],
-                         completion: completion)
+        guard let destination = account.publicKey else {
+            completion(nil, StellarError.missingPublicKey)
+
+            return
+        }
+
+        balance(account: destination, asset: asset) { (balance, error) in
+            if let error = error as? StellarError, case StellarError.missingAccount = error {
+                completion(nil, error)
+            }
+
+            if balance != nil {
+                completion("-na-", nil)
+
+                return
+            }
+
+            self.issueTransaction(source: account,
+                                  passphrase: passphrase,
+                                  operations: [self.trustOp(asset: asset)],
+                                  completion: completion)
+        }
     }
 
     /**
