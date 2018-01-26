@@ -183,42 +183,48 @@ public class Stellar {
     }
 
     // This is for testing only.
+    // The account used for funding exists only on test-net.
     /// :nodoc:
     public func fund(account: String, completion: @escaping (Bool) -> Void) {
-        let url = baseURL.appendingPathComponent("friendbot")
-        var comps = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        comps.query = "addr=\(account)"
+        let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
+        let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
 
-        URLSession
-            .shared
-            .dataTask(with: comps.url!, completionHandler: { (data, response, error) in
-                var success = true
+        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: funderPK)))
 
-                defer {
-                    completion(success)
-                }
+        self.sequence(account: funderPK) { sequence, error in
+            guard error == nil else {
+                completion(false)
 
-                guard
-                    let d = data,
-                    let jsonOpt = try? JSONSerialization.jsonObject(with: d,
-                                                                    options: []) as? [String: Any],
-                    let json = jsonOpt
-                    else {
-                        success = false
+                return
+            }
 
-                        return
-                }
+            guard let sequence = sequence else {
+                completion(false)
 
-                if let errorResponse = errorFromResponse(response: json) as? CreateAccountError {
-                    switch errorResponse {
-                    case .CREATE_ACCOUNT_ALREADY_EXIST:
-                        break
-                    default:
-                        success = false
-                    }
-                }
-            })
-            .resume()
+                return
+            }
+
+            let tx = Transaction(sourceAccount: sourcePK,
+                                 seqNum: sequence + 1,
+                                 timeBounds: nil,
+                                 memo: .MEMO_NONE,
+                                 operations: [self.createAccountOp(destination: account,
+                                                                   balance: 10 * 10000000)])
+
+            do {
+                let envelope = try self.sign(transaction: tx,
+                                             signer: StellarAccount(publicKey: funderPK,
+                                                                    secretKey: funderSK),
+                                             passphrase: "")
+
+                self.postTransaction(envelope: envelope, completion: { txHash, error in
+                    completion(error == nil)
+                })
+            }
+            catch {
+                completion(false)
+            }
+        }
     }
 
     // MARK: -
@@ -471,5 +477,21 @@ public class Stellar {
                 completion(hash, nil)
             })
             .resume()
+    }
+}
+
+// This is for testing only.
+/// :nodoc:
+private struct StellarAccount: Account {
+    var publicKey: String?
+    var secretKey: String
+
+    func sign(message: Data, passphrase: String) throws -> Data {
+        guard let keyPair = KeyUtils.keyPair(from: secretKey) else {
+            throw StellarError.unknownError(nil)
+        }
+
+        return try KeyUtils.sign(message: message,
+                                 signingKey: keyPair.secretKey)
     }
 }
