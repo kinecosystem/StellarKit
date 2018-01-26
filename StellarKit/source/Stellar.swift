@@ -146,38 +146,34 @@ public class Stellar {
                     return
                 }
 
-                guard
-                    let d = data,
-                    let jsonOpt = try? JSONSerialization.jsonObject(with: d,
-                                                                    options: []) as? [String: Any],
-                    let json = jsonOpt
-                    else {
-                        completion(nil, StellarError.parseError(data))
+                do {
+                    let json = try self.json(from: data)
+
+                    guard let balances = json["balances"] as? [[String: Any]] else {
+                        completion(nil, StellarError.missingAccount)
 
                         return
-                }
+                    }
 
-                guard let balances = json["balances"] as? [[String: Any]] else {
-                    completion(nil, StellarError.missingAccount)
+                    for balance in balances {
+                        if
+                            let code = balance["asset_code"] as? String,
+                            let issuer = balance["asset_issuer"] as? String,
+                            let amountStr = balance["balance"] as? String,
+                            let amount = Decimal(string: amountStr) {
+                            if code == "native" || Asset(assetCode: code, issuer: issuer) == asset ?? self.asset {
+                                completion(amount, nil)
 
-                    return
-                }
-
-                for balance in balances {
-                    if
-                        let code = balance["asset_code"] as? String,
-                        let issuer = balance["asset_issuer"] as? String,
-                        let amountStr = balance["balance"] as? String,
-                        let amount = Decimal(string: amountStr) {
-                        if code == "native" || Asset(assetCode: code, issuer: issuer) == asset ?? self.asset {
-                            completion(amount, nil)
-
-                            return
+                                return
+                            }
                         }
                     }
-                }
 
-                completion(nil, StellarError.missingBalance)
+                    completion(nil, StellarError.missingBalance)
+                }
+                catch {
+                    completion(nil, error)
+                }
             })
             .resume()
     }
@@ -344,25 +340,22 @@ public class Stellar {
                     return
                 }
 
-                guard
-                    let d = data,
-                    let jsonOpt = try? JSONSerialization.jsonObject(with: d,
-                                                                    options: []) as? [String: Any],
-                    let json = jsonOpt else {
-                        completion(nil, StellarError.parseError(data))
+                do {
+                    let json = try self.json(from: data)
 
-                        return
+                    guard
+                        let sequenceStr = json["sequence"] as? String,
+                        let sequence = UInt64(sequenceStr) else {
+                            completion(nil, StellarError.missingSequence)
+
+                            return
+                    }
+
+                    completion(sequence, nil)
                 }
-
-                guard
-                    let sequenceStr = json["sequence"] as? String,
-                    let sequence = UInt64(sequenceStr) else {
-                        completion(nil, StellarError.missingSequence)
-
-                        return
+                catch {
+                    completion(nil, error)
                 }
-
-                completion(sequence, nil)
             })
             .resume()
     }
@@ -451,32 +444,40 @@ public class Stellar {
                     return
                 }
 
-                guard
-                    let d = data,
-                    let jsonOpt = try? JSONSerialization.jsonObject(with: d,
-                                                                    options: []) as? [String: Any],
-                    let json = jsonOpt
-                    else {
-                        completion(nil, StellarError.parseError(data))
+                do {
+                    let json = try self.json(from: data)
+
+                    if let resultError = errorFromResponse(response: json) {
+                        completion(nil, resultError)
 
                         return
+                    }
+
+                    guard let hash = json["hash"] as? String else {
+                        completion(nil, StellarError.missingHash)
+                        
+                        return
+                    }
+
+                    completion(hash, nil)
                 }
-
-                if let resultError = errorFromResponse(response: json) {
-                    completion(nil, resultError)
-
-                    return
+                catch {
+                    completion(nil, error)
                 }
-
-                guard let hash = json["hash"] as? String else {
-                    completion(nil, StellarError.missingHash)
-
-                    return
-                }
-
-                completion(hash, nil)
             })
             .resume()
+    }
+
+    private func json(from data: Data?) throws -> [String: Any] {
+        guard let d = data,
+            let jsonOpt = try? JSONSerialization.jsonObject(with: d,
+                                                            options: []) as? [String: Any],
+            let json = jsonOpt
+            else {
+                throw StellarError.parseError(data)
+        }
+
+        return json
     }
 }
 
