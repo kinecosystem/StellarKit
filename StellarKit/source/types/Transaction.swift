@@ -35,7 +35,7 @@ enum Memo: XDRCodable {
         }
     }
 
-    func discriminant() -> Int32 {
+    private func discriminant() -> Int32 {
         switch self {
         case .MEMO_NONE: return MemoType.MEMO_NONE
         case .MEMO_TEXT: return MemoType.MEMO_TEXT
@@ -116,7 +116,7 @@ struct TransactionSignaturePayload: XDREncodableStruct {
     enum TaggedTransaction: XDREncodable {
         case ENVELOPE_TYPE_TX (Transaction)
 
-        func discriminant() -> Int32 {
+        private func discriminant() -> Int32 {
             switch self {
             case .ENVELOPE_TYPE_TX: return EnvelopeType.ENVELOPE_TYPE_TX
             }

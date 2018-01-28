@@ -59,7 +59,7 @@ public struct Operation: XDREncodableStruct, XDRDecodable {
             }
         }
         
-        func discriminant() -> Int32 {
+        private func discriminant() -> Int32 {
             switch self {
             case .CREATE_ACCOUNT: return OperationType.CREATE_ACCOUNT
             case .PAYMENT: return OperationType.PAYMENT

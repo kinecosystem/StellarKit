@@ -19,6 +19,28 @@ public enum Asset: XDRCodable, Equatable {
     case ASSET_TYPE_CREDIT_ALPHANUM4 (Alpha4)
     case ASSET_TYPE_CREDIT_ALPHANUM12 (Alpha12)
 
+    var assetCode: String {
+        switch self {
+        case .ASSET_TYPE_NATIVE:
+            return "native"
+        case .ASSET_TYPE_CREDIT_ALPHANUM4(let a4):
+            return String(bytes: a4.assetCode.wrapped, encoding: .utf8) ?? ""
+        case .ASSET_TYPE_CREDIT_ALPHANUM12(let a12):
+            return String(bytes: a12.assetCode.wrapped, encoding: .utf8) ?? ""
+        }
+    }
+
+    var issuer: String? {
+        switch self {
+        case .ASSET_TYPE_NATIVE:
+            return nil
+        case .ASSET_TYPE_CREDIT_ALPHANUM4(let a4):
+            return a4.issuer.publicKey
+        case .ASSET_TYPE_CREDIT_ALPHANUM12(let a12):
+            return a12.issuer.publicKey
+        }
+    }
+    
     public init?(assetCode: String, issuer: String) {
         if assetCode.count <= 4 {
             guard var codeData = assetCode.data(using: .utf8) else {
@@ -102,7 +124,7 @@ public enum Asset: XDRCodable, Equatable {
         }
     }
 
-    func discriminant() -> Int32 {
+    private func discriminant() -> Int32 {
         switch self {
         case .ASSET_TYPE_NATIVE: return AssetType.ASSET_TYPE_NATIVE
         case .ASSET_TYPE_CREDIT_ALPHANUM4: return AssetType.ASSET_TYPE_CREDIT_ALPHANUM4

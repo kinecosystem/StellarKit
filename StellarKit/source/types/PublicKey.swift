@@ -21,13 +21,21 @@ struct PublicKeyType {
 enum PublicKey: XDRCodable, Equatable {
     case PUBLIC_KEY_TYPE_ED25519 (FixedLengthDataWrapper)
 
+    var publicKey: String? {
+        if case .PUBLIC_KEY_TYPE_ED25519(let wrapper) = self {
+            return KeyUtils.base32(publicKey: wrapper.wrapped)
+        }
+
+        return nil
+    }
+
     init(xdrData: inout Data, count: Int32 = 0) {
         _ = Int32(xdrData: &xdrData)
 
         self = .PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 32)))
     }
     
-    func discriminant() -> Int32 {
+    private func discriminant() -> Int32 {
         switch self {
         case .PUBLIC_KEY_TYPE_ED25519: return PublicKeyType.PUBLIC_KEY_TYPE_ED25519
         }

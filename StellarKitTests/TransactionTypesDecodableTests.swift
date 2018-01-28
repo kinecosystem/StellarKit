@@ -112,4 +112,56 @@ class TransactionTypesDecodableTests: XCTestCase {
         XCTAssertEqual(xdr1, xdr2)
     }
 
+    func testMock() {
+        URLProtocol.registerClass(HTTPMock.self)
+
+        let key = "GANMSMOCHLLHKIWHV2MOC7TVPRNK22UT2CNZGYVRAQOTOHCKJZS5I2JQ"
+        let asset = Asset(assetCode: "TEST", issuer: key)!
+
+        let hz = HorizonMock()
+
+        hz.inject(account: MockAccount(balances: [Balance(asset: asset, amount: 123)]), key: key)
+
+        let funderBalances = [
+            Balance(asset: asset, amount: 10000000),
+            Balance(asset: .ASSET_TYPE_NATIVE, amount: 1000000000)
+        ]
+
+        hz.inject(account: MockAccount(balances: funderBalances),
+                  key: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")
+
+        let s = Stellar(baseURL: URL(string: "https://horizon")!, asset: asset)
+
+        let e = expectation(description: "")
+
+        s.fund(account: "GCJBAMWZPFLO3E37I2SMJ7GCSI7JKK7XEAVFPIHSFFCQ3BMS6SZIO7TN") { success in
+            print(success)
+            
+            s.fund(account: "GCJBAMWZPFLO3E37I2SMJ7GCSI7JKK7XEAVFPIHSFFCQ3BMS6SZIO7TN") { success in
+                print(success)
+
+                e.fulfill()
+            }
+        }
+
+//        s.payment(source: MockStellarAccount(seedStr: "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"),
+//                  destination: key,
+//                  amount: 100,
+//                  passphrase: "") { txHash, error in
+//                    print(String(describing: txHash))
+//                    print(String(describing: error))
+//
+//                    e.fulfill()
+//        }
+
+//        s.balance(account: key, asset: asset) { balance, error in
+//            print(String(describing: balance))
+//            print(String(describing: error))
+//
+//            e.fulfill()
+//        }
+
+        wait(for: [e], timeout: 100.0)
+    }
 }
+

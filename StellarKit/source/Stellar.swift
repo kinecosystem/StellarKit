@@ -155,13 +155,16 @@ public class Stellar {
                         return
                     }
 
+                    let asset = asset ?? self.asset
+
                     for balance in balances {
                         if
                             let code = balance["asset_code"] as? String,
                             let amountStr = balance["balance"] as? String,
                             let amount = Decimal(string: amountStr) {
                             let issuer = balance["asset_issuer"] as? String ?? ""
-                            if code == "native" || Asset(assetCode: code, issuer: issuer) == asset ?? self.asset {
+                            if (code == "native" && asset.assetCode == "native") ||
+                                Asset(assetCode: code, issuer: issuer) == asset {
                                 completion(amount, nil)
 
                                 return

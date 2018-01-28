@@ -1,5 +1,5 @@
 //
-//  StellarKitTests.swift
+//  StellarUnitTests.swift
 //  StellarKitTests
 //
 //  Created by Kin Foundation
@@ -9,52 +9,66 @@
 import XCTest
 @testable import StellarKit
 
-class StellarKitTests: XCTestCase {
+struct MockStellarAccount: Account {
+    var publicKey: String? {
+        return KeyUtils.base32(publicKey: keyPair.publicKey)
+    }
+
+    let keyPair: Sign.KeyPair
+
+    init(seedStr: String) {
+        keyPair = KeyUtils.keyPair(from: seedStr)!
+    }
+
+    func sign(message: Data, passphrase: String) throws -> Data {
+        return try KeyUtils.sign(message: message,
+                                 signingKey: keyPair.secretKey)
+    }
+}
+
+class StellarUnitTests: XCTestCase {
     let passphrase = "a phrase"
 
-    let stellar = Stellar(baseURL: URL(string: "https://horizon-testnet.stellar.org")!,
+    var horizonMock: HorizonMock? = nil
+
+    let kinAsset = Asset(assetCode: "KIN",
+                         issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")!
+
+    let stellar = Stellar(baseURL: URL(string: "https://horizon")!,
                           asset: Asset(assetCode: "KIN",
-                                       issuer: "GBOJSMAO3YZ3CQYUJOUWWFV37IFLQVNVKHVRQDEJ4M3O364H5FEGGMBH"))
-    var account: StellarAccount?
-    var account2: StellarAccount?
-    var issuer: StellarAccount?
+                                       issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"))
+    
+    var account = MockStellarAccount(seedStr: "SBVUHZRTCKG7NS54KIEFGEWSW7VS6YRGSRSH3S5GNQ52GUVE7RM4KPEH")
+    var account2 = MockStellarAccount(seedStr: "SCXKOLLQIAODKV6PXNAH4ZZWKIPK3DUAWUAGEC7I6HEL4Y7ZCWOUWWLU")
+    var issuer = MockStellarAccount(seedStr: "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35")
+
+    var registered = false
 
     override func setUp() {
         super.setUp()
 
-        KeyStore.removeAll()
-
-        if KeyStore.count() > 0 {
-            XCTAssertTrue(false, "Unable to clear existing accounts!")
+        if !registered {
+            URLProtocol.registerClass(HTTPMock.self)
+            registered = true
         }
 
-        self.account = try? KeyStore.newAccount(passphrase: passphrase)
-        self.account2 = try? KeyStore.newAccount(passphrase: passphrase)
+        horizonMock = HorizonMock()
 
-        if account == nil || account2 == nil {
-            XCTAssertTrue(false, "Unable to create account(s)!")
-        }
+        let nBalance = Balance(asset: .ASSET_TYPE_NATIVE, amount: 10000000)
+        let kBalance = Balance(asset: kinAsset, amount: 10000000)
 
-        issuer = try? KeyStore.importSecretSeed("SCML43HASLG5IIN34KCJLDQ6LPWYQ3HIROP5CRBHVC46YRMJ6QLOYQJS",
-                                                passphrase: passphrase)
-
-        if issuer == nil {
-            XCTAssertTrue(false, "Unable to import issuer account!")
-        }
+        horizonMock?.inject(account: MockAccount(balances: [nBalance, kBalance]),
+                            key: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")
     }
     
     override func tearDown() {
+        horizonMock = nil
+
         super.tearDown()
     }
 
     func test_trust() {
         let e = expectation(description: "")
-
-        guard let account = account else {
-            XCTAssertTrue(false, "Missing account!")
-
-            return
-        }
 
         self.stellar.fund(account: account.publicKey!) { success in
             if !success {
@@ -66,7 +80,7 @@ class StellarKitTests: XCTestCase {
             }
 
             self.stellar.trust(asset: self.stellar.asset,
-                               account: account,
+                               account: self.account,
                                passphrase: self.passphrase) { txHash, error in
                                 if let error = error {
                                     XCTAssertTrue(false, "Failed to trust asset: \(error)")
@@ -82,12 +96,6 @@ class StellarKitTests: XCTestCase {
     func test_double_trust() {
         let e = expectation(description: "")
 
-        guard let account = account else {
-            XCTAssertTrue(false, "Missing account!")
-
-            return
-        }
-
         stellar.fund(account: account.publicKey!) { success in
             if !success {
                 XCTAssertTrue(false, "Unable to fund account!")
@@ -98,7 +106,7 @@ class StellarKitTests: XCTestCase {
             }
 
             self.stellar.trust(asset: self.stellar.asset,
-                               account: account,
+                               account: self.account,
                                passphrase: self.passphrase) { txHash, error in
                                 if let error = error {
                                     XCTAssertTrue(false, "Failed to trust asset: \(error)")
@@ -109,7 +117,7 @@ class StellarKitTests: XCTestCase {
                                 }
 
                                 self.stellar.trust(asset: self.stellar.asset,
-                                                   account: account,
+                                                   account: self.account,
                                                    passphrase: self.passphrase) { txHash, error in
                                                     if let error = error {
                                                         XCTAssertTrue(false, "Received unexpected error: \(error)!")
@@ -125,15 +133,6 @@ class StellarKitTests: XCTestCase {
 
     func test_payment_to_untrusting_account() {
         let e = expectation(description: "")
-
-        guard
-            let account = account,
-            let account2 = account2
-            else {
-                XCTAssertTrue(false, "Missing account(s)!")
-
-                return
-        }
 
         stellar.payment(source: account,
                         destination: account2.publicKey!,
@@ -167,15 +166,6 @@ class StellarKitTests: XCTestCase {
     func test_payment_from_unfunded_account() {
         let e = expectation(description: "")
 
-        guard
-            let account = account,
-            let account2 = account2
-            else {
-                XCTAssertTrue(false, "Missing account(s)!")
-
-                return
-        }
-
         stellar.fund(account: account2.publicKey!) { success in
             if !success {
                 XCTAssertTrue(false, "Unable to fund account!")
@@ -188,7 +178,7 @@ class StellarKitTests: XCTestCase {
             self
                 .stellar
                 .trust(asset: self.stellar.asset,
-                       account: account2,
+                       account: self.account2,
                        passphrase: self.passphrase) { txHash, error in
                         if let error = error {
                             XCTAssertTrue(false, "Failed to trust asset: \(error)")
@@ -199,8 +189,8 @@ class StellarKitTests: XCTestCase {
 
                         self
                             .stellar
-                            .payment(source: account,
-                                     destination: account2.publicKey!,
+                            .payment(source: self.account,
+                                     destination: self.account2.publicKey!,
                                      amount: 1,
                                      passphrase: self.passphrase) { txHash, error in
                                         defer {
@@ -234,15 +224,6 @@ class StellarKitTests: XCTestCase {
         let e = expectation(description: "")
         let stellar = self.stellar
 
-        guard
-            let account = account,
-            let account2 = account2
-            else {
-                XCTAssertTrue(false, "Missing account(s)!")
-
-                return
-        }
-
         stellar.fund(account: account.publicKey!) { success in
             if !success {
                 XCTAssertTrue(false, "Unable to fund account!")
@@ -252,7 +233,7 @@ class StellarKitTests: XCTestCase {
                 return
             }
 
-            stellar.fund(account: account2.publicKey!) { success in
+            stellar.fund(account: self.account2.publicKey!) { success in
                 if !success {
                     XCTAssertTrue(false, "Unable to fund account!")
 
@@ -263,7 +244,7 @@ class StellarKitTests: XCTestCase {
 
                 stellar
                     .trust(asset: stellar.asset,
-                           account: account,
+                           account: self.account,
                               passphrase: self.passphrase) { txHash, error in
                                 if let error = error {
                                     XCTAssertTrue(false, "Failed to trust asset: \(error)")
@@ -274,9 +255,8 @@ class StellarKitTests: XCTestCase {
 
                                 stellar
                                     .trust(asset: stellar.asset,
-                                           account: account2,
+                                           account: self.account2,
                                               passphrase: self.passphrase) { txHash, error in
-
                                                 if let error = error {
                                                     XCTAssertTrue(false, "Failed to trust asset: \(error)")
                                                     e.fulfill()
@@ -285,8 +265,8 @@ class StellarKitTests: XCTestCase {
                                                 }
 
                                                 stellar
-                                                    .payment(source: account,
-                                                             destination: account2.publicKey!,
+                                                    .payment(source: self.account,
+                                                             destination: self.account2.publicKey!,
                                                              amount: 1,
                                                              passphrase: self.passphrase) { txHash, error in
                                                                 defer {
@@ -322,15 +302,6 @@ class StellarKitTests: XCTestCase {
         let e = expectation(description: "")
         let stellar = self.stellar
 
-        guard
-            let account = account,
-            let issuer = issuer
-            else {
-                XCTAssertTrue(false, "Missing account(s)!")
-
-                return
-        }
-
         stellar.fund(account: account.publicKey!) { success in
             if !success {
                 XCTAssertTrue(false, "Unable to fund account!")
@@ -342,7 +313,7 @@ class StellarKitTests: XCTestCase {
 
             stellar
                 .trust(asset: stellar.asset,
-                       account: account,
+                       account: self.account,
                           passphrase: self.passphrase) { txHash, error in
                             if let error = error {
                                 XCTAssertTrue(false, "Failed to trust asset: \(error)")
@@ -352,8 +323,8 @@ class StellarKitTests: XCTestCase {
                             }
 
                             stellar
-                                .payment(source: issuer,
-                                         destination: account.publicKey!,
+                                .payment(source: self.issuer,
+                                         destination: self.account.publicKey!,
                                          amount: 1,
                                          passphrase: self.passphrase) { txHash, error in
                                             defer {
@@ -372,14 +343,6 @@ class StellarKitTests: XCTestCase {
         let e = expectation(description: "")
         let stellar = self.stellar
 
-        guard
-            let account = account
-            else {
-                XCTAssertTrue(false, "Missing account(s)!")
-
-                return
-        }
-
         stellar.fund(account: account.publicKey!) { success in
             if !success {
                 XCTAssertTrue(false, "Unable to fund account!")
@@ -391,7 +354,7 @@ class StellarKitTests: XCTestCase {
 
             stellar
                 .trust(asset: stellar.asset,
-                       account: account,
+                       account: self.account,
                           passphrase: self.passphrase) { txHash, error in
                             if let error = error {
                                 XCTAssertTrue(false, "Failed to trust asset: \(error)")
@@ -400,7 +363,7 @@ class StellarKitTests: XCTestCase {
                                 return
                             }
 
-                            stellar.balance(account: account.publicKey!, completion: { balance, error in
+                            stellar.balance(account: self.account.publicKey!, completion: { balance, error in
                                 defer {
                                     e.fulfill()
                                 }

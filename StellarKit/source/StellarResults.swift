@@ -26,12 +26,12 @@ struct TransactionResultCode {
     static let txINTERNAL_ERROR: Int32 = -11      // an unknown error occured
 }
 
-struct TransactionResult: XDRDecodable {
+struct TransactionResult: XDREncodableStruct, XDRDecodable {
     let feeCharged: Int64
     let result: Result
     let reserved: Int32 = 0
 
-    enum Result: XDRDecodable {
+    enum Result: XDRCodable {
         case txSUCCESS ([OperationResult])
         case txFAILED ([OperationResult])
         case txERROR (Int32)
@@ -48,9 +48,37 @@ struct TransactionResult: XDRDecodable {
                 self = .txERROR(discriminant)
             }
         }
+
+        private func discriminant() -> Int32 {
+            switch self {
+            case .txSUCCESS: return TransactionResultCode.txSUCCESS
+            case .txFAILED: return TransactionResultCode.txFAILED
+            case .txERROR (let code): return code
+            }
+        }
+
+        func toXDR(count: Int32 = 0) -> Data {
+            var xdr = discriminant().toXDR()
+
+            switch self {
+            case .txSUCCESS (let opResults):
+                xdr.append(opResults.toXDR())
+            case .txFAILED (let opResults):
+                xdr.append(opResults.toXDR())
+            case .txERROR:
+                break
+            }
+
+            return xdr
+        }
     }
 
-    init(xdrData: inout Data, count: Int32) {
+    init(feeCharged: Int64, result: Result) {
+        self.feeCharged = feeCharged
+        self.result = result
+    }
+
+    init(xdrData: inout Data, count: Int32 = 0) {
         self.feeCharged = Int64(xdrData: &xdrData)
         self.result = Result(xdrData: &xdrData, count: 0)
     }
@@ -63,14 +91,15 @@ struct OperationResultCode {
     static let opNO_ACCOUNT: Int32 = -2 // source account was not found
 }
 
-enum OperationResult: XDRDecodable {
+enum OperationResult: XDRCodable {
     case opINNER (Tr)
     case opBAD_AUTH
     case opNO_ACCOUNT
 
     // Add cases as necessary.
-    enum Tr: XDRDecodable {
+    enum Tr: XDRCodable {
         case CREATE_ACCOUNT (CreateAccountResult)
+        case CHANGE_TRUST (ChangeTrustResult)
         case PAYMENT (PaymentResult)
         case unknown
 
@@ -79,12 +108,37 @@ enum OperationResult: XDRDecodable {
 
             switch discriminant {
             case OperationType.PAYMENT:
-                self = .PAYMENT(PaymentResult(xdrData: &xdrData, count: 0))
+                self = .PAYMENT(PaymentResult(xdrData: &xdrData))
             case OperationType.CREATE_ACCOUNT:
-                self = .CREATE_ACCOUNT(CreateAccountResult(xdrData: &xdrData, count: 0))
+                self = .CREATE_ACCOUNT(CreateAccountResult(xdrData: &xdrData))
+            case OperationType.CHANGE_TRUST:
+                self = .CHANGE_TRUST(ChangeTrustResult(xdrData: &xdrData))
             default:
                 self = .unknown
             }
+        }
+
+        private func discriminant() -> Int32 {
+            switch self {
+            case .CREATE_ACCOUNT: return OperationType.CREATE_ACCOUNT
+            case .PAYMENT: return OperationType.PAYMENT
+            default: return -1
+            }
+        }
+
+        func toXDR(count: Int32 = 0) -> Data {
+            var xdr = discriminant().toXDR()
+
+            switch self {
+            case .CREATE_ACCOUNT (let result):
+                xdr.append(result.toXDR())
+            case .PAYMENT (let result):
+                xdr.append(result.toXDR())
+            default:
+                break
+            }
+
+            return xdr
         }
     }
 
@@ -102,9 +156,33 @@ enum OperationResult: XDRDecodable {
             self = .opNO_ACCOUNT
         }
     }
+
+    private func discriminant() -> Int32 {
+        switch self {
+        case .opINNER: return OperationResultCode.opINNER
+        case .opBAD_AUTH: return OperationResultCode.opBAD_AUTH
+        case .opNO_ACCOUNT: return OperationResultCode.opNO_ACCOUNT
+        }
+    }
+
+    func toXDR(count: Int32 = 0) -> Data {
+        var xdr = discriminant().toXDR()
+        switch self {
+        case .opINNER (let tr):
+            xdr.append(tr.toXDR())
+        case .opBAD_AUTH:
+            break
+        case .opNO_ACCOUNT:
+            break
+        }
+
+        return xdr
+    }
 }
 
 struct CreateAccountResultCode {
+    static let CREATE_ACCOUNT_SUCCESS: Int32 = 0        // account was created
+
     static let CREATE_ACCOUNT_MALFORMED: Int32 = -1     // invalid destination
     static let CREATE_ACCOUNT_UNDERFUNDED: Int32 = -2   // not enough funds in source account
     static let CREATE_ACCOUNT_LOW_RESERVE: Int32 = -3   // would create an account below the min reserve
@@ -115,7 +193,54 @@ enum CreateAccountResult: XDRDecodable {
     case success
     case failure (Int32)
 
-    init(xdrData: inout Data, count: Int32) {
+    private func discriminant() -> Int32 {
+        switch self {
+        case .success:
+            return CreateAccountResultCode.CREATE_ACCOUNT_SUCCESS
+        case .failure (let code):
+            return code
+        }
+    }
+
+    func toXDR(count: Int32 = 0) -> Data {
+        return discriminant().toXDR(count:0)
+    }
+
+    init(xdrData: inout Data, count: Int32 = 0) {
+        let value = Int32(xdrData: &xdrData)
+
+        self = value == 0 ? .success : .failure(value)
+    }
+}
+
+struct ChangeTrustResultCode {
+    static let CHANGE_TRUST_SUCCESS: Int32 = 0
+
+    static let CHANGE_TRUST_MALFORMED: Int32 = -1           // bad input
+    static let CHANGE_TRUST_NO_ISSUER: Int32 = -2           // could not find issuer
+    static let CHANGE_TRUST_INVALID_LIMIT: Int32 = -3       // cannot drop limit below balance
+    static let CHANGE_TRUST_LOW_RESERVE: Int32 = -4         // not enough funds to create a new trust line,
+    static let CHANGE_TRUST_SELF_NOT_ALLOWED: Int32 = -5    // trusting self is not allowed
+};
+
+enum ChangeTrustResult: XDRDecodable {
+    case success
+    case failure (Int32)
+
+    private func discriminant() -> Int32 {
+        switch self {
+        case .success:
+            return ChangeTrustResultCode.CHANGE_TRUST_SUCCESS
+        case .failure (let code):
+            return code
+        }
+    }
+
+    func toXDR(count: Int32 = 0) -> Data {
+        return discriminant().toXDR(count:0)
+    }
+
+    init(xdrData: inout Data, count: Int32 = 0) {
         let value = Int32(xdrData: &xdrData)
 
         self = value == 0 ? .success : .failure(value)
@@ -151,11 +276,11 @@ enum PaymentResult: XDRDecodable {
         }
     }
 
-    func toXDR(count: Int32) -> Data {
+    func toXDR(count: Int32 = 0) -> Data {
         return discriminant().toXDR(count:0)
     }
 
-    init(xdrData: inout Data, count: Int32) {
+    init(xdrData: inout Data, count: Int32 = 0) {
         let value = Int32(xdrData: &xdrData)
 
         self = value == 0 ? .success : .failure(value)
