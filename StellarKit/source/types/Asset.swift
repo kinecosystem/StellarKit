@@ -110,7 +110,7 @@ public enum Asset: XDREncodable, Equatable {
     func isEqual(asset: Asset) -> Bool {
         switch self {
         case .ASSET_TYPE_NATIVE:
-            return asset == .ASSET_TYPE_NATIVE
+            return asset.discriminant() == self.discriminant()
         case .ASSET_TYPE_CREDIT_ALPHANUM4(let v1):
             if case .ASSET_TYPE_CREDIT_ALPHANUM4(let v2) = asset {
                 return v1 == v2
