@@ -22,15 +22,43 @@ struct OperationType {
     static let MANAGE_DATA: Int32 = 10
 }
 
-public struct Operation: XDREncodableStruct {
+public struct Operation: XDREncodableStruct, XDRDecodable {
     let sourceAccount: PublicKey?
     let body: Body
 
-    enum Body: XDREncodable {
+    init(sourceAccount: PublicKey?, body: Body) {
+        self.sourceAccount = sourceAccount
+        self.body = body
+    }
+
+    public init(xdrData: inout Data, count: Int32 = 0) {
+        // Decoding ops with a source account not currently supported
+        _ = Int32(xdrData: &xdrData)
+
+        sourceAccount = nil
+        body = Body(xdrData: &xdrData)
+    }
+
+    enum Body: XDRCodable {
         case CREATE_ACCOUNT (CreateAccountOp)
         case PAYMENT (PaymentOp)
         case CHANGE_TRUST (ChangeTrustOp)
 
+        init(xdrData: inout Data, count: Int32 = 0) {
+            let discriminant = Int32(xdrData: &xdrData)
+
+            switch discriminant {
+            case OperationType.CREATE_ACCOUNT:
+                self = .CREATE_ACCOUNT(CreateAccountOp(xdrData: &xdrData))
+            case OperationType.CHANGE_TRUST:
+                self = .CHANGE_TRUST(ChangeTrustOp(xdrData: &xdrData))
+            case OperationType.PAYMENT:
+                self = .PAYMENT(PaymentOp(xdrData: &xdrData))
+            default:
+                self = .CREATE_ACCOUNT(CreateAccountOp(xdrData: &xdrData))
+            }
+        }
+        
         func discriminant() -> Int32 {
             switch self {
             case .CREATE_ACCOUNT: return OperationType.CREATE_ACCOUNT

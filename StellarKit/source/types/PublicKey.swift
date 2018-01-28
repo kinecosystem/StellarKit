@@ -18,9 +18,15 @@ struct PublicKeyType {
     static let PUBLIC_KEY_TYPE_ED25519 = CryptoKeyType.KEY_TYPE_ED25519
 }
 
-enum PublicKey: XDREncodable, Equatable {
+enum PublicKey: XDRCodable, Equatable {
     case PUBLIC_KEY_TYPE_ED25519 (FixedLengthDataWrapper)
 
+    init(xdrData: inout Data, count: Int32 = 0) {
+        _ = Int32(xdrData: &xdrData)
+
+        self = .PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 32)))
+    }
+    
     func discriminant() -> Int32 {
         switch self {
         case .PUBLIC_KEY_TYPE_ED25519: return PublicKeyType.PUBLIC_KEY_TYPE_ED25519

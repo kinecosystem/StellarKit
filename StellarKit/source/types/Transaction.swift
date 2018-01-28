@@ -16,12 +16,24 @@ struct MemoType {
     static let MEMO_RETURN: Int32 = 4
 }
 
-enum Memo: XDREncodable {
+enum Memo: XDRCodable {
     case MEMO_NONE
     case MEMO_TEXT (String)
     case MEMO_ID (UInt64)
     case MEMO_HASH (FixedLengthDataWrapper)
     case MEMO_RETURN (FixedLengthDataWrapper)
+
+    init(xdrData: inout Data, count: Int32 = 0) {
+        let discriminant = Int32(xdrData: &xdrData)
+
+        switch discriminant {
+        case MemoType.MEMO_NONE:
+            self = .MEMO_NONE
+        // Insert other cases as support is required.
+        default:
+            self = .MEMO_NONE
+        }
+    }
 
     func discriminant() -> Int32 {
         switch self {
@@ -53,7 +65,7 @@ struct TimeBounds: XDREncodableStruct {
     let maxTime: UInt64
 }
 
-public struct Transaction: XDREncodableStruct {
+public struct Transaction: XDREncodableStruct, XDRDecodable {
     let sourceAccount: PublicKey
     let fee: UInt32
     let seqNum: UInt64
@@ -74,6 +86,20 @@ public struct Transaction: XDREncodableStruct {
         self.operations = operations
 
         self.fee = UInt32(100 * operations.count)
+    }
+
+    public init(xdrData: inout Data, count: Int32 = 0) {
+        sourceAccount = PublicKey(xdrData: &xdrData)
+        fee = UInt32(xdrData: &xdrData)
+        seqNum = UInt64(xdrData: &xdrData)
+
+        _ = Int32(xdrData: &xdrData)
+        timeBounds = nil
+
+        memo = Memo(xdrData: &xdrData)
+        operations = Array<Operation>(xdrData: &xdrData)
+
+        _ = Int32(xdrData: &xdrData)
     }
 }
 
@@ -108,12 +134,32 @@ struct TransactionSignaturePayload: XDREncodableStruct {
     }
 }
 
-struct DecoratedSignature: XDREncodableStruct {
+struct DecoratedSignature: XDREncodableStruct, XDRDecodable {
     let hint: FixedLengthDataWrapper;
     let signature: Data
+
+    init(hint: FixedLengthDataWrapper, signature: Data) {
+        self.hint = hint
+        self.signature = signature
+    }
+
+    init(xdrData: inout Data, count: Int32 = 0) {
+        hint = FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 4))
+        signature = Data(xdrData: &xdrData)
+    }
 }
 
-public struct TransactionEnvelope: XDREncodableStruct {
+public struct TransactionEnvelope: XDREncodableStruct, XDRDecodable {
     let tx: Transaction
     let signatures: [DecoratedSignature]
+
+    init(tx: Transaction, signatures: [DecoratedSignature]) {
+        self.tx = tx
+        self.signatures = signatures
+    }
+
+    public init(xdrData: inout Data, count: Int32 = 0) {
+        tx = Transaction(xdrData: &xdrData)
+        signatures = Array<DecoratedSignature>(xdrData: &xdrData)
+    }
 }

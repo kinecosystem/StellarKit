@@ -14,7 +14,7 @@ struct AssetType {
     static let ASSET_TYPE_CREDIT_ALPHANUM12: Int32 = 2
 }
 
-public enum Asset: XDREncodable, Equatable {
+public enum Asset: XDRCodable, Equatable {
     case ASSET_TYPE_NATIVE
     case ASSET_TYPE_CREDIT_ALPHANUM4 (Alpha4)
     case ASSET_TYPE_CREDIT_ALPHANUM12 (Alpha12)
@@ -53,6 +53,25 @@ public enum Asset: XDREncodable, Equatable {
         }
 
         return nil
+    }
+
+    public init(xdrData: inout Data, count: Int32 = 0) {
+        let discriminant = Int32(xdrData: &xdrData)
+
+        switch discriminant {
+        case AssetType.ASSET_TYPE_NATIVE:
+            self = .ASSET_TYPE_NATIVE
+        case AssetType.ASSET_TYPE_CREDIT_ALPHANUM4:
+            self = .ASSET_TYPE_CREDIT_ALPHANUM4(Alpha4(
+                assetCode: FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 4)),
+                issuer: PublicKey(xdrData: &xdrData)))
+        case AssetType.ASSET_TYPE_CREDIT_ALPHANUM12:
+            self = .ASSET_TYPE_CREDIT_ALPHANUM12(Alpha12(
+                assetCode: FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 12)),
+                issuer: PublicKey(xdrData: &xdrData)))
+        default:
+            self = .ASSET_TYPE_NATIVE
+        }
     }
 
     public struct Alpha4: XDREncodableStruct, Equatable {

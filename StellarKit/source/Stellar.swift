@@ -79,7 +79,7 @@ public class Stellar {
 
             let op = self.paymentOp(destination: destination,
                                     amount: amount,
-                                    source: source,
+                                    source: nil,
                                     asset: asset)
 
             self.issueTransaction(source: source,
