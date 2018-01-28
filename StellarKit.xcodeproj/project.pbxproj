@@ -27,6 +27,7 @@
 		824063B420147DCD0055D70A /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AF20147DCD0055D70A /* PublicKey.swift */; };
 		824063B520147DCD0055D70A /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063B020147DCD0055D70A /* Transaction.swift */; };
 		824063B720147DDA0055D70A /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063B620147DDA0055D70A /* KeyStore.swift */; };
+		824063F5201DFC760055D70A /* TransactionTypesDecodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063F4201DFC760055D70A /* TransactionTypesDecodableTests.swift */; };
 		82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB892002A2880010E31F /* XDRTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		E96F241B2013D6C60017EF68 /* KeychainSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24162013D6C60017EF68 /* KeychainSwift.swift */; };
@@ -157,6 +158,7 @@
 		824063AF20147DCD0055D70A /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
 		824063B020147DCD0055D70A /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		824063B620147DDA0055D70A /* KeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
+		824063F4201DFC760055D70A /* TransactionTypesDecodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTypesDecodableTests.swift; sourceTree = "<group>"; };
 		82ECAB892002A2880010E31F /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		E96F24162013D6C60017EF68 /* KeychainSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwift.swift; sourceTree = "<group>"; };
@@ -311,6 +313,7 @@
 			children = (
 				82340BAA1FFDF2DA0034204F /* StellarKitTests.swift */,
 				82ECAB892002A2880010E31F /* XDRTests.swift */,
+				824063F4201DFC760055D70A /* TransactionTypesDecodableTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
 				824063B620147DDA0055D70A /* KeyStore.swift */,
 			);
@@ -728,6 +731,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				824063F5201DFC760055D70A /* TransactionTypesDecodableTests.swift in Sources */,
 				82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */,
 				824063B720147DDA0055D70A /* KeyStore.swift in Sources */,
 				82340BAB1FFDF2DA0034204F /* StellarKitTests.swift in Sources */,
