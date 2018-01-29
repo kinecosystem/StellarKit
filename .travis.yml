@@ -1,0 +1,7 @@
+language: swift
+osx_image: xcode9.2
+xcode_project: StellarKit.xcodeproj
+xcode_scheme: StellarKit
+xcode_sdk: iphonesimulator8.4
+script:
+  - xcodebuild test -scheme StellarKit -destination 'platform=iOS Simulator,name=iPhone 8 Plus'
