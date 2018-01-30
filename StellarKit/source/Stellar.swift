@@ -14,8 +14,6 @@ public protocol Account {
     func sign(message: Data, passphrase: String) throws -> Data
 }
 
-public typealias Completion = (String?, Error?) -> Void
-
 /**
  `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
  supporting non-native assets.
@@ -55,37 +53,24 @@ public class Stellar {
      - parameter amount: The amount to be sent.
      - parameter passphrase: The passphrase which will unlock the secret key of the sender.
      - parameter asset: The `Asset` to be sent.  Defaults to the `Asset` specified in the initializer.
-     - parameter completion: A block which will receive the results of the payment attempt.
+
+     - Returns: A promise which will be signalled with the result of the operation.
      */
     public func payment(source: Account,
                         destination: String,
                         amount: Int64,
                         passphrase: String,
-                        asset: Asset? = nil,
-                        completion: @escaping Completion) {
-        balance(account: destination, asset: asset) { (balance, error) in
-            if let error = error as? StellarError {
-                switch error {
-                case .missingBalance: fallthrough
-                case .missingAccount:
-                    completion(nil, StellarError.destinationNotReadyForAsset(error, asset ?? self.asset))
+                        asset: Asset? = nil) -> Promise {
+        return balance(account: destination, asset: asset)
+            .then { _ -> Promise in
+                let op = self.paymentOp(destination: destination,
+                                        amount: amount,
+                                        source: nil,
+                                        asset: asset)
 
-                    return
-
-                default:
-                    break
-                }
-            }
-
-            let op = self.paymentOp(destination: destination,
-                                    amount: amount,
-                                    source: nil,
-                                    asset: asset)
-
-            self.issueTransaction(source: source,
-                                  passphrase: passphrase,
-                                  operations: [op],
-                                  completion: completion)
+                return self.issueTransaction(source: source,
+                                             passphrase: passphrase,
+                                             operations: [op])
         }
     }
 
@@ -95,34 +80,41 @@ public class Stellar {
      - parameter asset: The `Asset` to trust.
      - parameter account: The `Account` which will trust the given asset.
      - parameter passphrase: The passphrase which will unlock the secret key of the trusting account.
-     - parameter completion: A block which will receive the results of the trust operation.
+
+     - Returns: A promise which will be signalled with the result of the operation.
      */
-    public func trust(asset: Asset,
-                      account: Account,
-                      passphrase: String,
-                      completion: @escaping Completion) {
+    public func trust(asset: Asset, account: Account, passphrase: String) -> Promise {
+        let p = Promise()
+
         guard let destination = account.publicKey else {
-            completion(nil, StellarError.missingPublicKey)
+            p.signal(StellarError.missingPublicKey)
 
-            return
+            return p
         }
 
-        balance(account: destination, asset: asset) { (balance, error) in
-            if let error = error as? StellarError, case StellarError.missingAccount = error {
-                completion(nil, error)
+        balance(account: destination, asset: asset)
+            .then { _ -> Void in
+                p.signal("-na-")
             }
+            .error { error in
+                if let error = error as? StellarError, case StellarError.missingAccount = error {
+                    p.signal(error)
 
-            if balance != nil {
-                completion("-na-", nil)
+                    return
+                }
 
-                return
-            }
-
-            self.issueTransaction(source: account,
-                                  passphrase: passphrase,
-                                  operations: [self.trustOp(asset: asset)],
-                                  completion: completion)
+                self.issueTransaction(source: account,
+                                      passphrase: passphrase,
+                                      operations: [self.trustOp(asset: asset)])
+                    .then { txHash in
+                        p.signal(txHash)
+                    }
+                    .error { error in
+                        p.signal(error)
+                }
         }
+
+        return p
     }
 
     /**
@@ -130,18 +122,19 @@ public class Stellar {
 
      - parameter account: The `Account` whose balance will be retrieved.
      - parameter asset: The `Asset` whose balance will be obtained.  Defaults to the `Asset` specified in the initializer.
-     - parameter completion: A block which will receive the results of the balance request.
+
+     - Returns: A promise which will be signalled with the result of the operation.
      */
-    public func balance(account: String,
-                        asset: Asset? = nil,
-                        completion: @escaping (Decimal?, Error?) -> Void) {
+    public func balance(account: String, asset: Asset? = nil) -> Promise {
+        let p = Promise()
+
         let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         URLSession
             .shared
             .dataTask(with: url, completionHandler: { (data, response, error) in
-                if error != nil {
-                    completion(nil, error)
+                if let error = error {
+                    p.signal(error)
 
                     return
                 }
@@ -150,7 +143,7 @@ public class Stellar {
                     let json = try self.json(from: data)
 
                     guard let balances = json["balances"] as? [[String: Any]] else {
-                        completion(nil, StellarError.missingAccount)
+                        p.signal(StellarError.missingAccount)
 
                         return
                     }
@@ -165,64 +158,52 @@ public class Stellar {
                             let issuer = balance["asset_issuer"] as? String ?? ""
                             if (code == "native" && asset.assetCode == "native") ||
                                 Asset(assetCode: code, issuer: issuer) == asset {
-                                completion(amount, nil)
+                                p.signal(amount)
 
                                 return
                             }
                         }
                     }
 
-                    completion(nil, StellarError.missingBalance)
+                    p.signal(StellarError.missingBalance)
                 }
                 catch {
-                    completion(nil, error)
+                    p.signal(error)
                 }
             })
             .resume()
+
+        return p
     }
 
     // This is for testing only.
     // The account used for funding exists only on test-net.
     /// :nodoc:
-    public func fund(account: String, completion: @escaping (Bool) -> Void) {
+    public func fund(account: String) -> Promise {
         let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
         let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
 
         let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: funderPK)))
 
-        self.sequence(account: funderPK) { sequence, error in
-            guard error == nil else {
-                completion(false)
+        return self.sequence(account: funderPK)
+            .then { sequence -> Any in
+                guard let sequence = sequence as? UInt64 else {
+                    return StellarError.internalInconsistency
+                }
 
-                return
-            }
+                let tx = Transaction(sourceAccount: sourcePK,
+                                     seqNum: sequence + 1,
+                                     timeBounds: nil,
+                                     memo: .MEMO_NONE,
+                                     operations: [self.createAccountOp(destination: account,
+                                                                       balance: 10 * 10000000)])
 
-            guard let sequence = sequence else {
-                completion(false)
-
-                return
-            }
-
-            let tx = Transaction(sourceAccount: sourcePK,
-                                 seqNum: sequence + 1,
-                                 timeBounds: nil,
-                                 memo: .MEMO_NONE,
-                                 operations: [self.createAccountOp(destination: account,
-                                                                   balance: 10 * 10000000)])
-
-            do {
                 let envelope = try self.sign(transaction: tx,
                                              signer: StellarAccount(publicKey: funderPK,
                                                                     secretKey: funderSK),
                                              passphrase: "")
 
-                self.postTransaction(envelope: envelope, completion: { txHash, error in
-                    completion(error == nil)
-                })
-            }
-            catch {
-                completion(false)
-            }
+                return self.postTransaction(envelope: envelope)
         }
     }
 
@@ -275,12 +256,13 @@ public class Stellar {
 
     public func transaction(source: Account,
                             operations: [Operation],
-                            sequence: UInt64 = 0,
-                            completion: @escaping (Transaction?, Error?) -> Void) {
-        guard let sourceKey = source.publicKey else {
-            completion(nil, StellarError.missingPublicKey)
+                            sequence: UInt64 = 0) -> Promise {
+        let p = Promise()
 
-            return
+        guard let sourceKey = source.publicKey else {
+            p.signal(StellarError.missingPublicKey)
+
+            return p
         }
 
         let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: sourceKey)))
@@ -292,30 +274,28 @@ public class Stellar {
                                  memo: .MEMO_NONE,
                                  operations: operations)
 
-            completion(tx, nil)
+            p.signal(tx)
         }
 
         if sequence > 0 {
             comp(sequence)
 
-            return
+            return p
         }
 
-        self.sequence(account: sourceKey) { sequence, error in
-            guard error == nil else {
-                completion(nil, error)
+        self.sequence(account: sourceKey)
+            .then { sequence -> Void in
+                guard let sequence = sequence as? UInt64 else {
+                    throw StellarError.internalInconsistency
+                }
 
-                return
+                comp(sequence + 1)
             }
-
-            guard let sequence = sequence else {
-                completion(nil, StellarError.missingSequence)
-
-                return
-            }
-
-            comp(sequence + 1)
+            .error { error in
+                p.signal(StellarError.missingSequence)
         }
+
+        return p
     }
 
     public func sign(transaction tx: Transaction,
@@ -331,14 +311,16 @@ public class Stellar {
                         hint: KeyUtils.key(base32: publicKey).suffix(4))
     }
 
-    public func sequence(account: String, completion: @escaping (UInt64?, Error?) -> Void) {
+    public func sequence(account: String) -> Promise {
+        let p = Promise()
+
         let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         URLSession
             .shared
             .dataTask(with: url, completionHandler: { (data, response, error) in
-                if error != nil {
-                    completion(nil, error)
+                if let error = error {
+                    p.signal(error)
 
                     return
                 }
@@ -349,18 +331,20 @@ public class Stellar {
                     guard
                         let sequenceStr = json["sequence"] as? String,
                         let sequence = UInt64(sequenceStr) else {
-                            completion(nil, StellarError.missingSequence)
+                            p.signal(StellarError.missingSequence)
 
                             return
                     }
 
-                    completion(sequence, nil)
+                    p.signal(sequence)
                 }
                 catch {
-                    completion(nil, error)
+                    p.signal(error)
                 }
             })
             .resume()
+
+        return p
     }
 
     //MARK: -
@@ -389,49 +373,36 @@ public class Stellar {
 
     private func issueTransaction(source: Account,
                                   passphrase: String,
-                                  operations: [Operation],
-                                  completion: @escaping Completion) {
-        self.transaction(source: source,
-                         operations: operations,
-                         completion: { tx, error in
-                            guard error == nil else {
-                                completion(nil, error)
+                                  operations: [Operation]) -> Promise {
+        return self.transaction(source: source,operations: operations)
+            .then { tx -> Any in
+                guard let tx = tx as? Transaction else {
+                    return StellarError.internalInconsistency
+                }
 
-                                return
-                            }
+                let envelope = try self.sign(transaction: tx,
+                                             signer: source,
+                                             passphrase: passphrase)
 
-                            guard let tx = tx else {
-                                completion(nil, StellarError.unknownError(nil))
-
-                                return
-                            }
-
-                            do {
-                                let envelope = try self.sign(transaction: tx,
-                                                             signer: source,
-                                                             passphrase: passphrase)
-
-                                self.postTransaction(envelope: envelope, completion: completion)
-                            }
-                            catch {
-                                completion(nil, error)
-                            }
-        })
+                return self.postTransaction(envelope: envelope)
+            }
     }
 
-    private func postTransaction(envelope: TransactionEnvelope, completion: @escaping Completion) {
-        guard let urlEncodedEnvelope = envelope.toXDR().base64EncodedString().urlEncoded else {
-            completion(nil, StellarError.urlEncodingFailed)
+    private func postTransaction(envelope: TransactionEnvelope) -> Promise {
+        let p = Promise()
 
-            return
+        guard let urlEncodedEnvelope = envelope.toXDR().base64EncodedString().urlEncoded else {
+            p.signal(StellarError.urlEncodingFailed)
+
+            return p
         }
 
         let url = baseURL.appendingPathComponent("transactions")
 
         guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
-            completion(nil, StellarError.dataEncodingFailed)
+            p.signal(StellarError.dataEncodingFailed)
 
-            return
+            return p
         }
 
         var request = URLRequest(url: url)
@@ -441,8 +412,8 @@ public class Stellar {
         URLSession
             .shared
             .dataTask(with: request, completionHandler: { data, response, error in
-                if error != nil {
-                    completion(nil, error)
+                if let error = error {
+                    p.signal(error)
 
                     return
                 }
@@ -451,24 +422,26 @@ public class Stellar {
                     let json = try self.json(from: data)
 
                     if let resultError = errorFromResponse(response: json) {
-                        completion(nil, resultError)
+                        p.signal(resultError)
 
                         return
                     }
 
                     guard let hash = json["hash"] as? String else {
-                        completion(nil, StellarError.missingHash)
+                        p.signal(StellarError.missingHash)
                         
                         return
                     }
 
-                    completion(hash, nil)
+                    p.signal(hash)
                 }
                 catch {
-                    completion(nil, error)
+                    p.signal(error)
                 }
             })
             .resume()
+
+        return p
     }
 
     private func json(from data: Data?) throws -> [String: Any] {

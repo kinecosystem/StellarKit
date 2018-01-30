@@ -20,6 +20,7 @@ public enum StellarError: Error {
     case destinationNotReadyForAsset (Error, Asset)
     case parseError (Data?)
     case unknownError ([String: Any]?)
+    case internalInconsistency
 }
 
 public enum TransactionError: Int32, Error {
@@ -43,6 +44,14 @@ public enum CreateAccountError: Int32, Error {
     case CREATE_ACCOUNT_UNDERFUNDED = -2   // not enough funds in source account
     case CREATE_ACCOUNT_LOW_RESERVE = -3   // would create an account below the min reserve
     case CREATE_ACCOUNT_ALREADY_EXIST = -4 // account already exists
+}
+
+public enum ChangeTrustError: Int32, Error {
+    case CHANGE_TRUST_MALFORMED = -1         // bad input
+    case CHANGE_TRUST_NO_ISSUER = -2         // could not find issuer
+    case CHANGE_TRUST_INVALID_LIMIT = -3     // cannot drop limit below balance
+    case CHANGE_TRUST_LOW_RESERVE = -4       // not enough funds to create a new trust line,
+    case CHANGE_TRUST_SELF_NOT_ALLOWED = -5  // trusting self is not allowed
 }
 
 public enum PaymentError: Int32, Error {
@@ -106,6 +115,17 @@ func errorFromResponse(response: [String: Any]) -> Error? {
                         }
 
                         return StellarError.unknownError(response)
+
+                    default:
+                        break
+                    }
+
+                case .CHANGE_TRUST(let result):
+                    switch result {
+                    case .failure (let code):
+                        if let error = ChangeTrustError(rawValue: code) {
+                            return error
+                        }
 
                     default:
                         break

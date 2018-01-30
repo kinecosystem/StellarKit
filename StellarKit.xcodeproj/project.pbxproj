@@ -32,6 +32,8 @@
 		824063FA201E23FA0055D70A /* HorizonMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063F9201E23FA0055D70A /* HorizonMock.swift */; };
 		824063FC201E3E290055D70A /* StellarResultsDecodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063FB201E3E290055D70A /* StellarResultsDecodableTests.swift */; };
 		82406400201F00530055D70A /* StellarUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063FF201F00530055D70A /* StellarUnitTests.swift */; };
+		8240640A20200C620055D70A /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8240640920200C620055D70A /* Promise.swift */; };
+		82B8DC6D2022000000773D21 /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B8DC6C2022000000773D21 /* PromiseTests.swift */; };
 		82ECAB8A2002A2880010E31F /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB892002A2880010E31F /* XDRTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		E96F241B2013D6C60017EF68 /* KeychainSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24162013D6C60017EF68 /* KeychainSwift.swift */; };
@@ -167,6 +169,8 @@
 		824063F9201E23FA0055D70A /* HorizonMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonMock.swift; sourceTree = "<group>"; };
 		824063FB201E3E290055D70A /* StellarResultsDecodableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarResultsDecodableTests.swift; sourceTree = "<group>"; };
 		824063FF201F00530055D70A /* StellarUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StellarUnitTests.swift; path = StellarKitTests/StellarUnitTests.swift; sourceTree = SOURCE_ROOT; };
+		8240640920200C620055D70A /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
+		82B8DC6C2022000000773D21 /* PromiseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
 		82ECAB892002A2880010E31F /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		E96F24162013D6C60017EF68 /* KeychainSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwift.swift; sourceTree = "<group>"; };
@@ -325,6 +329,7 @@
 				82ECAB892002A2880010E31F /* XDRTests.swift */,
 				824063FB201E3E290055D70A /* StellarResultsDecodableTests.swift */,
 				824063F4201DFC760055D70A /* TransactionTypesDecodableTests.swift */,
+				82B8DC6C2022000000773D21 /* PromiseTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
 				824063B620147DDA0055D70A /* KeyStore.swift */,
 			);
@@ -342,6 +347,7 @@
 				82340C4A20014BFC0034204F /* StellarErrors.swift */,
 				82340C44200138E50034204F /* StellarResults.swift */,
 				82340BB81FFDF3390034204F /* XDRCodable.swift */,
+				8240640920200C620055D70A /* Promise.swift */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -732,6 +738,7 @@
 				82340BBB1FFDF3390034204F /* XDRCodable.swift in Sources */,
 				E96F24BB2013D6D90017EF68 /* ShortHash.swift in Sources */,
 				824063B120147DCD0055D70A /* Asset.swift in Sources */,
+				8240640A20200C620055D70A /* Promise.swift in Sources */,
 				82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */,
 				E96F241B2013D6C60017EF68 /* KeychainSwift.swift in Sources */,
 				E96F24B92013D6D90017EF68 /* SecretBox.swift in Sources */,
@@ -751,6 +758,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82B8DC6D2022000000773D21 /* PromiseTests.swift in Sources */,
 				824063F8201E064B0055D70A /* HTTPMock.swift in Sources */,
 				824063FA201E23FA0055D70A /* HorizonMock.swift in Sources */,
 				82406400201F00530055D70A /* StellarUnitTests.swift in Sources */,

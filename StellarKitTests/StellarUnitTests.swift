@@ -9,6 +9,14 @@
 import XCTest
 @testable import StellarKit
 
+struct TestError: Error {
+    let m: String
+
+    init(_ m: String) {
+        self.m = m
+    }
+}
+
 struct MockStellarAccount: Account {
     var publicKey: String? {
         return KeyUtils.base32(publicKey: keyPair.publicKey)
@@ -68,316 +76,165 @@ class StellarUnitTests: XCTestCase {
     }
 
     func test_trust() {
-        let e = expectation(description: "")
-
-        self.stellar.fund(account: account.publicKey!) { success in
-            if !success {
-                XCTAssertTrue(false, "Unable to fund account!")
-
-                e.fulfill()
-
-                return
+        self.stellar.fund(account: account.publicKey!)
+            .then { _ -> Any? in
+                return self.stellar.trust(asset: self.stellar.asset,
+                                          account: self.account,
+                                          passphrase: self.passphrase)
             }
-
-            self.stellar.trust(asset: self.stellar.asset,
-                               account: self.account,
-                               passphrase: self.passphrase) { txHash, error in
-                                if let error = error {
-                                    XCTAssertTrue(false, "Failed to trust asset: \(error)")
-                                }
-
-                                e.fulfill()
-            }
+            .error { error in
+                XCTAssertTrue(false, "Received unexpected error: \(error)!")
         }
-
-        wait(for: [e], timeout: 60)
     }
 
     func test_double_trust() {
-        let e = expectation(description: "")
-
-        stellar.fund(account: account.publicKey!) { success in
-            if !success {
-                XCTAssertTrue(false, "Unable to fund account!")
-
-                e.fulfill()
-
-                return
+        stellar.fund(account: account.publicKey!)
+            .then { _ -> Any? in
+                return self.stellar.trust(asset: self.stellar.asset,
+                                          account: self.account,
+                                          passphrase: self.passphrase)
             }
-
-            self.stellar.trust(asset: self.stellar.asset,
-                               account: self.account,
-                               passphrase: self.passphrase) { txHash, error in
-                                if let error = error {
-                                    XCTAssertTrue(false, "Failed to trust asset: \(error)")
-
-                                    e.fulfill()
-
-                                    return
-                                }
-
-                                self.stellar.trust(asset: self.stellar.asset,
-                                                   account: self.account,
-                                                   passphrase: self.passphrase) { txHash, error in
-                                                    if let error = error {
-                                                        XCTAssertTrue(false, "Received unexpected error: \(error)!")
-                                                    }
-
-                                                    e.fulfill()
-                                }
+            .then { txHash -> Any? in
+                return self.stellar.trust(asset: self.stellar.asset,
+                                          account: self.account,
+                                          passphrase: self.passphrase)
             }
+            .error { error in
+                XCTAssertTrue(false, "Failed to trust asset: \(error)")
         }
-
-        wait(for: [e], timeout: 60)
     }
 
     func test_payment_to_untrusting_account() {
-        let e = expectation(description: "")
-
         stellar.payment(source: account,
                         destination: account2.publicKey!,
                         amount: 1,
-                        passphrase: passphrase) { txHash, error in
-                            defer {
-                                e.fulfill()
-                            }
-
-                            guard let error = error else {
-                                XCTAssertTrue(false, "Expected error!")
-
-                                return
-                            }
-
-                            guard let stellarError = error as? StellarError else {
-                                XCTAssertTrue(false, "Received unexpected error: \(error)!")
-
-                                return
-                            }
-                            switch stellarError {
-                            case .destinationNotReadyForAsset: break
-                            default:
-                                XCTAssertTrue(false, "Received unexpected error: \(error)!")
-                            }
-        }
-
-        wait(for: [e], timeout: 60)
-    }
-
-    func test_payment_from_unfunded_account() {
-        let e = expectation(description: "")
-
-        stellar.fund(account: account2.publicKey!) { success in
-            if !success {
-                XCTAssertTrue(false, "Unable to fund account!")
-
-                e.fulfill()
-
-                return
+                        passphrase: self.passphrase)
+            .then { txHash -> Void in
+                XCTAssertTrue(false, "Expected error!")
             }
-
-            self
-                .stellar
-                .trust(asset: self.stellar.asset,
-                       account: self.account2,
-                       passphrase: self.passphrase) { txHash, error in
-                        if let error = error {
-                            XCTAssertTrue(false, "Failed to trust asset: \(error)")
-                            e.fulfill()
-
-                            return
-                        }
-
-                        self
-                            .stellar
-                            .payment(source: self.account,
-                                     destination: self.account2.publicKey!,
-                                     amount: 1,
-                                     passphrase: self.passphrase) { txHash, error in
-                                        defer {
-                                            e.fulfill()
-                                        }
-
-                                        guard let error = error else {
-                                            XCTAssertTrue(false, "Expected error!")
-
-                                            return
-                                        }
-
-                                        guard let stellarError = error as? StellarError else {
-                                            XCTAssertTrue(false, "Received unexpected error: \(error)!")
-
-                                            return
-                                        }
-                                        switch stellarError {
-                                        case .missingSequence: break
-                                        default:
-                                            XCTAssertTrue(false, "Received unexpected error: \(error)!")
-                                        }
-                        }
-            }
-        }
-
-        wait(for: [e], timeout: 60)
-    }
-
-    func test_payment_from_empty_account() {
-        let e = expectation(description: "")
-        let stellar = self.stellar
-
-        stellar.fund(account: account.publicKey!) { success in
-            if !success {
-                XCTAssertTrue(false, "Unable to fund account!")
-
-                e.fulfill()
-
-                return
-            }
-
-            stellar.fund(account: self.account2.publicKey!) { success in
-                if !success {
-                    XCTAssertTrue(false, "Unable to fund account!")
-
-                    e.fulfill()
+            .error { error in
+                guard let stellarError = error as? StellarError else {
+                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
 
                     return
                 }
 
-                stellar
-                    .trust(asset: stellar.asset,
-                           account: self.account,
-                              passphrase: self.passphrase) { txHash, error in
-                                if let error = error {
-                                    XCTAssertTrue(false, "Failed to trust asset: \(error)")
-                                    e.fulfill()
-
-                                    return
-                                }
-
-                                stellar
-                                    .trust(asset: stellar.asset,
-                                           account: self.account2,
-                                              passphrase: self.passphrase) { txHash, error in
-                                                if let error = error {
-                                                    XCTAssertTrue(false, "Failed to trust asset: \(error)")
-                                                    e.fulfill()
-
-                                                    return
-                                                }
-
-                                                stellar
-                                                    .payment(source: self.account,
-                                                             destination: self.account2.publicKey!,
-                                                             amount: 1,
-                                                             passphrase: self.passphrase) { txHash, error in
-                                                                defer {
-                                                                    e.fulfill()
-                                                                }
-
-                                                                guard let error = error else {
-                                                                    XCTAssertTrue(false, "Expected error!")
-
-                                                                    return
-                                                                }
-
-                                                                guard let paymentError = error as? PaymentError else {
-                                                                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
-
-                                                                    return
-                                                                }
-                                                                switch paymentError {
-                                                                case .PAYMENT_UNDERFUNDED: break
-                                                                default:
-                                                                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
-                                                                }
-                                                }
-                                }
+                switch stellarError {
+                case .missingAccount: break
+                case .missingBalance: break
+                default:
+                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
                 }
-            }
         }
+    }
 
-        wait(for: [e], timeout: 60)
+    func test_payment_from_unfunded_account() {
+        stellar.fund(account: account2.publicKey!)
+            .then { _ -> Any? in
+                return self.stellar.trust(asset: self.stellar.asset,
+                                          account: self.account2,
+                                          passphrase: self.passphrase)
+            }
+            .then { txHash -> Any? in
+                return self.stellar.payment(source: self.account,
+                                     destination: self.account2.publicKey!,
+                                     amount: 1,
+                                     passphrase: self.passphrase)
+            }
+            .then { txHash -> Void in
+                XCTAssertTrue(false, "Expected error!")
+            }
+            .error { error in
+                guard let stellarError = error as? StellarError else {
+                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+
+                    return
+                }
+
+                switch stellarError {
+                case .missingSequence: break
+                default:
+                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                }
+        }
+    }
+
+    func test_payment_from_empty_account() {
+        let stellar = self.stellar
+
+        stellar.fund(account: account.publicKey!)
+            .then { _ -> Any? in
+                return stellar.fund(account: self.account2.publicKey!)
+            }
+            .then { _ -> Any? in
+                return self.stellar.trust(asset: self.stellar.asset,
+                                          account: self.account,
+                                          passphrase: self.passphrase)
+            }
+            .then { txHash -> Any? in
+                return stellar.trust(asset: stellar.asset,
+                                     account: self.account2,
+                                     passphrase: self.passphrase)
+            }
+            .then { txHash -> Any? in
+                return stellar.payment(source: self.account,
+                                       destination: self.account2.publicKey!,
+                                       amount: 1,
+                                       passphrase: self.passphrase)
+            }
+            .then { txHash -> Void in
+                XCTAssertTrue(false, "Expected error!")
+            }
+            .error { error in
+                guard let paymentError = error as? PaymentError else {
+                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+
+                    return
+                }
+
+                switch paymentError {
+                case .PAYMENT_UNDERFUNDED: break
+                default:
+                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                }
+        }
     }
 
     func test_payment_to_trusting_account() {
-        let e = expectation(description: "")
         let stellar = self.stellar
 
-        stellar.fund(account: account.publicKey!) { success in
-            if !success {
-                XCTAssertTrue(false, "Unable to fund account!")
-
-                e.fulfill()
-
-                return
+        stellar.fund(account: account.publicKey!)
+            .then { _ -> Any? in
+                return stellar.trust(asset: stellar.asset,
+                                     account: self.account,
+                                     passphrase: self.passphrase)
             }
-
-            stellar
-                .trust(asset: stellar.asset,
-                       account: self.account,
-                          passphrase: self.passphrase) { txHash, error in
-                            if let error = error {
-                                XCTAssertTrue(false, "Failed to trust asset: \(error)")
-                                e.fulfill()
-
-                                return
-                            }
-
-                            stellar
-                                .payment(source: self.issuer,
-                                         destination: self.account.publicKey!,
-                                         amount: 1,
-                                         passphrase: self.passphrase) { txHash, error in
-                                            defer {
-                                                e.fulfill()
-                                            }
-
-                                            XCTAssertNotNil(txHash)
-                            }
+            .then { txHash -> Any? in
+                return stellar.payment(source: self.issuer,
+                                       destination: self.account.publicKey!,
+                                       amount: 1,
+                                       passphrase: self.passphrase)
             }
+            .error { error in
+                XCTAssertTrue(false, "Received unexpected error: \(error)!")
         }
-
-        wait(for: [e], timeout: 60)
     }
 
     func test_balance() {
-        let e = expectation(description: "")
         let stellar = self.stellar
 
-        stellar.fund(account: account.publicKey!) { success in
-            if !success {
-                XCTAssertTrue(false, "Unable to fund account!")
-
-                e.fulfill()
-
-                return
+        stellar.fund(account: account.publicKey!)
+            .then { txHash -> Any? in
+                return self.stellar.trust(asset: self.stellar.asset,
+                                          account: self.account,
+                                          passphrase: self.passphrase)
             }
-
-            stellar
-                .trust(asset: stellar.asset,
-                       account: self.account,
-                          passphrase: self.passphrase) { txHash, error in
-                            if let error = error {
-                                XCTAssertTrue(false, "Failed to trust asset: \(error)")
-                                e.fulfill()
-
-                                return
-                            }
-
-                            stellar.balance(account: self.account.publicKey!, completion: { balance, error in
-                                defer {
-                                    e.fulfill()
-                                }
-
-                                if let error = error {
-                                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
-
-                                    return
-                                }
-                            })
+            .then { txHash -> Any? in
+                return stellar.balance(account: self.account.publicKey!)
             }
+            .error { error in
+                XCTAssertTrue(false, "Received unexpected error: \(error)!")
         }
-
-        wait(for: [e], timeout: 60)
     }
 
 }
