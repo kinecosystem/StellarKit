@@ -32,10 +32,7 @@ public struct Operation: XDREncodableStruct, XDRDecodable {
     }
 
     public init(xdrData: inout Data, count: Int32 = 0) {
-        // Decoding ops with a source account not currently supported
-        _ = Int32(xdrData: &xdrData)
-
-        sourceAccount = nil
+        sourceAccount = Array<PublicKey>(xdrData: &xdrData).first
         body = Body(xdrData: &xdrData)
     }
 

@@ -60,9 +60,14 @@ enum Memo: XDRCodable {
     }
 }
 
-struct TimeBounds: XDREncodableStruct {
+struct TimeBounds: XDREncodableStruct, XDRDecodable {
     let minTime: UInt64
     let maxTime: UInt64
+
+    init(xdrData: inout Data, count: Int32 = 0) {
+        minTime = UInt64(xdrData: &xdrData)
+        maxTime = UInt64(xdrData: &xdrData)
+    }
 }
 
 public struct Transaction: XDREncodableStruct, XDRDecodable {
@@ -93,8 +98,7 @@ public struct Transaction: XDREncodableStruct, XDRDecodable {
         fee = UInt32(xdrData: &xdrData)
         seqNum = UInt64(xdrData: &xdrData)
 
-        _ = Int32(xdrData: &xdrData)
-        timeBounds = nil
+        timeBounds = Array<TimeBounds>(xdrData: &xdrData).first
 
         memo = Memo(xdrData: &xdrData)
         operations = Array<Operation>(xdrData: &xdrData)
