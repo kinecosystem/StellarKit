@@ -100,12 +100,19 @@ class HorizonMock {
 
             guard
                 let base64Str = urlEncodedStr.removingPercentEncoding,
-                var xdr = Data(base64Encoded: base64Str)
+                let xdr = Data(base64Encoded: base64Str)
                 else {
                     return self?.malformedTransaction()
             }
 
-            let envelope = TransactionEnvelope(xdrData: &xdr)
+            let envelope: TransactionEnvelope
+
+            do {
+                envelope = try XDRDecoder.decode(TransactionEnvelope.self, data: xdr)
+            }
+            catch {
+                return self?.malformedTransaction()
+            }
 
             guard
                 let publicKey = envelope.tx.sourceAccount.publicKey,
@@ -266,7 +273,7 @@ class HorizonMock {
                 "result_codes": [
                     "transaction": resultCode,
                 ],
-                "result_xdr": transactionResult.toXDR().base64EncodedString()
+                "result_xdr": try! Data(bytes: XDREncoder.encode(transactionResult)).base64EncodedString()
             ],
             ]
 
@@ -277,11 +284,12 @@ class HorizonMock {
         let d: [String: Any] = [
             "hash": "-",
             "ledger": 1,
-            "result_xdr": TransactionResult(feeCharged: 100,
+            "result_xdr":
+                try! Data(bytes: XDREncoder.encode(
+                TransactionResult(feeCharged: 100,
                                             result: .txSUCCESS([OperationResult
                                                 .opINNER(OperationResult.Tr
-                                                    .PAYMENT(PaymentResult.success))]))
-                .toXDR()
+                                                    .PAYMENT(PaymentResult.success))]))))
                 .base64EncodedString(),
             ]
 
@@ -292,11 +300,12 @@ class HorizonMock {
         let d: [String: Any] = [
             "hash": "-",
             "ledger": 1,
-            "result_xdr": TransactionResult(feeCharged: 100,
+            "result_xdr":
+                try! Data(bytes: XDREncoder.encode(
+                    TransactionResult(feeCharged: 100,
                                             result: .txSUCCESS([OperationResult
                                                 .opINNER(OperationResult.Tr
-                                                    .CREATE_ACCOUNT(CreateAccountResult.success))]))
-                .toXDR()
+                                                    .CREATE_ACCOUNT(CreateAccountResult.success))]))))
                 .base64EncodedString(),
             ]
 
@@ -307,11 +316,12 @@ class HorizonMock {
         let d: [String: Any] = [
             "hash": "-",
             "ledger": 1,
-            "result_xdr": TransactionResult(feeCharged: 100,
-                                            result: .txSUCCESS([OperationResult
-                                                .opINNER(OperationResult.Tr
-                                                    .CHANGE_TRUST(ChangeTrustResult.success))]))
-                .toXDR()
+            "result_xdr":
+                try! Data(bytes: XDREncoder.encode(
+                    TransactionResult(feeCharged: 100,
+                                      result: .txSUCCESS([OperationResult
+                                        .opINNER(OperationResult.Tr
+                                            .CHANGE_TRUST(ChangeTrustResult.success))]))))
                 .base64EncodedString(),
             ]
 

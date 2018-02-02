@@ -84,6 +84,18 @@ public extension Data {
         return s
     }
 
+    var byteString: String {
+        let a = withUnsafeBytes { (ptr: UnsafePointer<UInt8>) -> Array<UInt8> in
+            var a = [UInt8]()
+            for i in 0..<self.count {
+                a.append(ptr.advanced(by: i).pointee)
+            }
+            return a
+        }
+
+        return a.description
+    }
+
     var crc16: [UInt8] {
         let crc16tab: [UInt16] = [
             0x0000,0x1021,0x2042,0x3063,0x4084,0x50a5,0x60c6,0x70e7,

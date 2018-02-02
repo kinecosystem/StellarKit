@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CreateAccountOp: XDREncodableStruct, XDRDecodable {
+struct CreateAccountOp: XDRCodable {
     let destination: PublicKey
     let balance: Int64
 
@@ -16,14 +16,9 @@ struct CreateAccountOp: XDREncodableStruct, XDRDecodable {
         self.destination = destination
         self.balance = balance
     }
-
-    init(xdrData: inout Data, count: Int32 = 0) {
-        destination = PublicKey(xdrData: &xdrData)
-        balance = Int64(xdrData: &xdrData)
-    }
 }
 
-struct PaymentOp: XDREncodableStruct, XDRDecodable {
+struct PaymentOp: XDRCodable {
     let destination: PublicKey
     let asset: Asset
     let amount: Int64
@@ -34,23 +29,27 @@ struct PaymentOp: XDREncodableStruct, XDRDecodable {
         self.amount = amount
     }
 
-    init(xdrData: inout Data, count: Int32 = 0) {
-        destination = PublicKey(xdrData: &xdrData)
-        asset = Asset(xdrData: &xdrData)
-        amount = Int64(xdrData: &xdrData)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+
+        try container.encode(destination)
+        try container.encode(asset)
+        try container.encode(amount)
     }
 }
 
-struct ChangeTrustOp: XDREncodableStruct, XDRDecodable {
+struct ChangeTrustOp: XDRCodable {
     let asset: Asset
     let limit: Int64 = Int64.max
 
-    init(asset: Asset) {
-        self.asset = asset
+    init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+
+        asset = try container.decode(Asset.self)
+        _ = try container.decode(Int64.self)
     }
 
-    init(xdrData: inout Data, count: Int32 = 0) {
-        asset = Asset(xdrData: &xdrData)
-        _ = Int64(xdrData: &xdrData)
+    init(asset: Asset) {
+        self.asset = asset
     }
 }

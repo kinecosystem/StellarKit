@@ -41,6 +41,25 @@ public enum Asset: XDRCodable, Equatable {
         }
     }
     
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+
+        let discriminant = try container.decode(Int32.self)
+
+        switch discriminant {
+        case AssetType.ASSET_TYPE_NATIVE:
+            self = .ASSET_TYPE_NATIVE
+        case AssetType.ASSET_TYPE_CREDIT_ALPHANUM4:
+            let a4 = try container.decode(Alpha4.self)
+            self = .ASSET_TYPE_CREDIT_ALPHANUM4(a4)
+        case AssetType.ASSET_TYPE_CREDIT_ALPHANUM12:
+            let a12 = try container.decode(Alpha12.self)
+            self = .ASSET_TYPE_CREDIT_ALPHANUM12(a12)
+        default:
+            self = .ASSET_TYPE_NATIVE
+        }
+    }
+
     public init?(assetCode: String, issuer: String) {
         if assetCode.count <= 4 {
             guard var codeData = assetCode.data(using: .utf8) else {
@@ -50,9 +69,9 @@ public enum Asset: XDRCodable, Equatable {
             let extraCount = 4 - assetCode.count
             codeData.append(contentsOf: Array<UInt8>(repeating: 0, count: extraCount))
 
-            let a4 = Alpha4(assetCode: FixedLengthDataWrapper(codeData),
+            let a4 = Alpha4(assetCode: WrappedData4(codeData),
                             issuer: PublicKey
-                                .PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(KeyUtils.key(base32: issuer))))
+                                .PUBLIC_KEY_TYPE_ED25519(WrappedData32(KeyUtils.key(base32: issuer))))
             self = .ASSET_TYPE_CREDIT_ALPHANUM4(a4)
 
             return
@@ -66,9 +85,9 @@ public enum Asset: XDRCodable, Equatable {
             let extraCount = 12 - assetCode.count
             codeData.append(contentsOf: Array<UInt8>(repeating: 0, count: extraCount))
 
-            let a12 = Alpha12(assetCode: FixedLengthDataWrapper(codeData),
+            let a12 = Alpha12(assetCode: WrappedData12(codeData),
                               issuer: PublicKey
-                                .PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(KeyUtils.key(base32: issuer))))
+                                .PUBLIC_KEY_TYPE_ED25519(WrappedData32(KeyUtils.key(base32: issuer))))
             self = .ASSET_TYPE_CREDIT_ALPHANUM12(a12)
 
             return
@@ -77,32 +96,19 @@ public enum Asset: XDRCodable, Equatable {
         return nil
     }
 
-    public init(xdrData: inout Data, count: Int32 = 0) {
-        let discriminant = Int32(xdrData: &xdrData)
-
-        switch discriminant {
-        case AssetType.ASSET_TYPE_NATIVE:
-            self = .ASSET_TYPE_NATIVE
-        case AssetType.ASSET_TYPE_CREDIT_ALPHANUM4:
-            self = .ASSET_TYPE_CREDIT_ALPHANUM4(Alpha4(
-                assetCode: FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 4)),
-                issuer: PublicKey(xdrData: &xdrData)))
-        case AssetType.ASSET_TYPE_CREDIT_ALPHANUM12:
-            self = .ASSET_TYPE_CREDIT_ALPHANUM12(Alpha12(
-                assetCode: FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 12)),
-                issuer: PublicKey(xdrData: &xdrData)))
-        default:
-            self = .ASSET_TYPE_NATIVE
-        }
-    }
-
-    public struct Alpha4: XDREncodableStruct, Equatable {
-        let assetCode: FixedLengthDataWrapper
+    public struct Alpha4: XDRCodable, Equatable {
+        let assetCode: WrappedData4
         let issuer: PublicKey
 
-        init(assetCode: FixedLengthDataWrapper, issuer: PublicKey) {
+        init(assetCode: WrappedData4, issuer: PublicKey) {
             self.assetCode = assetCode
             self.issuer = issuer
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+            try container.encode(assetCode)
+            try container.encode(issuer)
         }
 
         public static func ==(lhs: Asset.Alpha4, rhs: Asset.Alpha4) -> Bool {
@@ -110,13 +116,19 @@ public enum Asset: XDRCodable, Equatable {
         }
     }
 
-    public struct Alpha12: XDREncodableStruct, Equatable {
-        let assetCode: FixedLengthDataWrapper
+    public struct Alpha12: XDRCodable, Equatable {
+        let assetCode: WrappedData12
         let issuer: PublicKey
 
-        init(assetCode: FixedLengthDataWrapper, issuer: PublicKey) {
+        init(assetCode: WrappedData12, issuer: PublicKey) {
             self.assetCode = assetCode
             self.issuer = issuer
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+            try container.encode(assetCode)
+            try container.encode(issuer)
         }
 
         public static func ==(lhs: Asset.Alpha12, rhs: Asset.Alpha12) -> Bool {
@@ -132,20 +144,19 @@ public enum Asset: XDRCodable, Equatable {
         }
     }
 
-    public func toXDR(count: Int32 = 0) -> Data {
-        var xdr = discriminant().toXDR()
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(discriminant())
 
         switch self {
         case .ASSET_TYPE_NATIVE: break
 
         case .ASSET_TYPE_CREDIT_ALPHANUM4 (let alpha4):
-            xdr.append(alpha4.toXDR())
+            try container.encode(alpha4)
 
         case .ASSET_TYPE_CREDIT_ALPHANUM12 (let alpha12):
-            xdr.append(alpha12.toXDR())
+            try container.encode(alpha12)
         }
-
-        return xdr
     }
 
     func isEqual(asset: Asset) -> Bool {

@@ -19,7 +19,7 @@ public protocol Account {
  supporting non-native assets.
  */
 public class Stellar {
-    typealias FLDW = FixedLengthDataWrapper
+    typealias WD32 = WrappedData32
 
     public let baseURL: URL
     public let asset: Asset
@@ -183,7 +183,7 @@ public class Stellar {
         let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
         let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
 
-        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: funderPK)))
+        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: funderPK)))
 
         return self.sequence(account: funderPK)
             .then { sequence -> Any in
@@ -212,11 +212,11 @@ public class Stellar {
     public func createAccountOp(destination: String,
                                 balance: Int64,
                                 source: Account? = nil) -> Operation {
-        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: destination)))
+        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: destination)))
 
         var sourcePK: PublicKey? = nil
         if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: pk)))
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
         }
 
         return Operation(sourceAccount: sourcePK,
@@ -228,11 +228,11 @@ public class Stellar {
                           amount: Int64,
                           source: Account? = nil,
                           asset: Asset? = nil) -> Operation {
-        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: destination)))
+        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: destination)))
 
         var sourcePK: PublicKey? = nil
         if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: pk)))
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
         }
 
         return Operation(sourceAccount: sourcePK,
@@ -245,7 +245,7 @@ public class Stellar {
     public func trustOp(source: Account? = nil, asset: Asset? = nil) -> Operation {
         var sourcePK: PublicKey? = nil
         if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: pk)))
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
         }
 
         return Operation(sourceAccount: sourcePK,
@@ -265,7 +265,7 @@ public class Stellar {
             return p
         }
 
-        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(FLDW(KeyUtils.key(base32: sourceKey)))
+        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceKey)))
 
         let comp = { (sequence: UInt64) -> Void in
             let tx = Transaction(sourceAccount: sourcePK,
@@ -359,15 +359,15 @@ public class Stellar {
 
         let networkId = data.sha256
 
-        let payload = TransactionSignaturePayload(networkId: FLDW(networkId),
+        let payload = TransactionSignaturePayload(networkId: WD32(networkId),
                                                   taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
-        let message = payload.toXDR().sha256
+        let message = try Data(bytes: XDREncoder.encode(payload)).sha256
 
         let signature = try signer.sign(message: message, passphrase: passphrase)
 
         return TransactionEnvelope(tx: tx,
-                                   signatures: [DecoratedSignature(hint: FLDW(hint),
+                                   signatures: [DecoratedSignature(hint: WrappedData4(hint),
                                                                    signature: signature)])
     }
 
@@ -391,57 +391,65 @@ public class Stellar {
     private func postTransaction(envelope: TransactionEnvelope) -> Promise {
         let p = Promise()
 
-        guard let urlEncodedEnvelope = envelope.toXDR().base64EncodedString().urlEncoded else {
-            p.signal(StellarError.urlEncodingFailed)
+        do {
+            let envelopeData = try Data(XDREncoder.encode(envelope))
+            guard let urlEncodedEnvelope = envelopeData.base64EncodedString().urlEncoded else {
+                p.signal(StellarError.urlEncodingFailed)
 
-            return p
-        }
+                return p
+            }
 
-        let url = baseURL.appendingPathComponent("transactions")
+            let url = baseURL.appendingPathComponent("transactions")
 
-        guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
-            p.signal(StellarError.dataEncodingFailed)
+            guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
+                p.signal(StellarError.dataEncodingFailed)
 
-            return p
-        }
+                return p
+            }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.httpBody = httpBody
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.httpBody = httpBody
 
-        URLSession
-            .shared
-            .dataTask(with: request, completionHandler: { data, response, error in
-                if let error = error {
-                    p.signal(error)
-
-                    return
-                }
-
-                do {
-                    let json = try self.json(from: data)
-
-                    if let resultError = errorFromResponse(response: json) {
-                        p.signal(resultError)
-
-                        return
-                    }
-
-                    guard let hash = json["hash"] as? String else {
-                        p.signal(StellarError.missingHash)
+            URLSession
+                .shared
+                .dataTask(with: request, completionHandler: { data, response, error in
+                    if let error = error {
+                        p.signal(error)
                         
                         return
                     }
 
-                    p.signal(hash)
-                }
-                catch {
-                    p.signal(error)
-                }
-            })
-            .resume()
+                    do {
+                        let json = try self.json(from: data)
 
-        return p
+                        if let resultError = errorFromResponse(response: json) {
+                            p.signal(resultError)
+
+                            return
+                        }
+
+                        guard let hash = json["hash"] as? String else {
+                            p.signal(StellarError.missingHash)
+
+                            return
+                        }
+
+                        p.signal(hash)
+                    }
+                    catch {
+                        p.signal(error)
+                    }
+                })
+                .resume()
+
+            return p
+        }
+        catch {
+            p.signal(error)
+
+            return p
+        }
     }
 
     private func json(from data: Data?) throws -> [String: Any] {

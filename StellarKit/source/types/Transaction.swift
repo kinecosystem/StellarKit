@@ -20,20 +20,8 @@ enum Memo: XDRCodable {
     case MEMO_NONE
     case MEMO_TEXT (String)
     case MEMO_ID (UInt64)
-    case MEMO_HASH (FixedLengthDataWrapper)
-    case MEMO_RETURN (FixedLengthDataWrapper)
-
-    init(xdrData: inout Data, count: Int32 = 0) {
-        let discriminant = Int32(xdrData: &xdrData)
-
-        switch discriminant {
-        case MemoType.MEMO_NONE:
-            self = .MEMO_NONE
-        // Insert other cases as support is required.
-        default:
-            self = .MEMO_NONE
-        }
-    }
+    case MEMO_HASH (WrappedData32)
+    case MEMO_RETURN (WrappedData32)
 
     private func discriminant() -> Int32 {
         switch self {
@@ -45,32 +33,35 @@ enum Memo: XDRCodable {
         }
     }
 
-    func toXDR(count: Int32 = 0) -> Data {
-        var xdr = discriminant().toXDR()
+    init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+
+        _ = try container.decode(Int32.self)
+
+        self = .MEMO_NONE
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+
+        try container.encode(discriminant())
 
         switch self {
         case .MEMO_NONE: break
-        case .MEMO_TEXT (let text): xdr.append(text.toXDR())
-        case .MEMO_ID (let id): xdr.append(id.toXDR())
-        case .MEMO_HASH (let hash): xdr.append(hash.toXDR())
-        case .MEMO_RETURN (let hash): xdr.append(hash.toXDR())
+        case .MEMO_TEXT (let text): try container.encode(text)
+        case .MEMO_ID (let id): try container.encode(id)
+        case .MEMO_HASH (let hash): try container.encode(hash)
+        case .MEMO_RETURN (let hash): try container.encode(hash)
         }
-
-        return xdr
     }
 }
 
-struct TimeBounds: XDREncodableStruct, XDRDecodable {
+struct TimeBounds: XDRCodable {
     let minTime: UInt64
     let maxTime: UInt64
-
-    init(xdrData: inout Data, count: Int32 = 0) {
-        minTime = UInt64(xdrData: &xdrData)
-        maxTime = UInt64(xdrData: &xdrData)
-    }
 }
 
-public struct Transaction: XDREncodableStruct, XDRDecodable {
+public struct Transaction: XDRCodable {
     let sourceAccount: PublicKey
     let fee: UInt32
     let seqNum: UInt64
@@ -93,17 +84,28 @@ public struct Transaction: XDREncodableStruct, XDRDecodable {
         self.fee = UInt32(100 * operations.count)
     }
 
-    public init(xdrData: inout Data, count: Int32 = 0) {
-        sourceAccount = PublicKey(xdrData: &xdrData)
-        fee = UInt32(xdrData: &xdrData)
-        seqNum = UInt64(xdrData: &xdrData)
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
 
-        timeBounds = Array<TimeBounds>(xdrData: &xdrData).first
+        sourceAccount = try container.decode(PublicKey.self)
+        fee = try container.decode(UInt32.self)
+        seqNum = try container.decode(UInt64.self)
+        timeBounds = try container.decode(Array<TimeBounds>.self).first
+        memo = try container.decode(Memo.self)
+        operations = try container.decode(Array<Operation>.self)
+        _ = try container.decode(Int32.self)
+    }
 
-        memo = Memo(xdrData: &xdrData)
-        operations = Array<Operation>(xdrData: &xdrData)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
 
-        _ = Int32(xdrData: &xdrData)
+        try container.encode(sourceAccount)
+        try container.encode(fee)
+        try container.encode(seqNum)
+        try container.encode(timeBounds)
+        try container.encode(memo)
+        try container.encode(operations)
+        try container.encode(reserved)
     }
 }
 
@@ -113,8 +115,8 @@ struct EnvelopeType {
     static let ENVELOPE_TYPE_AUTH: Int32 = 3
 }
 
-struct TransactionSignaturePayload: XDREncodableStruct {
-    let networkId: FixedLengthDataWrapper
+struct TransactionSignaturePayload: XDREncodable {
+    let networkId: WrappedData32
     let taggedTransaction: TaggedTransaction
 
     enum TaggedTransaction: XDREncodable {
@@ -126,44 +128,34 @@ struct TransactionSignaturePayload: XDREncodableStruct {
             }
         }
 
-        func toXDR(count: Int32 = 0) -> Data {
-            var xdr = discriminant().toXDR()
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+
+            try container.encode(discriminant())
 
             switch self {
-            case .ENVELOPE_TYPE_TX (let tx): xdr.append(tx.toXDR())
+            case .ENVELOPE_TYPE_TX (let tx): try container.encode(tx)
             }
-
-            return xdr
         }
     }
 }
 
-struct DecoratedSignature: XDREncodableStruct, XDRDecodable {
-    let hint: FixedLengthDataWrapper;
+struct DecoratedSignature: XDRCodable {
+    let hint: WrappedData4;
     let signature: Data
 
-    init(hint: FixedLengthDataWrapper, signature: Data) {
+    init(hint: WrappedData4, signature: Data) {
         self.hint = hint
         self.signature = signature
     }
-
-    init(xdrData: inout Data, count: Int32 = 0) {
-        hint = FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 4))
-        signature = Data(xdrData: &xdrData)
-    }
 }
 
-public struct TransactionEnvelope: XDREncodableStruct, XDRDecodable {
+public struct TransactionEnvelope: XDRCodable {
     let tx: Transaction
     let signatures: [DecoratedSignature]
 
     init(tx: Transaction, signatures: [DecoratedSignature]) {
         self.tx = tx
         self.signatures = signatures
-    }
-
-    public init(xdrData: inout Data, count: Int32 = 0) {
-        tx = Transaction(xdrData: &xdrData)
-        signatures = Array<DecoratedSignature>(xdrData: &xdrData)
     }
 }

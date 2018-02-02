@@ -76,8 +76,16 @@ func errorFromResponse(response: [String: Any]) -> Error? {
 
     if
         let resultXDRStr = dict["result_xdr"] as? String,
-        var resultXDRData = Data(base64Encoded: resultXDRStr) {
-        let result = TransactionResult(xdrData: &resultXDRData, count: 0)
+        let resultXDRData = Data(base64Encoded: resultXDRStr) {
+
+        let result: TransactionResult
+        do {
+            result = try XDRDecoder.decode(TransactionResult.self, data: resultXDRData)
+        }
+        catch {
+            return error
+        }
+
         switch result.result {
         case .txSUCCESS:
             break

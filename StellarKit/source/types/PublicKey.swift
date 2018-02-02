@@ -19,7 +19,7 @@ struct PublicKeyType {
 }
 
 enum PublicKey: XDRCodable, Equatable {
-    case PUBLIC_KEY_TYPE_ED25519 (FixedLengthDataWrapper)
+    case PUBLIC_KEY_TYPE_ED25519 (WrappedData32)
 
     var publicKey: String? {
         if case .PUBLIC_KEY_TYPE_ED25519(let wrapper) = self {
@@ -29,10 +29,12 @@ enum PublicKey: XDRCodable, Equatable {
         return nil
     }
 
-    init(xdrData: inout Data, count: Int32 = 0) {
-        _ = Int32(xdrData: &xdrData)
+    init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
 
-        self = .PUBLIC_KEY_TYPE_ED25519(FixedLengthDataWrapper(Data(xdrData: &xdrData, count: 32)))
+        _ = try container.decode(Int32.self)
+
+        self = .PUBLIC_KEY_TYPE_ED25519(try container.decode(WrappedData32.self))
     }
     
     private func discriminant() -> Int32 {
@@ -40,16 +42,16 @@ enum PublicKey: XDRCodable, Equatable {
         case .PUBLIC_KEY_TYPE_ED25519: return PublicKeyType.PUBLIC_KEY_TYPE_ED25519
         }
     }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
 
-    func toXDR(count: Int32 = 0) -> Data {
-        var xdr = discriminant().toXDR()
+        try container.encode(discriminant())
 
         switch self {
         case .PUBLIC_KEY_TYPE_ED25519 (let key):
-            xdr.append(key.toXDR())
+            try container.encode(key)
         }
-
-        return xdr
     }
 
     public static func ==(lhs: PublicKey, rhs: PublicKey) -> Bool {

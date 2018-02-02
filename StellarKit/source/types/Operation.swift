@@ -22,7 +22,7 @@ struct OperationType {
     static let MANAGE_DATA: Int32 = 10
 }
 
-public struct Operation: XDREncodableStruct, XDRDecodable {
+public struct Operation: XDRCodable {
     let sourceAccount: PublicKey?
     let body: Body
 
@@ -31,9 +31,18 @@ public struct Operation: XDREncodableStruct, XDRDecodable {
         self.body = body
     }
 
-    public init(xdrData: inout Data, count: Int32 = 0) {
-        sourceAccount = Array<PublicKey>(xdrData: &xdrData).first
-        body = Body(xdrData: &xdrData)
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+
+        sourceAccount = try container.decode(Array<PublicKey>.self).first
+        body = try container.decode(Body.self)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+
+        try container.encode(sourceAccount)
+        try container.encode(body)
     }
 
     enum Body: XDRCodable {
@@ -41,18 +50,20 @@ public struct Operation: XDREncodableStruct, XDRDecodable {
         case PAYMENT (PaymentOp)
         case CHANGE_TRUST (ChangeTrustOp)
 
-        init(xdrData: inout Data, count: Int32 = 0) {
-            let discriminant = Int32(xdrData: &xdrData)
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let discriminant = try container.decode(Int32.self)
 
             switch discriminant {
             case OperationType.CREATE_ACCOUNT:
-                self = .CREATE_ACCOUNT(CreateAccountOp(xdrData: &xdrData))
+                self = .CREATE_ACCOUNT(try container.decode(CreateAccountOp.self))
             case OperationType.CHANGE_TRUST:
-                self = .CHANGE_TRUST(ChangeTrustOp(xdrData: &xdrData))
+                self = .CHANGE_TRUST(try container.decode(ChangeTrustOp.self))
             case OperationType.PAYMENT:
-                self = .PAYMENT(PaymentOp(xdrData: &xdrData))
+                self = .PAYMENT(try container.decode(PaymentOp.self))
             default:
-                self = .CREATE_ACCOUNT(CreateAccountOp(xdrData: &xdrData))
+                self = .CREATE_ACCOUNT(try container.decode(CreateAccountOp.self))
             }
         }
         
@@ -64,21 +75,21 @@ public struct Operation: XDREncodableStruct, XDRDecodable {
             }
         }
 
-        func toXDR(count: Int32 = 0) -> Data {
-            var xdr = discriminant().toXDR()
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+
+            try container.encode(discriminant())
 
             switch self {
             case .CREATE_ACCOUNT (let op):
-                xdr.append(op.toXDR())
+                try container.encode(op)
 
             case .PAYMENT (let op):
-                xdr.append(op.toXDR())
+                try container.encode(op)
 
             case .CHANGE_TRUST (let op):
-                xdr.append(op.toXDR())
+                try container.encode(op)
             }
-
-            return xdr
         }
     }
 }
