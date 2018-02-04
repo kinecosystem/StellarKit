@@ -16,7 +16,7 @@ public final class Promise {
     private var result: Any? = nil
     private var error: Error? = nil
 
-    var errorHandler: ErrorHandler?
+    private var errorHandler: ErrorHandler?
 
     private var signaled: Bool {
         return result != nil || error != nil
@@ -25,11 +25,11 @@ public final class Promise {
     private let waitGroup = DispatchGroup()
     private var finished = false
 
-    init() {
+    public init() {
         waitGroup.enter()
     }
 
-    func signal(_ result: Any) {
+    public func signal(_ result: Any) {
         guard signaled == false else {
             return
         }
@@ -39,7 +39,7 @@ public final class Promise {
         waitGroup.leave()
     }
 
-    func signal(_ error: Error) {
+    public func signal(_ error: Error) {
         guard signaled == false else {
             return
         }
