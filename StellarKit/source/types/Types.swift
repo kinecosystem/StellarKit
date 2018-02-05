@@ -8,14 +8,6 @@
 
 import Foundation
 
-private func encode(data: Data, to encoder: XDREncoder) throws {
-    try data.withUnsafeBytes { (p: UnsafePointer<UInt8>) -> Void in
-        for i in 0..<data.count {
-            try p.advanced(by: i).pointee.encode(to: encoder)
-        }
-    }
-}
-
 private func decodeData(from decoder: XDRDecoder, capacity: Int) throws -> Data {
     var d = Data(capacity: capacity)
 
@@ -33,7 +25,7 @@ struct WrappedData32: XDRCodable, Equatable {
     private let capacity = 32
 
     public func xdrEncode(to encoder: XDREncoder) throws {
-        try StellarKit.encode(data: wrapped, to: encoder)
+        try wrapped.forEach { try $0.encode(to: encoder) }
     }
 
     public init(fromBinary decoder: XDRDecoder) throws {
@@ -55,7 +47,7 @@ struct WrappedData4: XDRCodable, Equatable {
     private let capacity = 4
 
     public func xdrEncode(to encoder: XDREncoder) throws {
-        try StellarKit.encode(data: wrapped, to: encoder)
+        try wrapped.forEach { try $0.encode(to: encoder) }
     }
 
     public init(fromBinary decoder: XDRDecoder) throws {
@@ -77,7 +69,7 @@ struct WrappedData12: XDRCodable, Equatable {
     private let capacity = 12
 
     public func xdrEncode(to encoder: XDREncoder) throws {
-        try StellarKit.encode(data: wrapped, to: encoder)
+        try wrapped.forEach { try $0.encode(to: encoder) }
     }
 
     public init(fromBinary decoder: XDRDecoder) throws {

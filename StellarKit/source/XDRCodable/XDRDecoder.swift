@@ -45,14 +45,7 @@ public extension XDRDecoder {
     }
 
     static func decode<T: XDRDecodable>(_ type: T.Type, data: Data) throws -> T {
-        var a = [UInt8]()
-        data.withUnsafeBytes { (p: UnsafePointer<UInt8>) -> Void in
-            for i in 0..<data.count {
-                a.append(p.advanced(by: i).pointee)
-            }
-        }
-
-        return try XDRDecoder(data: a).decode(T.self)
+        return try XDRDecoder(data: data.map { $0 }).decode(T.self)
     }
 }
 

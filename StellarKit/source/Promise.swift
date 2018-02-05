@@ -8,13 +8,11 @@
 
 import Foundation
 
-public typealias ResultHandler = (Any) throws -> Any?
-public typealias VoidResultHandler = (Any) throws -> Void
 public typealias ErrorHandler = (Error) -> Void
 
-public final class Promise {
-    private var result: Any? = nil
-    private var error: Error? = nil
+public final class Promise<Value> {
+    public private(set) var result: Value? = nil
+    public private(set) var error: Error? = nil
 
     private var errorHandler: ErrorHandler?
 
@@ -29,76 +27,38 @@ public final class Promise {
         waitGroup.enter()
     }
 
-    public func signal(_ result: Any) {
-        guard signaled == false else {
-            return
-        }
+    convenience public init(_ result: Value) {
+        self.init()
 
-        self.result = result
-
-        waitGroup.leave()
+        signal(result)
     }
 
-    public func signal(_ error: Error) {
-        guard signaled == false else {
-            return
-        }
+    convenience public init(_ error: Error) {
+        self.init()
 
-        self.error = error
-
-        waitGroup.leave()
+        signal(error)
     }
 
     @discardableResult
-    public func then(_ handler: @escaping ResultHandler) -> Promise {
-        if finished {
-            return self
-        }
-
-        return commonThen { result -> Any? in
-            let res: Any?
-
-            do {
-                res = try handler(result)
-            }
-            catch {
-                res = error
-            }
-
-            return res
-        }
+    public func signal(_ result: Value) -> Promise<Value> {
+        return commonSignal(result)
     }
 
     @discardableResult
-    public func then(_ handler: @escaping VoidResultHandler) -> Promise {
+    public func signal(_ error: Error) -> Promise<Value> {
+        return commonSignal(error)
+    }
+
+    @discardableResult
+    public func then<NewValue>(_ handler: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
         if finished {
-            return self
+            let p = Promise<NewValue>()
+            p.errorHandler = errorHandler
+            p.error = error
+
+            return p
         }
 
-        return commonThen { result -> Any? in
-            var res: Any? = nil
-
-            do {
-                try handler(result)
-            }
-            catch {
-                res = error
-            }
-
-            return res
-        }
-    }
-
-    public func error(_ handler: @escaping ErrorHandler) {
-        if let error = error {
-            handler(error)
-        }
-        else {
-            errorHandler = handler
-        }
-    }
-
-    private func commonThen(handler: ResultHandler) -> Promise {
         waitGroup.wait()
 
         finished = true
@@ -110,20 +70,71 @@ public final class Promise {
                 res = try handler(result)
             }
             catch {
-                res = error
+                self.error = error
             }
 
-            if let promise = res as? Promise {
+            if let promise = res as? Promise<NewValue> {
                 return promise
             }
-            else if let error = res as? Error {
+        }
+
+        let p = Promise<NewValue>()
+        if let error = error {
+            p.errorHandler = errorHandler
+            p.signal(error)
+        }
+
+        return p
+    }
+
+    @discardableResult
+    public func then(_ handler: @escaping (Value) throws -> Void) -> Promise {
+        if finished {
+            return self
+        }
+
+        waitGroup.wait()
+
+        finished = true
+
+        if let result = result {
+            do {
+                try handler(result)
+            }
+            catch {
                 self.error = error
-                errorHandler?(error)
             }
         }
-        else if let error = error {
+
+        if let error = error {
             errorHandler?(error)
         }
+
+        return self
+    }
+
+    public func error(_ handler: @escaping ErrorHandler) {
+        if let error = error {
+            handler(error)
+        }
+        else {
+            errorHandler = handler
+        }
+    }
+
+    private func commonSignal(_ value: Any) -> Promise<Value> {
+        guard signaled == false else {
+            return self
+        }
+
+        if let value = value as? Value {
+            self.result = value
+        }
+        else if let error = value as? Error {
+            self.error = error
+        }
+
+        waitGroup.leave()
 
         return self
     }

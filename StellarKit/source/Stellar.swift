@@ -60,9 +60,9 @@ public class Stellar {
                         destination: String,
                         amount: Int64,
                         passphrase: String,
-                        asset: Asset? = nil) -> Promise {
+                        asset: Asset? = nil) -> Promise<String> {
         return balance(account: destination, asset: asset)
-            .then { _ -> Promise in
+            .then { _ -> Promise<String> in
                 let op = self.paymentOp(destination: destination,
                                         amount: amount,
                                         source: nil,
@@ -83,8 +83,8 @@ public class Stellar {
 
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public func trust(asset: Asset, account: Account, passphrase: String) -> Promise {
-        let p = Promise()
+    public func trust(asset: Asset, account: Account, passphrase: String) -> Promise<String> {
+        let p = Promise<String>()
 
         guard let destination = account.publicKey else {
             p.signal(StellarError.missingPublicKey)
@@ -125,8 +125,8 @@ public class Stellar {
 
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public func balance(account: String, asset: Asset? = nil) -> Promise {
-        let p = Promise()
+    public func balance(account: String, asset: Asset? = nil) -> Promise<Decimal> {
+        let p = Promise<Decimal>()
 
         let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
@@ -179,18 +179,14 @@ public class Stellar {
     // This is for testing only.
     // The account used for funding exists only on test-net.
     /// :nodoc:
-    public func fund(account: String) -> Promise {
+    public func fund(account: String) -> Promise<String> {
         let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
         let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
 
         let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: funderPK)))
 
         return self.sequence(account: funderPK)
-            .then { sequence -> Any in
-                guard let sequence = sequence as? UInt64 else {
-                    return StellarError.internalInconsistency
-                }
-
+            .then { sequence -> Promise<String> in
                 let tx = Transaction(sourceAccount: sourcePK,
                                      seqNum: sequence + 1,
                                      timeBounds: nil,
@@ -256,8 +252,8 @@ public class Stellar {
 
     public func transaction(source: Account,
                             operations: [Operation],
-                            sequence: UInt64 = 0) -> Promise {
-        let p = Promise()
+                            sequence: UInt64 = 0) -> Promise<Transaction> {
+        let p = Promise<Transaction>()
 
         guard let sourceKey = source.publicKey else {
             p.signal(StellarError.missingPublicKey)
@@ -285,10 +281,6 @@ public class Stellar {
 
         self.sequence(account: sourceKey)
             .then { sequence -> Void in
-                guard let sequence = sequence as? UInt64 else {
-                    throw StellarError.internalInconsistency
-                }
-
                 comp(sequence + 1)
             }
             .error { error in
@@ -311,8 +303,8 @@ public class Stellar {
                         hint: KeyUtils.key(base32: publicKey).suffix(4))
     }
 
-    public func sequence(account: String) -> Promise {
-        let p = Promise()
+    public func sequence(account: String) -> Promise<UInt64> {
+        let p = Promise<UInt64>()
 
         let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
@@ -373,13 +365,9 @@ public class Stellar {
 
     private func issueTransaction(source: Account,
                                   passphrase: String,
-                                  operations: [Operation]) -> Promise {
+                                  operations: [Operation]) -> Promise<String> {
         return self.transaction(source: source,operations: operations)
-            .then { tx -> Any in
-                guard let tx = tx as? Transaction else {
-                    return StellarError.internalInconsistency
-                }
-
+            .then { tx -> Promise<String> in
                 let envelope = try self.sign(transaction: tx,
                                              signer: source,
                                              passphrase: passphrase)
@@ -388,8 +376,8 @@ public class Stellar {
             }
     }
 
-    private func postTransaction(envelope: TransactionEnvelope) -> Promise {
-        let p = Promise()
+    private func postTransaction(envelope: TransactionEnvelope) -> Promise<String> {
+        let p = Promise<String>()
 
         do {
             let envelopeData = try Data(XDREncoder.encode(envelope))

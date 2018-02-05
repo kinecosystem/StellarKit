@@ -64,22 +64,11 @@ extension FixedWidthInteger where Self: XDRDecodable {
 
 extension Data: XDRCodable {
     public func xdrEncode(to encoder: XDREncoder) throws {
-        var a = [UInt8]()
-        withUnsafeBytes { (p: UnsafePointer<UInt8>) -> Void in
-            for i in 0..<count {
-                a.append(p.advanced(by: i).pointee)
-            }
-        }
-
-        try encoder.encode(a)
+        try encoder.encode(map { $0 })
     }
 
     public func xdrEncodeFixed(to encoder: XDREncoder) throws {
-        try withUnsafeBytes { (p: UnsafePointer<UInt8>) -> Void in
-            for i in 0..<count {
-                try p.advanced(by: i).pointee.encode(to: encoder)
-            }
-        }
+        try forEach { try $0.encode(to: encoder) }
     }
 
     public init(fromBinary xdrDecoder: XDRDecoder) throws {

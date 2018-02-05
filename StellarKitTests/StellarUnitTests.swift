@@ -77,7 +77,7 @@ class StellarUnitTests: XCTestCase {
 
     func test_trust() {
         self.stellar.fund(account: account.publicKey!)
-            .then { _ -> Any? in
+            .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account,
                                           passphrase: self.passphrase)
@@ -89,12 +89,12 @@ class StellarUnitTests: XCTestCase {
 
     func test_double_trust() {
         stellar.fund(account: account.publicKey!)
-            .then { _ -> Any? in
+            .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account,
                                           passphrase: self.passphrase)
             }
-            .then { txHash -> Any? in
+            .then { txHash -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account,
                                           passphrase: self.passphrase)
@@ -130,12 +130,12 @@ class StellarUnitTests: XCTestCase {
 
     func test_payment_from_unfunded_account() {
         stellar.fund(account: account2.publicKey!)
-            .then { _ -> Any? in
+            .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account2,
                                           passphrase: self.passphrase)
             }
-            .then { txHash -> Any? in
+            .then { txHash -> Promise<String> in
                 return self.stellar.payment(source: self.account,
                                      destination: self.account2.publicKey!,
                                      amount: 1,
@@ -163,20 +163,20 @@ class StellarUnitTests: XCTestCase {
         let stellar = self.stellar
 
         stellar.fund(account: account.publicKey!)
-            .then { _ -> Any? in
+            .then { _ -> Promise<String> in
                 return stellar.fund(account: self.account2.publicKey!)
             }
-            .then { _ -> Any? in
+            .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account,
                                           passphrase: self.passphrase)
             }
-            .then { txHash -> Any? in
+            .then { txHash -> Promise<String> in
                 return stellar.trust(asset: stellar.asset,
                                      account: self.account2,
                                      passphrase: self.passphrase)
             }
-            .then { txHash -> Any? in
+            .then { txHash -> Promise<String> in
                 return stellar.payment(source: self.account,
                                        destination: self.account2.publicKey!,
                                        amount: 1,
@@ -204,12 +204,12 @@ class StellarUnitTests: XCTestCase {
         let stellar = self.stellar
 
         stellar.fund(account: account.publicKey!)
-            .then { _ -> Any? in
+            .then { _ -> Promise<String> in
                 return stellar.trust(asset: stellar.asset,
                                      account: self.account,
                                      passphrase: self.passphrase)
             }
-            .then { txHash -> Any? in
+            .then { txHash -> Promise<String> in
                 return stellar.payment(source: self.issuer,
                                        destination: self.account.publicKey!,
                                        amount: 1,
@@ -224,12 +224,12 @@ class StellarUnitTests: XCTestCase {
         let stellar = self.stellar
 
         stellar.fund(account: account.publicKey!)
-            .then { txHash -> Any? in
+            .then { txHash -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account,
                                           passphrase: self.passphrase)
             }
-            .then { txHash -> Any? in
+            .then { txHash -> Promise<Decimal> in
                 return stellar.balance(account: self.account.publicKey!)
             }
             .error { error in

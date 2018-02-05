@@ -19,8 +19,8 @@ class PromiseTests: XCTestCase {
         }
     }
 
-    func asyncPromise(_ x: Int) -> Promise {
-        let p = Promise()
+    func asyncPromise(_ x: Int) -> Promise<Int> {
+        let p = Promise<Int>()
 
         DispatchQueue(label: "").async {
             p.signal(x)
@@ -29,8 +29,8 @@ class PromiseTests: XCTestCase {
         return p
     }
 
-    func asyncError(_ m: String) -> Promise {
-        let p = Promise()
+    func asyncError(_ m: String) -> Promise<Int> {
+        let p = Promise<Int>()
 
         DispatchQueue(label: "").async {
             p.signal(TestError(m))
@@ -42,7 +42,7 @@ class PromiseTests: XCTestCase {
     func test_async_then() {
         asyncPromise(1)
             .then { x -> Void in
-                XCTAssertEqual(x as? Int, Int?(1))
+                XCTAssertEqual(x, Int?(1))
         }
             .error { error in
                 XCTAssert(false, "Shouldn't reach here.")
@@ -63,11 +63,11 @@ class PromiseTests: XCTestCase {
         let e = expectation(description: "")
 
         asyncPromise(1)
-            .then { x -> Any? in
+            .then { x -> Promise<Int> in
                 return self.asyncPromise(2)
             }
             .then { x -> Void in
-                XCTAssertEqual(x as? Int, Int?(2))
+                XCTAssertEqual(x, Int?(2))
 
                 e.fulfill()
             }
@@ -82,10 +82,8 @@ class PromiseTests: XCTestCase {
         let e = expectation(description: "")
 
         asyncPromise(1)
-            .then { x -> Any? in
-                XCTAssertEqual(x as? Int, Int?(1))
-
-                return TestError("a")
+            .then { x -> Promise<Int> in
+                throw TestError("a")
             }
             .error { error in
                 XCTAssertEqual((error as? TestError)?.m, "a")
@@ -100,10 +98,10 @@ class PromiseTests: XCTestCase {
         let e = expectation(description: "")
 
         asyncPromise(1)
-            .then { x -> Any? in
-                XCTAssertEqual(x as? Int, Int?(1))
+            .then { x -> Promise<Int> in
+                XCTAssertEqual(x, Int?(1))
 
-                return TestError("a")
+                throw TestError("a")
             }
             .then { _ -> Void in
                 XCTAssert(false, "Shouldn't reach here.")
@@ -121,11 +119,11 @@ class PromiseTests: XCTestCase {
         let e = expectation(description: "")
 
         asyncPromise(1)
-            .then { x -> Any? in
+            .then { x -> Promise<Int> in
                 return self.asyncPromise(2)
             }
-            .then { _ -> Any? in
-                return TestError("a")
+            .then { _ -> Promise<Int> in
+                throw TestError("a")
             }
             .error { error in
                 XCTAssertEqual((error as? TestError)?.m, "a")

@@ -58,10 +58,8 @@ public extension Data {
     var hexString: String {
         var s = ""
 
-        self.withUnsafeBytes { (bp: UnsafePointer<UInt8>) -> Void in
-            for i in 0..<count {
-                s += String(format: "%02x", bp.advanced(by: i).pointee)
-            }
+        forEach {
+            s += String(format: "%02x", $0)
         }
 
         return s
@@ -72,28 +70,18 @@ public extension Data {
     var binaryString: String {
         var s = ""
 
-        withUnsafeBytes { (bp: UnsafePointer<UInt8>) -> Void in
-            for i in 0..<count {
-                let bs = String(bp.advanced(by: i).pointee, radix: 2)
-                let padding = String(repeating: "0", count: 8 - bs.length)
+        forEach {
+            let bs = String($0, radix: 2)
+            let padding = String(repeating: "0", count: 8 - bs.length)
 
-                s += padding + bs
-            }
+            s += padding + bs
         }
 
         return s
     }
 
     var byteString: String {
-        let a = withUnsafeBytes { (ptr: UnsafePointer<UInt8>) -> Array<UInt8> in
-            var a = [UInt8]()
-            for i in 0..<self.count {
-                a.append(ptr.advanced(by: i).pointee)
-            }
-            return a
-        }
-
-        return a.description
+        return map { $0 }.description
     }
 
     var crc16: [UInt8] {
@@ -134,15 +122,11 @@ public extension Data {
 
         var crc: UInt16 = 0
 
-        withUnsafeBytes { (bp: UnsafePointer<UInt8>) -> Void in
-            for i in 0..<count {
-                let byte = bp.advanced(by: i).pointee
+        forEach { byte in
+            let t1 = (UInt16(crc << 8) & UInt16(0xFFFF))
+            let t2 = crc16tab[Int(((crc >> 8) ^ UInt16(byte)) & UInt16(0x00FF))]
 
-                let t1 = ((crc << 8) & UInt16(0xFFFF))
-                let t2 = crc16tab[Int(((crc >> 8) ^ UInt16(byte)) & UInt16(0x00FF))]
-
-                crc = t1 ^ t2
-            }
+            crc = t1 ^ t2
         }
 
         let b0 = UInt8(crc & 0x00ff)
