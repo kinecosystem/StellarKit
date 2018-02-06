@@ -62,7 +62,7 @@ public class Stellar {
                         passphrase: String,
                         asset: Asset? = nil) -> Promise<String> {
         return balance(account: destination, asset: asset)
-            .then { _ -> Promise<String> in
+            .then { _ in
                 let op = self.paymentOp(destination: destination,
                                         amount: amount,
                                         source: nil,
@@ -160,7 +160,7 @@ public class Stellar {
         let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: funderPK)))
 
         return self.sequence(account: funderPK)
-            .then { sequence -> Promise<String> in
+            .then { sequence in
                 let tx = Transaction(sourceAccount: sourcePK,
                                      seqNum: sequence + 1,
                                      timeBounds: nil,
@@ -314,7 +314,7 @@ public class Stellar {
                                   passphrase: String,
                                   operations: [Operation]) -> Promise<String> {
         return self.transaction(source: source,operations: operations)
-            .then { tx -> Promise<String> in
+            .then { tx in
                 let envelope = try self.sign(transaction: tx,
                                              signer: source,
                                              passphrase: passphrase)
@@ -324,80 +324,70 @@ public class Stellar {
     }
 
     private func postTransaction(envelope: TransactionEnvelope) -> Promise<String> {
-        let p = Promise<String>()
-
+        let envelopeData: Data
         do {
-            let envelopeData = try Data(XDREncoder.encode(envelope))
-            guard let urlEncodedEnvelope = envelopeData.base64EncodedString().urlEncoded else {
-                p.signal(StellarError.urlEncodingFailed)
-
-                return p
-            }
-
-            let url = baseURL.appendingPathComponent("transactions")
-
-            guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
-                p.signal(StellarError.dataEncodingFailed)
-
-                return p
-            }
-
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.httpBody = httpBody
-
-            URLSession
-                .shared
-                .dataTask(with: request, completionHandler: { data, response, error in
-                    if let error = error {
-                        p.signal(error)
-                        
-                        return
-                    }
-
-                    guard let data = data else {
-                        p.signal(StellarError.internalInconsistency)
-
-                        return
-                    }
-
-                    if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data),
-                        let resultXDR = horizonError.extras?.resultXDR,
-                        let error = errorFromResponse(resultXDR: resultXDR) {
-                        p.signal(error)
-
-                        return
-                    }
-
-                    do {
-                        let txResponse = try JSONDecoder().decode(TransactionResponse.self,
-                                                                  from: data)
-
-                        p.signal(txResponse.hash)
-                    }
-                    catch {
-                        p.signal(error)
-                    }
-                })
-                .resume()
-
-            return p
+            envelopeData = try Data(XDREncoder.encode(envelope))
         }
         catch {
-            p.signal(error)
+            return Promise<String>(error)
+        }
 
-            return p
+        guard let urlEncodedEnvelope = envelopeData.base64EncodedString().urlEncoded else {
+            return Promise<String>(StellarError.urlEncodingFailed)
+        }
+
+        guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
+            return Promise<String>(StellarError.dataEncodingFailed)
+        }
+
+        var request = URLRequest(url: baseURL.appendingPathComponent("transactions"))
+        request.httpMethod = "POST"
+        request.httpBody = httpBody
+
+        return issue(request: request)
+            .then { data in
+                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data),
+                    let resultXDR = horizonError.extras?.resultXDR,
+                    let error = errorFromResponse(resultXDR: resultXDR) {
+                    throw error
+                }
+
+                do {
+                    let txResponse = try JSONDecoder().decode(TransactionResponse.self,
+                                                              from: data)
+
+                    return Promise<String>(txResponse.hash)
+                }
+                catch {
+                    throw error
+                }
         }
     }
 
     private func accountDetails(account: String) -> Promise<AccountDetails> {
-        let p = Promise<AccountDetails>()
-
         let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
+
+        return issue(request: URLRequest(url: url))
+            .then { data in
+                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
+                    if horizonError.status == 404 {
+                        throw StellarError.missingAccount
+                    }
+                    else {
+                        throw StellarError.unknownError(horizonError)
+                    }
+                }
+
+                return try Promise<AccountDetails>(JSONDecoder().decode(AccountDetails.self, from: data))
+            }
+    }
+
+    private func issue(request: URLRequest) -> Promise<Data> {
+        let p = Promise<Data>()
 
         URLSession
             .shared
-            .dataTask(with: url, completionHandler: { (data, response, error) in
+            .dataTask(with: request, completionHandler: { (data, response, error) in
                 if let error = error {
                     p.signal(error)
 
@@ -410,23 +400,7 @@ public class Stellar {
                     return
                 }
 
-                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
-                    if horizonError.status == 404 {
-                        p.signal(StellarError.missingAccount)
-                    }
-                    else {
-                        p.signal(StellarError.unknownError(horizonError))
-                    }
-
-                    return
-                }
-
-                do {
-                    p.signal(try JSONDecoder().decode(AccountDetails.self, from: data))
-                }
-                catch {
-                    p.signal(error)
-                }
+                p.signal(data)
             })
             .resume()
 

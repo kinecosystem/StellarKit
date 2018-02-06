@@ -10,8 +10,8 @@ import Foundation
 
 public typealias ErrorHandler = (Error) -> Void
 
-public final class Promise<Value> {
-    public private(set) var result: Value? = nil
+public final class Promise<Result> {
+    public private(set) var result: Result? = nil
     public private(set) var error: Error? = nil
 
     private var errorHandler: ErrorHandler?
@@ -27,7 +27,7 @@ public final class Promise<Value> {
         waitGroup.enter()
     }
 
-    convenience public init(_ result: Value) {
+    convenience public init(_ result: Result) {
         self.init()
 
         signal(result)
@@ -40,17 +40,17 @@ public final class Promise<Value> {
     }
 
     @discardableResult
-    public func signal(_ result: Value) -> Promise<Value> {
+    public func signal(_ result: Result) -> Promise<Result> {
         return commonSignal(result)
     }
 
     @discardableResult
-    public func signal(_ error: Error) -> Promise<Value> {
+    public func signal(_ error: Error) -> Promise<Result> {
         return commonSignal(error)
     }
 
     @discardableResult
-    public func then<NewValue>(_ handler: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
+    public func then<NewValue>(_ handler: @escaping (Result) throws -> Promise<NewValue>) -> Promise<NewValue> {
         if finished {
             let p = Promise<NewValue>()
             p.errorHandler = errorHandler
@@ -88,7 +88,7 @@ public final class Promise<Value> {
     }
 
     @discardableResult
-    public func then(_ handler: @escaping (Value) throws -> Void) -> Promise {
+    public func then(_ handler: @escaping (Result) throws -> Void) -> Promise {
         if finished {
             return self
         }
@@ -122,12 +122,12 @@ public final class Promise<Value> {
         }
     }
 
-    private func commonSignal(_ value: Any) -> Promise<Value> {
+    private func commonSignal(_ value: Any) -> Promise<Result> {
         guard signaled == false else {
             return self
         }
 
-        if let value = value as? Value {
+        if let value = value as? Result {
             self.result = value
         }
         else if let error = value as? Error {
