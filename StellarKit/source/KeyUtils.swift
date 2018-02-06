@@ -17,10 +17,6 @@ enum KeyUtilsError: Error {
 }
 
 public struct KeyUtils {
-    public static func keyPair() -> Sign.KeyPair? {
-        return Sodium().sign.keyPair()
-    }
-
     public static func keyPair(from seed: Data) -> Sign.KeyPair? {
         return Sodium().sign.keyPair(seed: seed)
     }
