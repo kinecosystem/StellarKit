@@ -35,12 +35,15 @@ class MockAccount {
         var d: [String: Any] = [:]
 
         d["sequence"] = String(describing: sequence)
+        d["id"] = "-"
+        d["account_id"] = "-"
 
         var b: [[String: String]] = []
 
         for balance in balances {
             var d = [
                 "asset_code": balance.asset.assetCode,
+                "asset_type": "-",
                 "balance": String(describing: balance.amount)
             ]
 
@@ -194,10 +197,10 @@ class HorizonMock {
     }
 
     private func missingAccount() -> Data {
-        let d = [
+        let d: [String: Any] = [
             "type": "https://stellar.org/horizon-errors/not_found",
             "title": "Resource Missing",
-            "status": "404",
+            "status": 404,
             "detail": "Reasons",
             "instance": "horizon-mock",
             ]
@@ -209,7 +212,7 @@ class HorizonMock {
         let d: [String: Any] = [
             "type": "https://stellar.org/horizon-errors/transaction_malformed",
             "title": "Transaction Malformed",
-            "status": "400",
+            "status": 400,
             "detail": "Reasons",
             "instance": "horizon-mock",
             "extras": [ "envelope_xdr": "-" ],
@@ -265,7 +268,7 @@ class HorizonMock {
         let d: [String: Any] = [
             "type": "https://stellar.org/horizon-errors/transaction_failed",
             "title": "Transaction Failed",
-            "status": "400",
+            "status": 400,
             "detail": "Reasons",
             "instance": "horizon-mock",
             "extras": [

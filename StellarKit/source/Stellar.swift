@@ -126,54 +126,28 @@ public class Stellar {
      - Returns: A promise which will be signalled with the result of the operation.
      */
     public func balance(account: String, asset: Asset? = nil) -> Promise<Decimal> {
-        let p = Promise<Decimal>()
+        return accountDetails(account: account)
+            .then { accountDetails in
+                let p = Promise<Decimal>()
 
-        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
+                let asset = asset ?? self.asset
 
-        URLSession
-            .shared
-            .dataTask(with: url, completionHandler: { (data, response, error) in
-                if let error = error {
-                    p.signal(error)
+                for balance in accountDetails.balances {
+                    let code = balance.assetCode
+                    let issuer = balance.assetIssuer
 
-                    return
-                }
-
-                do {
-                    let json = try self.json(from: data)
-
-                    guard let balances = json["balances"] as? [[String: Any]] else {
-                        p.signal(StellarError.missingAccount)
-
-                        return
+                    if (code == "native" && asset.assetCode == "native") {
+                        return p.signal(balance.balanceNum)
                     }
 
-                    let asset = asset ?? self.asset
-
-                    for balance in balances {
-                        if
-                            let code = balance["asset_code"] as? String,
-                            let amountStr = balance["balance"] as? String,
-                            let amount = Decimal(string: amountStr) {
-                            let issuer = balance["asset_issuer"] as? String ?? ""
-                            if (code == "native" && asset.assetCode == "native") ||
-                                Asset(assetCode: code, issuer: issuer) == asset {
-                                p.signal(amount)
-
-                                return
-                            }
-                        }
+                    if let issuer = issuer, let code = code,
+                        Asset(assetCode: code, issuer: issuer) == asset {
+                        return p.signal(balance.balanceNum)
                     }
-
-                    p.signal(StellarError.missingBalance)
                 }
-                catch {
-                    p.signal(error)
-                }
-            })
-            .resume()
 
-        return p
+                return p.signal(StellarError.missingBalance)
+        }
     }
 
     // This is for testing only.
@@ -280,10 +254,10 @@ public class Stellar {
         }
 
         self.sequence(account: sourceKey)
-            .then { sequence -> Void in
-                comp(sequence + 1)
+            .then {
+                comp($0 + 1)
             }
-            .error { error in
+            .error { _ in
                 p.signal(StellarError.missingSequence)
         }
 
@@ -304,39 +278,12 @@ public class Stellar {
     }
 
     public func sequence(account: String) -> Promise<UInt64> {
-        let p = Promise<UInt64>()
+        return accountDetails(account: account)
+            .then { accountDetails in
+                let p = Promise<UInt64>()
 
-        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
-
-        URLSession
-            .shared
-            .dataTask(with: url, completionHandler: { (data, response, error) in
-                if let error = error {
-                    p.signal(error)
-
-                    return
-                }
-
-                do {
-                    let json = try self.json(from: data)
-
-                    guard
-                        let sequenceStr = json["sequence"] as? String,
-                        let sequence = UInt64(sequenceStr) else {
-                            p.signal(StellarError.missingSequence)
-
-                            return
-                    }
-
-                    p.signal(sequence)
-                }
-                catch {
-                    p.signal(error)
-                }
-            })
-            .resume()
-
-        return p
+                return p.signal(accountDetails.seqNum)
+        }
     }
 
     //MARK: -
@@ -408,22 +355,25 @@ public class Stellar {
                         return
                     }
 
+                    guard let data = data else {
+                        p.signal(StellarError.internalInconsistency)
+
+                        return
+                    }
+
+                    if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data),
+                        let resultXDR = horizonError.extras?.resultXDR,
+                        let error = errorFromResponse(resultXDR: resultXDR) {
+                        p.signal(error)
+
+                        return
+                    }
+
                     do {
-                        let json = try self.json(from: data)
+                        let txResponse = try JSONDecoder().decode(TransactionResponse.self,
+                                                                  from: data)
 
-                        if let resultError = errorFromResponse(response: json) {
-                            p.signal(resultError)
-
-                            return
-                        }
-
-                        guard let hash = json["hash"] as? String else {
-                            p.signal(StellarError.missingHash)
-
-                            return
-                        }
-
-                        p.signal(hash)
+                        p.signal(txResponse.hash)
                     }
                     catch {
                         p.signal(error)
@@ -440,16 +390,47 @@ public class Stellar {
         }
     }
 
-    private func json(from data: Data?) throws -> [String: Any] {
-        guard let d = data,
-            let jsonOpt = try? JSONSerialization.jsonObject(with: d,
-                                                            options: []) as? [String: Any],
-            let json = jsonOpt
-            else {
-                throw StellarError.parseError(data)
-        }
+    private func accountDetails(account: String) -> Promise<AccountDetails> {
+        let p = Promise<AccountDetails>()
 
-        return json
+        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
+
+        URLSession
+            .shared
+            .dataTask(with: url, completionHandler: { (data, response, error) in
+                if let error = error {
+                    p.signal(error)
+
+                    return
+                }
+
+                guard let data = data else {
+                    p.signal(StellarError.internalInconsistency)
+
+                    return
+                }
+
+                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
+                    if horizonError.status == 404 {
+                        p.signal(StellarError.missingAccount)
+                    }
+                    else {
+                        p.signal(StellarError.unknownError(horizonError))
+                    }
+
+                    return
+                }
+
+                do {
+                    p.signal(try JSONDecoder().decode(AccountDetails.self, from: data))
+                }
+                catch {
+                    p.signal(error)
+                }
+            })
+            .resume()
+
+        return p
     }
 }
 

@@ -56,13 +56,7 @@ public extension Data {
     }
 
     var hexString: String {
-        var s = ""
-
-        forEach {
-            s += String(format: "%02x", $0)
-        }
-
-        return s
+        return reduce("") { $0 + String(format: "%02x", $1) }
     }
 }
 

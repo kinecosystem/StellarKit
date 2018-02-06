@@ -31,6 +31,7 @@
 		824063FA201E23FA0055D70A /* HorizonMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063F9201E23FA0055D70A /* HorizonMock.swift */; };
 		82406400201F00530055D70A /* StellarUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063FF201F00530055D70A /* StellarUnitTests.swift */; };
 		8240640A20200C620055D70A /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8240640920200C620055D70A /* Promise.swift */; };
+		8240BAF62028EAE0003F08FB /* HorizonResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8240BAF52028EAE0003F08FB /* HorizonResponses.swift */; };
 		82B8DC6D2022000000773D21 /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B8DC6C2022000000773D21 /* PromiseTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		82FD8B2320264D9A00A126C0 /* XDRCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B1F20264D9800A126C0 /* XDRCodable.swift */; };
@@ -169,6 +170,7 @@
 		824063F9201E23FA0055D70A /* HorizonMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonMock.swift; sourceTree = "<group>"; };
 		824063FF201F00530055D70A /* StellarUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StellarUnitTests.swift; path = StellarKitTests/StellarUnitTests.swift; sourceTree = SOURCE_ROOT; };
 		8240640920200C620055D70A /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
+		8240BAF52028EAE0003F08FB /* HorizonResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonResponses.swift; sourceTree = "<group>"; };
 		82B8DC6C2022000000773D21 /* PromiseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		82FD8B1F20264D9800A126C0 /* XDRCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRCodable.swift; sourceTree = "<group>"; };
@@ -342,6 +344,7 @@
 				824063AB20147DCD0055D70A /* types */,
 				82340BB71FFDF3390034204F /* Conversion.swift */,
 				82340BD31FFDF7780034204F /* Data+extensions.swift */,
+				8240BAF52028EAE0003F08FB /* HorizonResponses.swift */,
 				82ECAB8B2003290F0010E31F /* KeyUtils.swift */,
 				82340BDC1FFE24EE0034204F /* Stellar.swift */,
 				82340C4A20014BFC0034204F /* StellarErrors.swift */,
@@ -747,6 +750,7 @@
 				E96F241C2013D6C60017EF68 /* KeychainSwiftAccessOptions.swift in Sources */,
 				E96F241D2013D6C60017EF68 /* TegKeychainConstants.swift in Sources */,
 				E96F24BA2013D6D90017EF68 /* SecretStream.swift in Sources */,
+				8240BAF62028EAE0003F08FB /* HorizonResponses.swift in Sources */,
 				82340BBA1FFDF3390034204F /* Conversion.swift in Sources */,
 				824063B520147DCD0055D70A /* Transaction.swift in Sources */,
 				82FD8B2520264D9A00A126C0 /* XDREncoder.swift in Sources */,

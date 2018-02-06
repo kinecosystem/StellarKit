@@ -19,7 +19,7 @@ public enum StellarError: Error {
     case signingFailed
     case destinationNotReadyForAsset (Error, Asset)
     case parseError (Data?)
-    case unknownError ([String: Any]?)
+    case unknownError (Any?)
     case internalInconsistency
 }
 
@@ -66,18 +66,8 @@ public enum PaymentError: Int32, Error {
     case PAYMENT_NO_ISSUER = -9          // missing issuer on asset
 }
 
-func errorFromResponse(response: [String: Any]) -> Error? {
-    let dict: [String: Any]
-    if let extras = response["extras"] as? [String: Any] {
-        dict = extras
-    } else {
-        dict = response
-    }
-
-    if
-        let resultXDRStr = dict["result_xdr"] as? String,
-        let resultXDRData = Data(base64Encoded: resultXDRStr) {
-
+func errorFromResponse(resultXDR: String) -> Error? {
+    if let resultXDRData = Data(base64Encoded: resultXDR) {
         let result: TransactionResult
         do {
             result = try XDRDecoder.decode(TransactionResult.self, data: resultXDRData)
@@ -94,10 +84,10 @@ func errorFromResponse(response: [String: Any]) -> Error? {
                 return transactionError
             }
 
-            return StellarError.unknownError(response)
+            return StellarError.unknownError(resultXDR)
         case .txFAILED (let opResults):
             guard let opResult = opResults.first else {
-                return StellarError.unknownError(response)
+                return StellarError.unknownError(resultXDR)
             }
 
             switch opResult {
@@ -110,7 +100,7 @@ func errorFromResponse(response: [String: Any]) -> Error? {
                             return paymentError
                         }
 
-                        return StellarError.unknownError(response)
+                        return StellarError.unknownError(resultXDR)
 
                     default:
                         break
@@ -122,7 +112,7 @@ func errorFromResponse(response: [String: Any]) -> Error? {
                             return createAccountError
                         }
 
-                        return StellarError.unknownError(response)
+                        return StellarError.unknownError(resultXDR)
 
                     default:
                         break
@@ -148,7 +138,7 @@ func errorFromResponse(response: [String: Any]) -> Error? {
             }
         }
     } else {
-        return StellarError.unknownError(response)
+        return StellarError.unknownError(resultXDR)
     }
 
     return nil
