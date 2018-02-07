@@ -2,7 +2,7 @@
 //  Types.swift
 //  StellarKit
 //
-//  Created by Avi Shevin on 02/02/2018.
+//  Created by Kin Foundation.
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 

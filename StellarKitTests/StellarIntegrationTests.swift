@@ -54,15 +54,23 @@ class StellarIntegrationTests: XCTestCase {
             return
         }
         
+        let e = expectation(description: "")
+
         self.stellar.fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: account,
                                           passphrase: self.passphrase)
             }
+            .then { _ in
+                e.fulfill()
+            }
             .error { error in
                 XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                e.fulfill()
         }
+
+        wait(for: [e], timeout: 120.0)
     }
     
     func test_double_trust() {
@@ -72,6 +80,8 @@ class StellarIntegrationTests: XCTestCase {
             return
         }
         
+        let e = expectation(description: "")
+
         stellar.fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
@@ -83,9 +93,15 @@ class StellarIntegrationTests: XCTestCase {
                                           account: account,
                                           passphrase: self.passphrase)
             }
+            .then { _ in
+                e.fulfill()
+            }
             .error { error in
                 XCTAssertTrue(false, "Failed to trust asset: \(error)")
+                e.fulfill()
         }
+
+        wait(for: [e], timeout: 120.0)
     }
     
     func test_payment_to_untrusting_account() {
@@ -98,12 +114,15 @@ class StellarIntegrationTests: XCTestCase {
                 return
         }
         
+        let e = expectation(description: "")
+
         stellar.payment(source: account,
                         destination: account2.publicKey!,
                         amount: 1,
                         passphrase: self.passphrase)
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
+                e.fulfill()
             }
             .error { error in
                 guard let stellarError = error as? StellarError else {
@@ -118,7 +137,11 @@ class StellarIntegrationTests: XCTestCase {
                 default:
                     XCTAssertTrue(false, "Received unexpected error: \(error)!")
                 }
+
+                e.fulfill()
         }
+
+        wait(for: [e], timeout: 120.0)
     }
     
     func test_payment_from_unfunded_account() {
@@ -131,6 +154,8 @@ class StellarIntegrationTests: XCTestCase {
                 return
         }
         
+        let e = expectation(description: "")
+
         stellar.fund(account: account2.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
@@ -145,6 +170,7 @@ class StellarIntegrationTests: XCTestCase {
             }
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
+                e.fulfill()
             }
             .error { error in
                 guard let stellarError = error as? StellarError else {
@@ -158,12 +184,14 @@ class StellarIntegrationTests: XCTestCase {
                 default:
                     XCTAssertTrue(false, "Received unexpected error: \(error)!")
                 }
+
+                e.fulfill()
         }
+
+        wait(for: [e], timeout: 120.0)
     }
     
     func test_payment_from_empty_account() {
-        let stellar = self.stellar
-        
         guard
             let account = account,
             let account2 = account2
@@ -173,12 +201,16 @@ class StellarIntegrationTests: XCTestCase {
                 return
         }
         
+        let e = expectation(description: "")
+
+        let stellar = self.stellar
+
         stellar.fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return stellar.fund(account: account2.publicKey!)
             }
             .then { _ -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+                return self.stellar.trust(asset: stellar.asset,
                                           account: account,
                                           passphrase: self.passphrase)
             }
@@ -195,6 +227,7 @@ class StellarIntegrationTests: XCTestCase {
             }
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
+                e.fulfill()
             }
             .error { error in
                 guard let paymentError = error as? PaymentError else {
@@ -208,12 +241,14 @@ class StellarIntegrationTests: XCTestCase {
                 default:
                     XCTAssertTrue(false, "Received unexpected error: \(error)!")
                 }
+
+                e.fulfill()
         }
+
+        wait(for: [e], timeout: 120.0)
     }
     
     func test_payment_to_trusting_account() {
-        let stellar = self.stellar
-        
         guard
             let account = account,
             let issuer = issuer
@@ -223,6 +258,10 @@ class StellarIntegrationTests: XCTestCase {
                 return
         }
         
+        let e = expectation(description: "")
+
+        let stellar = self.stellar
+
         stellar.fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return stellar.trust(asset: stellar.asset,
@@ -235,14 +274,18 @@ class StellarIntegrationTests: XCTestCase {
                                        amount: 1,
                                        passphrase: self.passphrase)
             }
+            .then { _ in
+                e.fulfill()
+            }
             .error { error in
                 XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                e.fulfill()
         }
+
+        wait(for: [e], timeout: 120.0)
     }
     
     func test_balance() {
-        let stellar = self.stellar
-        
         guard
             let account = account
             else {
@@ -251,18 +294,28 @@ class StellarIntegrationTests: XCTestCase {
                 return
         }
         
+        let e = expectation(description: "")
+
+        let stellar = self.stellar
+
         stellar.fund(account: account.publicKey!)
-            .then { _ -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+            .then { txHash -> Promise<String> in
+                return self.stellar.trust(asset: stellar.asset,
                                           account: account,
                                           passphrase: self.passphrase)
             }
             .then { txHash -> Promise<Decimal> in
                 return stellar.balance(account: account.publicKey!)
             }
+            .then { _ in
+                e.fulfill()
+            }
             .error { error in
                 XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                e.fulfill()
         }
+
+        wait(for: [e], timeout: 120.0)
     }
 
 }

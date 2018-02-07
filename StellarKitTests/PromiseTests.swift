@@ -2,7 +2,7 @@
 //  PromiseTests.swift
 //  StellarKitTests
 //
-//  Created by Avi Shevin on 31/01/2018.
+//  Created by Kin Foundation.
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 
