@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8214E887202CAB8000789C78 /* StellarBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E886202CAB8000789C78 /* StellarBaseTests.swift */; };
 		82340BA61FFDF2DA0034204F /* StellarKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340B9C1FFDF2DA0034204F /* StellarKit.framework */; };
 		82340BAB1FFDF2DA0034204F /* StellarIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */; };
 		82340BAD1FFDF2DA0034204F /* StellarKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 82340B9F1FFDF2DA0034204F /* StellarKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -141,6 +142,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8214E886202CAB8000789C78 /* StellarBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarBaseTests.swift; sourceTree = "<group>"; };
 		82340B9C1FFDF2DA0034204F /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82340B9F1FFDF2DA0034204F /* StellarKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StellarKit.h; sourceTree = "<group>"; };
 		82340BA01FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 				82B8DC6C2022000000773D21 /* PromiseTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
 				824063B620147DDA0055D70A /* KeyStore.swift */,
+				8214E886202CAB8000789C78 /* StellarBaseTests.swift */,
 			);
 			path = StellarKitTests;
 			sourceTree = "<group>";
@@ -778,6 +781,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				82B8DC6D2022000000773D21 /* PromiseTests.swift in Sources */,
+				8214E887202CAB8000789C78 /* StellarBaseTests.swift in Sources */,
 				824063F8201E064B0055D70A /* HTTPMock.swift in Sources */,
 				824063FA201E23FA0055D70A /* HorizonMock.swift in Sources */,
 				82406400201F00530055D70A /* StellarUnitTests.swift in Sources */,

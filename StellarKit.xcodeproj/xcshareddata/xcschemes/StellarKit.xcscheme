@@ -39,6 +39,29 @@
                BlueprintName = "StellarKitTests"
                ReferencedContainer = "container:StellarKit.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "StellarBaseTests/test_balance()">
+               </Test>
+               <Test
+                  Identifier = "StellarBaseTests/test_double_trust()">
+               </Test>
+               <Test
+                  Identifier = "StellarBaseTests/test_payment_from_empty_account()">
+               </Test>
+               <Test
+                  Identifier = "StellarBaseTests/test_payment_from_unfunded_account()">
+               </Test>
+               <Test
+                  Identifier = "StellarBaseTests/test_payment_to_trusting_account()">
+               </Test>
+               <Test
+                  Identifier = "StellarBaseTests/test_payment_to_untrusting_account()">
+               </Test>
+               <Test
+                  Identifier = "StellarBaseTests/test_trust()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>
