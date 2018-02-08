@@ -84,18 +84,19 @@ extension Data: XDRCodable {
 
 extension Optional: XDREncodable {
     public func xdrEncode(to encoder: XDREncoder) throws {
-        switch self {
-        case .some(let a):
-            try encoder.encode(Int32(1))
-            guard let encodable = a as? XDREncodable else {
-                throw XDREncoder.Error.typeNotConformingToXDREncodable(type(of: a))
-            }
-            try encoder.encode(encodable)
-        case nil:
+        guard let unwrapped = self else {
             try encoder.encode(Int32(0))
+            return
         }
+
+        try encoder.encode(Int32(1))
+        guard let encodable = unwrapped as? XDREncodable else {
+            throw XDREncoder.Error.typeNotConformingToXDREncodable(type(of: unwrapped))
+        }
+        try encoder.encode(encodable)
     }
 }
+
 extension UInt8: XDRCodable {}
 extension Int32: XDRCodable {}
 extension UInt32: XDRCodable {}
