@@ -6,6 +6,10 @@
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 
+/*
+ Based on: https://github.com/mikeash/BinaryCoder
+ */
+
 import CoreFoundation
 
 /// A protocol for types which can be encoded to binary.

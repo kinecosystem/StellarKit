@@ -8,6 +8,10 @@
 
 /// Implementations of XDRCodable for built-in types.
 
+/*
+ Based on: https://github.com/mikeash/BinaryCoder
+ */
+
 import Foundation
 
 extension Array: XDRCodable {
