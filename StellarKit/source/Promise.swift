@@ -16,6 +16,7 @@ private enum Result<Value> {
 public class Promise<Value> {
     private var callbacks = [((Result<Value>) -> Void)]()
     private var errorHandler: ((Error) -> Void)?
+    private var errorTransform: ((Error) -> Error) = { return $0 }
 
     private var result: Result<Value>? {
         didSet {
@@ -77,11 +78,11 @@ public class Promise<Value> {
                     try handler(value)
                 }
                 catch {
-                    p.signal(error)
+                    p.signal(self.errorTransform(error))
                 }
 
             case .error(let error):
-                p.signal(error)
+                p.signal(self.errorTransform(error))
             }
         }
 
@@ -103,20 +104,26 @@ public class Promise<Value> {
                         case .value(let value):
                             p.signal(value)
                         case .error(let error):
-                            p.signal(error)
+                            p.signal(self.errorTransform(error))
                         }
                     }
                 }
                 catch {
-                    p.signal(error)
+                    p.signal(self.errorTransform(error))
                 }
 
             case .error(let error):
-                p.signal(error)
+                p.signal(self.errorTransform(error))
             }
         }
 
         return p
+    }
+
+    public func transformError(handler: @escaping (Error) -> Error) -> Promise {
+        errorTransform = handler
+
+        return self
     }
 
     public func error(handler: @escaping (Error) -> Void) {
@@ -125,7 +132,7 @@ public class Promise<Value> {
         if let result = result {
             switch result {
             case .value: break
-            case .error(let error): errorHandler?(error)
+            case .error(let error): errorHandler?(errorTransform(error))
             }
         }
     }

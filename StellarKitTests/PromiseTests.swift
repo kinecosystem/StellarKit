@@ -43,7 +43,7 @@ class PromiseTests: XCTestCase {
         asyncPromise(1)
             .then { x -> Void in
                 XCTAssertEqual(x, Int?(1))
-        }
+            }
             .error { error in
                 XCTAssert(false, "Shouldn't reach here.")
         }
@@ -53,9 +53,22 @@ class PromiseTests: XCTestCase {
         asyncError("a")
             .then { _ -> Void in
                 XCTAssert(false, "Shouldn't reach here.")
-        }
+            }
             .error { error in
                 XCTAssertEqual((error as? TestError)?.m, "a")
+        }
+    }
+
+    func test_async_error_with_transform() {
+        asyncError("a")
+            .then { _ -> Void in
+                XCTAssert(false, "Shouldn't reach here.")
+            }
+            .transformError { _ in
+                return TestError("b")
+            }
+            .error { error in
+                XCTAssertEqual((error as? TestError)?.m, "b")
         }
     }
 
@@ -87,6 +100,25 @@ class PromiseTests: XCTestCase {
             }
             .error { error in
                 XCTAssertEqual((error as? TestError)?.m, "a")
+
+                e.fulfill()
+        }
+
+        wait(for: [e], timeout: 1.0)
+    }
+
+    func test_async_then_returning_error_with_transform() {
+        let e = expectation(description: "")
+
+        asyncPromise(1)
+            .then { x -> Promise<Int> in
+                throw TestError("a")
+            }
+            .transformError { _ in
+                return TestError("b")
+            }
+            .error { error in
+                XCTAssertEqual((error as? TestError)?.m, "b")
 
                 e.fulfill()
         }

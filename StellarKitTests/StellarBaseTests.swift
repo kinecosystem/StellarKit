@@ -112,16 +112,10 @@ class StellarBaseTests: XCTestCase {
                 e.fulfill()
             }
             .error { error in
-                guard let stellarError = error as? StellarError else {
-                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                if case StellarError.destinationNotReadyForAsset = error {
 
-                    return
                 }
-
-                switch stellarError {
-                case .missingAccount: break
-                case .missingBalance: break
-                default:
+                else {
                     XCTAssertTrue(false, "Received unexpected error: \(error)!")
                 }
 
@@ -151,15 +145,10 @@ class StellarBaseTests: XCTestCase {
                 e.fulfill()
             }
             .error { error in
-                guard let stellarError = error as? StellarError else {
-                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                if case StellarError.missingSequence = error {
 
-                    return
                 }
-
-                switch stellarError {
-                case .missingSequence: break
-                default:
+                else {
                     XCTAssertTrue(false, "Received unexpected error: \(error)!")
                 }
 
@@ -199,15 +188,10 @@ class StellarBaseTests: XCTestCase {
                 e.fulfill()
             }
             .error { error in
-                guard let paymentError = error as? PaymentError else {
-                    XCTAssertTrue(false, "Received unexpected error: \(error)!")
+                if case PaymentError.PAYMENT_UNDERFUNDED = error {
 
-                    return
                 }
-
-                switch paymentError {
-                case .PAYMENT_UNDERFUNDED: break
-                default:
+                else {
                     XCTAssertTrue(false, "Received unexpected error: \(error)!")
                 }
 

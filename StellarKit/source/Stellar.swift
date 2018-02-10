@@ -72,6 +72,17 @@ public class Stellar {
                                              passphrase: passphrase,
                                              operations: [op])
         }
+            .transformError(handler: { (error) -> Error in
+                if case StellarError.missingAccount = error {
+                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
+                }
+
+                if case StellarError.missingBalance = error {
+                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
+                }
+
+                return error
+            })
     }
 
     /**
