@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8214E887202CAB8000789C78 /* StellarBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E886202CAB8000789C78 /* StellarBaseTests.swift */; };
+		8214E889202F8AB000789C78 /* StellarUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E888202F8AB000789C78 /* StellarUtils.swift */; };
 		82340BA61FFDF2DA0034204F /* StellarKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340B9C1FFDF2DA0034204F /* StellarKit.framework */; };
 		82340BAB1FFDF2DA0034204F /* StellarIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */; };
 		82340BAD1FFDF2DA0034204F /* StellarKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 82340B9F1FFDF2DA0034204F /* StellarKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -143,6 +144,7 @@
 
 /* Begin PBXFileReference section */
 		8214E886202CAB8000789C78 /* StellarBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarBaseTests.swift; sourceTree = "<group>"; };
+		8214E888202F8AB000789C78 /* StellarUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarUtils.swift; sourceTree = "<group>"; };
 		82340B9C1FFDF2DA0034204F /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82340B9F1FFDF2DA0034204F /* StellarKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StellarKit.h; sourceTree = "<group>"; };
 		82340BA01FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -350,6 +352,7 @@
 				8240BAF52028EAE0003F08FB /* HorizonResponses.swift */,
 				82ECAB8B2003290F0010E31F /* KeyUtils.swift */,
 				82340BDC1FFE24EE0034204F /* Stellar.swift */,
+				8214E888202F8AB000789C78 /* StellarUtils.swift */,
 				82340C4A20014BFC0034204F /* StellarErrors.swift */,
 				82340C44200138E50034204F /* StellarResults.swift */,
 				8240640920200C620055D70A /* Promise.swift */,
@@ -747,6 +750,7 @@
 				E96F24762013D6D90017EF68 /* KeyExchange.swift in Sources */,
 				82FD8B2320264D9A00A126C0 /* XDRCodable.swift in Sources */,
 				E96F24BF2013D6D90017EF68 /* Stream.swift in Sources */,
+				8214E889202F8AB000789C78 /* StellarUtils.swift in Sources */,
 				824063B220147DCD0055D70A /* Operation.swift in Sources */,
 				E96F24C02013D6D90017EF68 /* Utils.swift in Sources */,
 				E96F24722013D6D90017EF68 /* Box.swift in Sources */,

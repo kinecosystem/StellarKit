@@ -14,13 +14,13 @@ public protocol Account {
     func sign(message: Data, passphrase: String) throws -> Data
 }
 
+typealias WD32 = WrappedData32
+
 /**
  `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
  supporting non-native assets.
  */
 public class Stellar {
-    typealias WD32 = WrappedData32
-
     public let baseURL: URL
     public let asset: Asset
 
@@ -62,16 +62,21 @@ public class Stellar {
                         passphrase: String,
                         asset: Asset? = nil) -> Promise<String> {
         return balance(account: destination, asset: asset)
-            .then { _ in
+            .then { _ -> Promise<Transaction> in
                 let op = self.paymentOp(destination: destination,
                                         amount: amount,
                                         source: nil,
                                         asset: asset)
 
-                return self.issueTransaction(source: source,
-                                             passphrase: passphrase,
-                                             operations: [op])
-        }
+                return self.transaction(source: source,operations: [ op ])
+            }
+            .then { tx -> Promise<String> in
+                let envelope = try self.sign(transaction: tx,
+                                             signer: source,
+                                             passphrase: passphrase)
+
+                return postTransaction(baseURL: self.baseURL, envelope: envelope)
+            }
             .transformError(handler: { (error) -> Error in
                 if case StellarError.missingAccount = error {
                     return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
@@ -114,9 +119,14 @@ public class Stellar {
                     return
                 }
 
-                self.issueTransaction(source: account,
-                                      passphrase: passphrase,
-                                      operations: [self.trustOp(asset: asset)])
+                self.transaction(source: account, operations: [self.trustOp(asset: asset)])
+                    .then { tx -> Promise<String> in
+                        let envelope = try self.sign(transaction: tx,
+                                                     signer: account,
+                                                     passphrase: passphrase)
+
+                        return postTransaction(baseURL: self.baseURL, envelope: envelope)
+                    }
                     .then { txHash in
                         p.signal(txHash)
                     }
@@ -137,7 +147,7 @@ public class Stellar {
      - Returns: A promise which will be signalled with the result of the operation.
      */
     public func balance(account: String, asset: Asset? = nil) -> Promise<Decimal> {
-        return accountDetails(account: account)
+        return accountDetails(baseURL: baseURL, account: account)
             .then { accountDetails in
                 let p = Promise<Decimal>()
 
@@ -184,7 +194,7 @@ public class Stellar {
                                                                     secretKey: funderSK),
                                              passphrase: "")
 
-                return self.postTransaction(envelope: envelope)
+                return postTransaction(baseURL: self.baseURL, envelope: envelope)
         }
     }
 
@@ -282,142 +292,24 @@ public class Stellar {
             throw StellarError.missingPublicKey
         }
 
-        return try sign(transaction: tx,
-                        signer: signer,
-                        passphrase: passphrase,
-                        hint: KeyUtils.key(base32: publicKey).suffix(4))
+        return try StellarKit.sign(transaction: tx,
+                                   signer: signer,
+                                   passphrase: passphrase,
+                                   hint: KeyUtils.key(base32: publicKey).suffix(4),
+                                   networkId: networkId)
     }
 
     public func sequence(account: String) -> Promise<UInt64> {
-        return accountDetails(account: account)
+        return accountDetails(baseURL: baseURL, account: account)
             .then { accountDetails in
                 let p = Promise<UInt64>()
 
                 return p.signal(accountDetails.seqNum)
         }
     }
-
-    //MARK: -
-
-    private func sign(transaction tx: Transaction,
-                      signer: Account,
-                      passphrase: String,
-                      hint: Data) throws -> TransactionEnvelope {
-        guard let data = self.networkId.data(using: .utf8) else {
-            throw StellarError.dataEncodingFailed
-        }
-
-        let networkId = data.sha256
-
-        let payload = TransactionSignaturePayload(networkId: WD32(networkId),
-                                                  taggedTransaction: .ENVELOPE_TYPE_TX(tx))
-
-        let message = try Data(bytes: XDREncoder.encode(payload)).sha256
-
-        let signature = try signer.sign(message: message, passphrase: passphrase)
-
-        return TransactionEnvelope(tx: tx,
-                                   signatures: [DecoratedSignature(hint: WrappedData4(hint),
-                                                                   signature: signature)])
-    }
-
-    private func issueTransaction(source: Account,
-                                  passphrase: String,
-                                  operations: [Operation]) -> Promise<String> {
-        return self.transaction(source: source,operations: operations)
-            .then { tx in
-                let envelope = try self.sign(transaction: tx,
-                                             signer: source,
-                                             passphrase: passphrase)
-
-                return self.postTransaction(envelope: envelope)
-            }
-    }
-
-    private func postTransaction(envelope: TransactionEnvelope) -> Promise<String> {
-        let envelopeData: Data
-        do {
-            envelopeData = try Data(XDREncoder.encode(envelope))
-        }
-        catch {
-            return Promise<String>(error)
-        }
-
-        guard let urlEncodedEnvelope = envelopeData.base64EncodedString().urlEncoded else {
-            return Promise<String>(StellarError.urlEncodingFailed)
-        }
-
-        guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
-            return Promise<String>(StellarError.dataEncodingFailed)
-        }
-
-        var request = URLRequest(url: baseURL.appendingPathComponent("transactions"))
-        request.httpMethod = "POST"
-        request.httpBody = httpBody
-
-        return issue(request: request)
-            .then { data in
-                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data),
-                    let resultXDR = horizonError.extras?.resultXDR,
-                    let error = errorFromResponse(resultXDR: resultXDR) {
-                    throw error
-                }
-
-                do {
-                    let txResponse = try JSONDecoder().decode(TransactionResponse.self,
-                                                              from: data)
-
-                    return Promise<String>(txResponse.hash)
-                }
-                catch {
-                    throw error
-                }
-        }
-    }
-
-    private func accountDetails(account: String) -> Promise<AccountDetails> {
-        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
-
-        return issue(request: URLRequest(url: url))
-            .then { data in
-                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
-                    if horizonError.status == 404 {
-                        throw StellarError.missingAccount
-                    }
-                    else {
-                        throw StellarError.unknownError(horizonError)
-                    }
-                }
-
-                return try Promise<AccountDetails>(JSONDecoder().decode(AccountDetails.self, from: data))
-            }
-    }
-
-    private func issue(request: URLRequest) -> Promise<Data> {
-        let p = Promise<Data>()
-
-        URLSession
-            .shared
-            .dataTask(with: request, completionHandler: { (data, response, error) in
-                if let error = error {
-                    p.signal(error)
-
-                    return
-                }
-
-                guard let data = data else {
-                    p.signal(StellarError.internalInconsistency)
-
-                    return
-                }
-
-                p.signal(data)
-            })
-            .resume()
-
-        return p
-    }
 }
+
+//MARK: -
 
 // This is for testing only.
 /// :nodoc:
