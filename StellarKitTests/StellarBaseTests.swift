@@ -18,15 +18,19 @@ struct MockStellarAccount: Account {
 
     init(seedStr: String) {
         keyPair = KeyUtils.keyPair(from: seedStr)!
+
+        let secretKey = keyPair.secretKey
+
+        sign = { message in
+            return try KeyUtils.sign(message: message,
+                                     signingKey: secretKey)
+        }
     }
+
+    var sign: ((Data) throws -> Data)?
 
     init() {
-        keyPair = KeyUtils.keyPair(from: KeyUtils.seed()!)!
-    }
-
-    func sign(message: Data, passphrase: String) throws -> Data {
-        return try KeyUtils.sign(message: message,
-                                 signingKey: keyPair.secretKey)
+        self.init(seedStr: KeyUtils.base32(seed: KeyUtils.seed()!))
     }
 }
 
@@ -61,8 +65,7 @@ class StellarBaseTests: XCTestCase {
         self.stellar.fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
-                                          account: self.account,
-                                          passphrase: self.passphrase)
+                                          account: self.account)
             }
             .then { _ in
                 e.fulfill()
@@ -81,13 +84,11 @@ class StellarBaseTests: XCTestCase {
         stellar.fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
-                                          account: self.account,
-                                          passphrase: self.passphrase)
+                                          account: self.account)
             }
             .then { txHash -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
-                                          account: self.account,
-                                          passphrase: self.passphrase)
+                                          account: self.account)
             }
             .then { _ in
                 e.fulfill()
@@ -105,8 +106,7 @@ class StellarBaseTests: XCTestCase {
 
         stellar.payment(source: account,
                         destination: account2.publicKey!,
-                        amount: 1,
-                        passphrase: self.passphrase)
+                        amount: 1)
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
                 e.fulfill()
@@ -131,14 +131,12 @@ class StellarBaseTests: XCTestCase {
         stellar.fund(account: account2.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
-                                          account: self.account2,
-                                          passphrase: self.passphrase)
+                                          account: self.account2)
             }
             .then { txHash -> Promise<String> in
                 return self.stellar.payment(source: self.account,
                                             destination: self.account2.publicKey!,
-                                            amount: 1,
-                                            passphrase: self.passphrase)
+                                            amount: 1)
             }
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
@@ -169,19 +167,16 @@ class StellarBaseTests: XCTestCase {
             }
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
-                                          account: self.account,
-                                          passphrase: self.passphrase)
+                                          account: self.account)
             }
             .then { txHash -> Promise<String> in
                 return stellar.trust(asset: stellar.asset,
-                                     account: self.account2,
-                                     passphrase: self.passphrase)
+                                     account: self.account2)
             }
             .then { txHash -> Promise<String> in
                 return stellar.payment(source: self.account,
                                        destination: self.account2.publicKey!,
-                                       amount: 1,
-                                       passphrase: self.passphrase)
+                                       amount: 1)
             }
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
@@ -207,14 +202,12 @@ class StellarBaseTests: XCTestCase {
         stellar.fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
-                                          account: self.account,
-                                          passphrase: self.passphrase)
+                                          account: self.account)
             }
             .then { txHash -> Promise<String> in
                 return self.stellar.payment(source: self.issuer,
                                             destination: self.account.publicKey!,
-                                            amount: 1,
-                                            passphrase: self.passphrase)
+                                            amount: 1)
             }
             .then { _ in
                 e.fulfill()
@@ -233,8 +226,7 @@ class StellarBaseTests: XCTestCase {
         stellar.fund(account: account.publicKey!)
             .then { txHash -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
-                                          account: self.account,
-                                          passphrase: self.passphrase)
+                                          account: self.account)
             }
             .then { txHash -> Promise<Decimal> in
                 return self.stellar.balance(account: self.account.publicKey!)

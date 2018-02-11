@@ -18,7 +18,6 @@ private func networrkIdSHA256(_ networkId: String) throws -> Data {
 
 func sign(transaction tx: Transaction,
           signer: Account,
-          passphrase: String,
           hint: Data,
           networkId: String) throws -> TransactionEnvelope {
     let sha256 = try networrkIdSHA256(networkId)
@@ -28,7 +27,11 @@ func sign(transaction tx: Transaction,
 
     let message = try Data(bytes: XDREncoder.encode(payload)).sha256
 
-    let signature = try signer.sign(message: message, passphrase: passphrase)
+    guard let sign = signer.sign else {
+        throw StellarError.missingSignClosure
+    }
+
+    let signature = try sign(message)
 
     return TransactionEnvelope(tx: tx,
                                signatures: [DecoratedSignature(hint: WrappedData4(hint),

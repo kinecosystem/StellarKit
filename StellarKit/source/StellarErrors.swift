@@ -14,11 +14,11 @@ public enum StellarError: Error {
     case missingHash
     case missingSequence
     case missingBalance
+    case missingSignClosure
     case urlEncodingFailed
     case dataEncodingFailed
     case signingFailed
     case destinationNotReadyForAsset (Error, Asset)
-    case parseError (Data?)
     case unknownError (Any?)
     case internalInconsistency
 }

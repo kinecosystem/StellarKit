@@ -11,7 +11,7 @@ import Foundation
 public protocol Account {
     var publicKey: String? { get }
 
-    func sign(message: Data, passphrase: String) throws -> Data
+    var sign: ((Data) throws -> Data)? { get }
 }
 
 typealias WD32 = WrappedData32
@@ -51,7 +51,6 @@ public class Stellar {
      - parameter source: The account from which the payment will be made.
      - parameter destination: The public key of the receiving account, as a base32 string.
      - parameter amount: The amount to be sent.
-     - parameter passphrase: The passphrase which will unlock the secret key of the sender.
      - parameter asset: The `Asset` to be sent.  Defaults to the `Asset` specified in the initializer.
 
      - Returns: A promise which will be signalled with the result of the operation.
@@ -59,7 +58,6 @@ public class Stellar {
     public func payment(source: Account,
                         destination: String,
                         amount: Int64,
-                        passphrase: String,
                         asset: Asset? = nil) -> Promise<String> {
         return balance(account: destination, asset: asset)
             .then { _ -> Promise<Transaction> in
@@ -68,12 +66,11 @@ public class Stellar {
                                         source: nil,
                                         asset: asset)
 
-                return self.transaction(source: source,operations: [ op ])
+                return self.transaction(source: source, operations: [ op ])
             }
             .then { tx -> Promise<String> in
                 let envelope = try self.sign(transaction: tx,
-                                             signer: source,
-                                             passphrase: passphrase)
+                                             signer: source)
 
                 return postTransaction(baseURL: self.baseURL, envelope: envelope)
             }
@@ -95,11 +92,10 @@ public class Stellar {
 
      - parameter asset: The `Asset` to trust.
      - parameter account: The `Account` which will trust the given asset.
-     - parameter passphrase: The passphrase which will unlock the secret key of the trusting account.
 
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public func trust(asset: Asset, account: Account, passphrase: String) -> Promise<String> {
+    public func trust(asset: Asset, account: Account) -> Promise<String> {
         let p = Promise<String>()
 
         guard let destination = account.publicKey else {
@@ -122,8 +118,7 @@ public class Stellar {
                 self.transaction(source: account, operations: [self.trustOp(asset: asset)])
                     .then { tx -> Promise<String> in
                         let envelope = try self.sign(transaction: tx,
-                                                     signer: account,
-                                                     passphrase: passphrase)
+                                                     signer: account)
 
                         return postTransaction(baseURL: self.baseURL, envelope: envelope)
                     }
@@ -191,8 +186,7 @@ public class Stellar {
 
                 let envelope = try self.sign(transaction: tx,
                                              signer: StellarAccount(publicKey: funderPK,
-                                                                    secretKey: funderSK),
-                                             passphrase: "")
+                                                                    secretKey: funderSK))
 
                 return postTransaction(baseURL: self.baseURL, envelope: envelope)
         }
@@ -286,15 +280,13 @@ public class Stellar {
     }
 
     public func sign(transaction tx: Transaction,
-                     signer: Account,
-                     passphrase: String) throws -> TransactionEnvelope {
+                     signer: Account) throws -> TransactionEnvelope {
         guard let publicKey = signer.publicKey else {
             throw StellarError.missingPublicKey
         }
 
         return try StellarKit.sign(transaction: tx,
                                    signer: signer,
-                                   passphrase: passphrase,
                                    hint: KeyUtils.key(base32: publicKey).suffix(4),
                                    networkId: networkId)
     }
@@ -317,12 +309,19 @@ private struct StellarAccount: Account {
     var publicKey: String?
     var secretKey: String
 
-    func sign(message: Data, passphrase: String) throws -> Data {
-        guard let keyPair = KeyUtils.keyPair(from: secretKey) else {
-            throw StellarError.unknownError(nil)
-        }
+    var sign: ((Data) throws -> Data)?
 
-        return try KeyUtils.sign(message: message,
-                                 signingKey: keyPair.secretKey)
+    init(publicKey: String?, secretKey: String) {
+        self.publicKey = publicKey
+        self.secretKey = secretKey
+
+        self.sign = { message in
+            guard let keyPair = KeyUtils.keyPair(from: secretKey) else {
+                throw StellarError.unknownError(nil)
+            }
+
+            return try KeyUtils.sign(message: message,
+                                     signingKey: keyPair.secretKey)
+        }
     }
 }
