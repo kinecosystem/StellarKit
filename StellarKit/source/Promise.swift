@@ -25,8 +25,10 @@ public class Promise<Value> {
             if let result = result {
                 switch result {
                 case .value: break
-                case .error(let error): errorHandler?(error)
+                case .error(let error): errorHandler?(errorTransform(error))
                 }
+
+                errorHandler = nil
             }
         }
     }
@@ -70,6 +72,7 @@ public class Promise<Value> {
     @discardableResult
     public func then(handler: @escaping (Value) throws -> Void) -> Promise {
         let p = Promise<Value>()
+        p.errorTransform = errorTransform
 
         observe { result in
             switch result {
@@ -78,11 +81,11 @@ public class Promise<Value> {
                     try handler(value)
                 }
                 catch {
-                    p.signal(self.errorTransform(error))
+                    p.signal(error)
                 }
 
             case .error(let error):
-                p.signal(self.errorTransform(error))
+                p.signal(error)
             }
         }
 
@@ -92,6 +95,7 @@ public class Promise<Value> {
     @discardableResult
     public func then<NewValue>(handler: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
         let p = Promise<NewValue>()
+        p.errorTransform = errorTransform
 
         observe { result in
             switch result {
@@ -104,16 +108,16 @@ public class Promise<Value> {
                         case .value(let value):
                             p.signal(value)
                         case .error(let error):
-                            p.signal(self.errorTransform(error))
+                            p.signal(error)
                         }
                     }
                 }
                 catch {
-                    p.signal(self.errorTransform(error))
+                    p.signal(error)
                 }
 
             case .error(let error):
-                p.signal(self.errorTransform(error))
+                p.signal(error)
             }
         }
 
@@ -127,13 +131,15 @@ public class Promise<Value> {
     }
 
     public func error(handler: @escaping (Error) -> Void) {
-        errorHandler = handler
-
         if let result = result {
             switch result {
             case .value: break
-            case .error(let error): errorHandler?(errorTransform(error))
+            case .error(let error): handler(errorTransform(error))
             }
+
+            return
         }
+
+        errorHandler = handler
     }
 }

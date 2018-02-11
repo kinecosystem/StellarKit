@@ -35,7 +35,6 @@ struct MockStellarAccount: Account {
 }
 
 class StellarBaseTests: XCTestCase {
-    let passphrase = "a phrase"
     var endpoint: String { return "override me" }
 
     lazy var stellar: Stellar =
