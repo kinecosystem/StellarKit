@@ -28,7 +28,6 @@
 		824063B320147DCD0055D70A /* Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AE20147DCD0055D70A /* Operations.swift */; };
 		824063B420147DCD0055D70A /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AF20147DCD0055D70A /* PublicKey.swift */; };
 		824063B520147DCD0055D70A /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063B020147DCD0055D70A /* Transaction.swift */; };
-		824063B720147DDA0055D70A /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063B620147DDA0055D70A /* KeyStore.swift */; };
 		824063F8201E064B0055D70A /* HTTPMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063F7201E064B0055D70A /* HTTPMock.swift */; };
 		824063FA201E23FA0055D70A /* HorizonMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063F9201E23FA0055D70A /* HorizonMock.swift */; };
 		82406400201F00530055D70A /* StellarUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063FF201F00530055D70A /* StellarUnitTests.swift */; };
@@ -169,7 +168,6 @@
 		824063AE20147DCD0055D70A /* Operations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operations.swift; sourceTree = "<group>"; };
 		824063AF20147DCD0055D70A /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
 		824063B020147DCD0055D70A /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
-		824063B620147DDA0055D70A /* KeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
 		824063F7201E064B0055D70A /* HTTPMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMock.swift; sourceTree = "<group>"; };
 		824063F9201E23FA0055D70A /* HorizonMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonMock.swift; sourceTree = "<group>"; };
 		824063FF201F00530055D70A /* StellarUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StellarUnitTests.swift; path = StellarKitTests/StellarUnitTests.swift; sourceTree = SOURCE_ROOT; };
@@ -336,7 +334,6 @@
 				82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */,
 				82B8DC6C2022000000773D21 /* PromiseTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
-				824063B620147DDA0055D70A /* KeyStore.swift */,
 				8214E886202CAB8000789C78 /* StellarBaseTests.swift */,
 			);
 			path = StellarKitTests;
@@ -789,7 +786,6 @@
 				824063F8201E064B0055D70A /* HTTPMock.swift in Sources */,
 				824063FA201E23FA0055D70A /* HorizonMock.swift in Sources */,
 				82406400201F00530055D70A /* StellarUnitTests.swift in Sources */,
-				824063B720147DDA0055D70A /* KeyStore.swift in Sources */,
 				82340BAB1FFDF2DA0034204F /* StellarIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
