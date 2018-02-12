@@ -36,9 +36,16 @@ enum Memo: XDRCodable {
     init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
 
-        _ = try container.decode(Int32.self)
+        let discriminant = try container.decode(Int32.self)
 
-        self = .MEMO_NONE
+        switch discriminant {
+        case MemoType.MEMO_NONE:
+            self = .MEMO_NONE
+        case MemoType.MEMO_TEXT:
+            self = .MEMO_TEXT(try container.decode(String.self))
+        default:
+            self = .MEMO_NONE
+        }
     }
 
     func encode(to encoder: Encoder) throws {
@@ -48,7 +55,7 @@ enum Memo: XDRCodable {
 
         switch self {
         case .MEMO_NONE: break
-        case .MEMO_TEXT (let text): try container.encode(text)
+        case .MEMO_TEXT (let text): try container.encode(text + (text.count < 28 ? "\0" : ""))
         case .MEMO_ID (let id): try container.encode(id)
         case .MEMO_HASH (let hash): try container.encode(hash)
         case .MEMO_RETURN (let hash): try container.encode(hash)

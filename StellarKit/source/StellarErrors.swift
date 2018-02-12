@@ -9,6 +9,7 @@
 import Foundation
 
 public enum StellarError: Error {
+    case memoTooLong (String?)
     case missingAccount
     case missingPublicKey
     case missingHash

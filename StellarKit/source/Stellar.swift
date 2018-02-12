@@ -52,13 +52,19 @@ public class Stellar {
      - parameter destination: The public key of the receiving account, as a base32 string.
      - parameter amount: The amount to be sent.
      - parameter asset: The `Asset` to be sent.  Defaults to the `Asset` specified in the initializer.
+     - parameter memo: A short string placed in the MEMO field of the transaction.
 
      - Returns: A promise which will be signalled with the result of the operation.
      */
     public func payment(source: Account,
                         destination: String,
                         amount: Int64,
-                        asset: Asset? = nil) -> Promise<String> {
+                        asset: Asset? = nil,
+                        memo: String? = nil) -> Promise<String> {
+        if let memo = memo, memo.count > 28 {
+            return Promise<String>(StellarError.memoTooLong(memo))
+        }
+
         return balance(account: destination, asset: asset)
             .then { _ -> Promise<Transaction> in
                 let op = self.paymentOp(destination: destination,
@@ -66,7 +72,7 @@ public class Stellar {
                                         source: nil,
                                         asset: asset)
 
-                return self.transaction(source: source, operations: [ op ])
+                return self.transaction(source: source, operations: [ op ], memo: memo)
             }
             .then { tx -> Promise<String> in
                 let envelope = try self.sign(transaction: tx,
@@ -241,7 +247,8 @@ public class Stellar {
 
     public func transaction(source: Account,
                             operations: [Operation],
-                            sequence: UInt64 = 0) -> Promise<Transaction> {
+                            sequence: UInt64 = 0,
+                            memo: String? = nil) -> Promise<Transaction> {
         let p = Promise<Transaction>()
 
         guard let sourceKey = source.publicKey else {
@@ -256,7 +263,7 @@ public class Stellar {
             let tx = Transaction(sourceAccount: sourcePK,
                                  seqNum: sequence,
                                  timeBounds: nil,
-                                 memo: .MEMO_NONE,
+                                 memo: memo != nil ? Memo.MEMO_TEXT(memo ?? "") : Memo.MEMO_NONE,
                                  operations: operations)
 
             p.signal(tx)

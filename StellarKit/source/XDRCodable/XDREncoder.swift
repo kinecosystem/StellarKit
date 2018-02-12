@@ -51,6 +51,7 @@ public extension XDREncoder {
         /// require `XDREncodable` because `XDREncoder` doesn't support full keyed
         /// coding functionality.)
         case typeNotConformingToXDREncodable(Any.Type)
+        case notUTF8Encodable(String)
     }
 }
 

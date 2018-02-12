@@ -39,7 +39,11 @@ extension Array: XDRCodable {
 
 extension String: XDRCodable {
     public func xdrEncode(to encoder: XDREncoder) throws {
-        try Array(self.utf8).xdrEncode(to: encoder)
+        guard let data = self.data(using: .utf8) else {
+            throw XDREncoder.Error.notUTF8Encodable(self)
+        }
+
+        try data.xdrEncode(to: encoder)
     }
     
     public init(fromBinary decoder: XDRDecoder) throws {
