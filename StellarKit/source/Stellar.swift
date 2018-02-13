@@ -26,6 +26,8 @@ public class Stellar {
 
     private let networkId: String
 
+    private var eventSource: EventSource?
+
     // MARK: -
 
     /**
@@ -170,6 +172,37 @@ public class Stellar {
 
                 return p.signal(StellarError.missingBalance)
         }
+    }
+
+    public func watch(account: String, closure: @escaping (Transaction) -> Void) {
+        eventSource?.close()
+
+        let url = baseURL
+            .appendingPathComponent("accounts")
+            .appendingPathComponent(account)
+            .appendingPathComponent("transactions")
+
+        eventSource = EventSource(url: url.absoluteString)
+        eventSource?.onMessage{ [weak self] _, _, data in
+            guard
+                self?.eventSource != nil,
+                let jsonData = data?.data(using: .utf8),
+                let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
+                let unwrappedJSON = json,
+                let envB64 = unwrappedJSON["envelope_xdr"] as? String,
+                let envData = Data(base64Encoded: envB64),
+                let envelope = try? XDRDecoder(data: envData).decode(TransactionEnvelope.self)
+                else {
+                    return
+            }
+
+            closure(envelope.tx)
+        }
+    }
+
+    public func cancelWatch() {
+        eventSource?.close()
+        eventSource = nil
     }
 
     // This is for testing only.

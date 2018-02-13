@@ -4,3 +4,6 @@
 [submodule "keychain-swift"]
 	path = StellarKit/third-party/keychain-swift
 	url = https://github.com/filippovdev/keychain-swift.git
+[submodule "StellarKit/third-party/EventSource"]
+	path = StellarKit/third-party/EventSource
+	url = https://github.com/inaka/EventSource.git

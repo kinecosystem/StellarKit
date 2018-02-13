@@ -35,9 +35,13 @@ public extension XDRDecodable {
 public class XDRDecoder {
     fileprivate let data: [UInt8]
     fileprivate var cursor = 0
-    
+
     public init(data: [UInt8]) {
         self.data = data
+    }
+
+    public init(data: Data) {
+        self.data = data.map { $0 }
     }
 }
 

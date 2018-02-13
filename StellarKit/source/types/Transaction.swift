@@ -77,6 +77,14 @@ public struct Transaction: XDRCodable {
     let operations: [Operation]
     let reserved: Int32 = 0
 
+    var memoString: String? {
+        if case let Memo.MEMO_TEXT(text) = memo {
+            return text
+        }
+
+        return nil
+    }
+
     init(sourceAccount: PublicKey,
          seqNum: UInt64,
          timeBounds: TimeBounds?,
