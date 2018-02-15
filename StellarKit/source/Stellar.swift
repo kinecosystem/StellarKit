@@ -26,7 +26,7 @@ public class Stellar {
 
     private let networkId: String
 
-    private var eventSource: EventSource?
+    private var eventSource: StellarEventSource?
 
     // MARK: -
 
@@ -182,8 +182,8 @@ public class Stellar {
             .appendingPathComponent(account)
             .appendingPathComponent("transactions")
 
-        eventSource = EventSource(url: url.absoluteString)
-        eventSource?.onMessage{ [weak self] _, _, data in
+        eventSource = StellarEventSource(url: url)
+        eventSource?.onMessage { [weak self] _, _, data in
             guard
                 self?.eventSource != nil,
                 let jsonData = data?.data(using: .utf8),
