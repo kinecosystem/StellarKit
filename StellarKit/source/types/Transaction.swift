@@ -174,3 +174,43 @@ public struct TransactionEnvelope: XDRCodable {
         self.signatures = signatures
     }
 }
+
+public struct TxInfo {
+    let tx: Transaction
+    public var createdAt: String
+    public var source: String
+    public var hash: String
+
+    public var isPayment: Bool {
+        switch tx.operations.first!.body {
+        case .PAYMENT: return true
+        default: return false
+        }
+    }
+
+    public var amount: Int64? {
+        if case let Operation.Body.PAYMENT(op) = tx.operations.first!.body {
+            return op.amount
+        }
+
+        return nil
+    }
+
+    public var destination: String? {
+        switch tx.operations.first!.body {
+        case .PAYMENT(let op): return op.destination.publicKey
+        default: return nil
+        }
+    }
+
+    init(json: [String: Any]) throws {
+        let envB64 = json["envelope_xdr"] as? String
+        let envData = Data(base64Encoded: envB64!)
+        let envelope = try XDRDecoder(data: envData!).decode(TransactionEnvelope.self)
+
+        tx = envelope.tx
+        createdAt = json["created_at"] as! String
+        source = json["source_account"] as! String
+        hash = json["hash"] as! String
+    }
+}

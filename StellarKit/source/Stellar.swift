@@ -174,7 +174,7 @@ public class Stellar {
         }
     }
 
-    public func watch(account: String, closure: @escaping (Transaction) -> Void) {
+    public func watch(account: String, closure: @escaping (TxInfo) -> Void) {
         eventSource?.close()
 
         let url = baseURL
@@ -189,14 +189,12 @@ public class Stellar {
                 let jsonData = data?.data(using: .utf8),
                 let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                 let unwrappedJSON = json,
-                let envB64 = unwrappedJSON["envelope_xdr"] as? String,
-                let envData = Data(base64Encoded: envB64),
-                let envelope = try? XDRDecoder(data: envData).decode(TransactionEnvelope.self)
+                let txInfo = try? TxInfo(json: unwrappedJSON)
                 else {
                     return
             }
 
-            closure(envelope.tx)
+            closure(txInfo)
         }
     }
 

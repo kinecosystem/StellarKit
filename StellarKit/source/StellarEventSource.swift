@@ -23,17 +23,7 @@ class StellarEventSource: NSObject, URLSessionDataDelegate {
     var task: URLSessionDataTask?
     var retryTime = 3000
 
-    var lastEventId: String? {
-        get {
-            return UserDefaults.standard.string(forKey: "__event_source_\(url.absoluteString))")
-        }
-
-        set {
-            if let id = newValue {
-                UserDefaults.standard.set(id, forKey: "__event_source_\(url.absoluteString))")
-            }
-        }
-    }
+    var lastEventId: String?
 
     var onMessageCallback: ((_ id: String?, _ event: String?, _ data: String?) -> Void)?
 
