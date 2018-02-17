@@ -203,6 +203,13 @@ public struct TxInfo {
         }
     }
 
+    public var memoString: String? {
+        switch tx.memo {
+        case .MEMO_TEXT (let string): return string
+        default: return nil
+        }
+    }
+
     init(json: [String: Any]) throws {
         let envB64 = json["envelope_xdr"] as? String
         let envData = Data(base64Encoded: envB64!)
