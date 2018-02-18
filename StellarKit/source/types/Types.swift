@@ -19,7 +19,7 @@ private func decodeData(from decoder: XDRDecoder, capacity: Int) throws -> Data 
     return d
 }
 
-struct WrappedData32: XDRCodable, Equatable {
+public struct WrappedData32: XDRCodable, Equatable {
     let wrapped: Data
 
     private let capacity = 32

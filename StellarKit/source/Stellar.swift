@@ -62,11 +62,7 @@ public class Stellar {
                         destination: String,
                         amount: Int64,
                         asset: Asset? = nil,
-                        memoData: Data? = nil) -> Promise<String> {
-        if let memo = memoData, memo.count > 32 {
-            return Promise<String>(StellarError.memoTooLong(memo))
-        }
-
+                        memo: Memo = .MEMO_NONE) -> Promise<String> {
         return balance(account: destination, asset: asset)
             .then { _ -> Promise<Transaction> in
                 let op = self.paymentOp(destination: destination,
@@ -74,7 +70,7 @@ public class Stellar {
                                         source: nil,
                                         asset: asset)
 
-                return self.transaction(source: source, operations: [ op ], memoData: memoData)
+                return self.transaction(source: source, operations: [ op ], memo: memo)
             }
             .then { tx -> Promise<String> in
                 let envelope = try self.sign(transaction: tx,
@@ -279,7 +275,7 @@ public class Stellar {
     public func transaction(source: Account,
                             operations: [Operation],
                             sequence: UInt64 = 0,
-                            memoData: Data? = nil) -> Promise<Transaction> {
+                            memo: Memo = .MEMO_NONE) -> Promise<Transaction> {
         let p = Promise<Transaction>()
 
         guard let sourceKey = source.publicKey else {
@@ -294,7 +290,7 @@ public class Stellar {
             let tx = Transaction(sourceAccount: sourcePK,
                                  seqNum: sequence,
                                  timeBounds: nil,
-                                 memo: memoData != nil ? Memo.MEMO_HASH(WD32(memoData ?? Data())) : Memo.MEMO_NONE,
+                                 memo: memo,
                                  operations: operations)
 
             p.signal(tx)

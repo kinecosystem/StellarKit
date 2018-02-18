@@ -206,8 +206,7 @@ class StellarBaseTests: XCTestCase {
             .then { txHash -> Promise<String> in
                 return self.stellar.payment(source: self.issuer,
                                             destination: self.account.publicKey!,
-                                            amount: 1,
-                                            memoData: nil)
+                                            amount: 1)
             }
             .then { _ in
                 e.fulfill()

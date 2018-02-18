@@ -16,12 +16,44 @@ struct MemoType {
     static let MEMO_RETURN: Int32 = 4
 }
 
-enum Memo: XDRCodable {
+public enum Memo: XDRCodable {
     case MEMO_NONE
     case MEMO_TEXT (String)
     case MEMO_ID (UInt64)
-    case MEMO_HASH (WrappedData32)
-    case MEMO_RETURN (WrappedData32)
+    case MEMO_HASH (Data)
+    case MEMO_RETURN (Data)
+
+    public var text: String? {
+        if case let .MEMO_TEXT(text) = self {
+            return text
+        }
+
+        return nil
+    }
+
+    public var data: Data? {
+        if case let .MEMO_HASH(data) = self {
+            return data
+        }
+
+        return nil
+    }
+
+    public init(_ string: String) throws {
+        guard string.count <= 28 else {
+            throw StellarError.memoTooLong(string)
+        }
+
+        self = .MEMO_TEXT(string)
+    }
+
+    public init(_ data: Data) throws {
+        guard data.count <= 32 else {
+            throw StellarError.memoTooLong(data)
+        }
+
+        self = .MEMO_HASH(data)
+    }
 
     private func discriminant() -> Int32 {
         switch self {
@@ -33,7 +65,7 @@ enum Memo: XDRCodable {
         }
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
 
         let discriminant = try container.decode(Int32.self)
@@ -44,13 +76,13 @@ enum Memo: XDRCodable {
         case MemoType.MEMO_TEXT:
             self = .MEMO_TEXT(try container.decode(String.self))
         case MemoType.MEMO_HASH:
-            self = .MEMO_HASH(try container.decode(WrappedData32.self))
+            self = .MEMO_HASH(try container.decode(WrappedData32.self).wrapped)
         default:
             self = .MEMO_NONE
         }
     }
 
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
 
         try container.encode(discriminant())
@@ -59,8 +91,8 @@ enum Memo: XDRCodable {
         case .MEMO_NONE: break
         case .MEMO_TEXT (let text): try container.encode(text + (text.count < 28 ? "\0" : ""))
         case .MEMO_ID (let id): try container.encode(id)
-        case .MEMO_HASH (let hash): try container.encode(hash)
-        case .MEMO_RETURN (let hash): try container.encode(hash)
+        case .MEMO_HASH (let hash): try container.encode(WrappedData32(hash))
+        case .MEMO_RETURN (let hash): try container.encode(WrappedData32(hash))
         }
     }
 }
@@ -205,18 +237,12 @@ public struct TxInfo {
         }
     }
 
-    public var memoString: String? {
-        switch tx.memo {
-        case .MEMO_TEXT (let string): return string
-        default: return nil
-        }
+    public var memoText: String? {
+        return tx.memo.text
     }
 
     public var memoData: Data? {
-        switch tx.memo {
-        case .MEMO_HASH (let hash): return hash.wrapped
-        default: return nil
-        }
+        return tx.memo.data
     }
 
     init(json: [String: Any]) throws {
