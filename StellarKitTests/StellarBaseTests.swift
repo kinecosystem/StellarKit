@@ -207,7 +207,7 @@ class StellarBaseTests: XCTestCase {
                 return self.stellar.payment(source: self.issuer,
                                             destination: self.account.publicKey!,
                                             amount: 1,
-                                            memo: "1234567890123456789012345678")
+                                            memoData: nil)
             }
             .then { _ in
                 e.fulfill()

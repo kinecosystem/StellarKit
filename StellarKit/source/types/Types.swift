@@ -33,7 +33,14 @@ struct WrappedData32: XDRCodable, Equatable {
     }
 
     init(_ data: Data) {
-        self.wrapped = data
+        if data.count >= capacity {
+            self.wrapped = data
+        }
+        else {
+            var d = data
+            d.append(Data(count: capacity - data.count))
+            self.wrapped = d
+        }
     }
 
     public static func ==(lhs: WrappedData32, rhs: WrappedData32) -> Bool {
@@ -55,7 +62,14 @@ struct WrappedData4: XDRCodable, Equatable {
     }
 
     init(_ data: Data) {
-        self.wrapped = data
+        if data.count >= capacity {
+            self.wrapped = data
+        }
+        else {
+            var d = data
+            d.append(Data(count: capacity - data.count))
+            self.wrapped = d
+        }
     }
 
     public static func ==(lhs: WrappedData4, rhs: WrappedData4) -> Bool {
@@ -77,7 +91,14 @@ struct WrappedData12: XDRCodable, Equatable {
     }
 
     init(_ data: Data) {
-        self.wrapped = data
+        if data.count >= capacity {
+            self.wrapped = data
+        }
+        else {
+            var d = data
+            d.append(Data(count: capacity - data.count))
+            self.wrapped = d
+        }
     }
 
     public static func ==(lhs: WrappedData12, rhs: WrappedData12) -> Bool {

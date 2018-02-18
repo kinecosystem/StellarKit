@@ -43,6 +43,8 @@ enum Memo: XDRCodable {
             self = .MEMO_NONE
         case MemoType.MEMO_TEXT:
             self = .MEMO_TEXT(try container.decode(String.self))
+        case MemoType.MEMO_HASH:
+            self = .MEMO_HASH(try container.decode(WrappedData32.self))
         default:
             self = .MEMO_NONE
         }
@@ -206,6 +208,13 @@ public struct TxInfo {
     public var memoString: String? {
         switch tx.memo {
         case .MEMO_TEXT (let string): return string
+        default: return nil
+        }
+    }
+
+    public var memoData: Data? {
+        switch tx.memo {
+        case .MEMO_HASH (let hash): return hash.wrapped
         default: return nil
         }
     }
