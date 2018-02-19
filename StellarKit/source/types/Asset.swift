@@ -24,9 +24,11 @@ public enum Asset: XDRCodable, Equatable {
         case .ASSET_TYPE_NATIVE:
             return "native"
         case .ASSET_TYPE_CREDIT_ALPHANUM4(let a4):
-            return String(bytes: a4.assetCode.wrapped, encoding: .utf8) ?? ""
+            return (String(bytes: a4.assetCode.wrapped, encoding: .utf8) ?? "")
+                .trimmingCharacters(in: CharacterSet(charactersIn: "\0"))
         case .ASSET_TYPE_CREDIT_ALPHANUM12(let a12):
-            return String(bytes: a12.assetCode.wrapped, encoding: .utf8) ?? ""
+            return (String(bytes: a12.assetCode.wrapped, encoding: .utf8) ?? "")
+                .trimmingCharacters(in: CharacterSet(charactersIn: "\0"))
         }
     }
 

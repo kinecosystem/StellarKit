@@ -168,13 +168,21 @@ public class Stellar {
         }
     }
 
-    public func watch(account: String, closure: @escaping (TxInfo) -> Void) -> StellarEventSource {
-        let url = baseURL
+    public func watch(account: String,
+                      lastEventId: String?,
+                      closure: @escaping (TxInfo) -> Void) -> StellarEventSource {
+        var url = baseURL
             .appendingPathComponent("accounts")
             .appendingPathComponent(account)
             .appendingPathComponent("transactions")
 
-        let eventSource = StellarEventSource(url: url)
+        var eventId = lastEventId
+        if let lastEventId = lastEventId {
+            url = URL(string: url.absoluteString + "?cursor=\(lastEventId)")!
+            eventId = nil
+        }
+
+        let eventSource = StellarEventSource(url: url, lastEventId: eventId)
         eventSource.onMessage { _, _, data in
             guard
                 let jsonData = data?.data(using: .utf8),

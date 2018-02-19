@@ -27,9 +27,10 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
 
     var onMessageCallback: ((_ id: String?, _ event: String?, _ data: String?) -> Void)?
 
-    init(url: URL) {
+    init(url: URL, lastEventId: String? = nil) {
         self.url = url
-
+        self.lastEventId = lastEventId
+        
         super.init()
 
         connect()
