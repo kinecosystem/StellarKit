@@ -26,8 +26,6 @@ public class Stellar {
 
     private let networkId: String
 
-    private var eventSource: StellarEventSource?
-
     // MARK: -
 
     /**
@@ -170,18 +168,15 @@ public class Stellar {
         }
     }
 
-    public func watch(account: String, closure: @escaping (TxInfo) -> Void) {
-        eventSource?.close()
-
+    public func watch(account: String, closure: @escaping (TxInfo) -> Void) -> StellarEventSource {
         let url = baseURL
             .appendingPathComponent("accounts")
             .appendingPathComponent(account)
             .appendingPathComponent("transactions")
 
-        eventSource = StellarEventSource(url: url)
-        eventSource?.onMessage { [weak self] _, _, data in
+        let eventSource = StellarEventSource(url: url)
+        eventSource.onMessage { _, _, data in
             guard
-                self?.eventSource != nil,
                 let jsonData = data?.data(using: .utf8),
                 let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                 let unwrappedJSON = json,
@@ -192,37 +187,8 @@ public class Stellar {
 
             closure(txInfo)
         }
-    }
 
-    public func cancelWatch() {
-        eventSource?.close()
-        eventSource = nil
-    }
-
-    // This is for testing only.
-    // The account used for funding exists only on test-net.
-    /// :nodoc:
-    public func fund(account: String) -> Promise<String> {
-        let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
-        let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
-
-        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: funderPK)))
-
-        return self.sequence(account: funderPK)
-            .then { sequence in
-                let tx = Transaction(sourceAccount: sourcePK,
-                                     seqNum: sequence + 1,
-                                     timeBounds: nil,
-                                     memo: .MEMO_NONE,
-                                     operations: [self.createAccountOp(destination: account,
-                                                                       balance: 10 * 10000000)])
-
-                let envelope = try self.sign(transaction: tx,
-                                             signer: StellarAccount(publicKey: funderPK,
-                                                                    secretKey: funderSK))
-
-                return postTransaction(baseURL: self.baseURL, envelope: envelope)
-        }
+        return eventSource
     }
 
     // MARK: -
@@ -331,6 +297,34 @@ public class Stellar {
                 let p = Promise<UInt64>()
 
                 return p.signal(accountDetails.seqNum)
+        }
+    }
+}
+
+extension Stellar {
+    // This is for testing only.
+    // The account used for funding exists only on test-net.
+    /// :nodoc:
+    public func fund(account: String) -> Promise<String> {
+        let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
+        let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
+
+        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: funderPK)))
+
+        return self.sequence(account: funderPK)
+            .then { sequence in
+                let tx = Transaction(sourceAccount: sourcePK,
+                                     seqNum: sequence + 1,
+                                     timeBounds: nil,
+                                     memo: .MEMO_NONE,
+                                     operations: [self.createAccountOp(destination: account,
+                                                                       balance: 10 * 10000000)])
+
+                let envelope = try self.sign(transaction: tx,
+                                             signer: StellarAccount(publicKey: funderPK,
+                                                                    secretKey: funderSK))
+
+                return postTransaction(baseURL: self.baseURL, envelope: envelope)
         }
     }
 }

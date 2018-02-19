@@ -8,7 +8,7 @@
 
 import Foundation
 
-class StellarEventSource: NSObject, URLSessionDataDelegate {
+public class StellarEventSource: NSObject, URLSessionDataDelegate {
     enum State {
         case connecting
         case open
@@ -23,7 +23,7 @@ class StellarEventSource: NSObject, URLSessionDataDelegate {
     var task: URLSessionDataTask?
     var retryTime = 3000
 
-    var lastEventId: String?
+    public private(set) var lastEventId: String?
 
     var onMessageCallback: ((_ id: String?, _ event: String?, _ data: String?) -> Void)?
 
@@ -64,7 +64,7 @@ class StellarEventSource: NSObject, URLSessionDataDelegate {
         task?.resume()
     }
 
-    func close() {
+    public func close() {
         state = .closed
 
         task?.cancel()
@@ -153,7 +153,7 @@ class StellarEventSource: NSObject, URLSessionDataDelegate {
         return (id, eventName, data)
     }
 
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         guard state == .open else {
             return
         }
@@ -177,7 +177,7 @@ class StellarEventSource: NSObject, URLSessionDataDelegate {
         }
     }
 
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         completionHandler(.allow)
 
         if let httpResponse = response as? HTTPURLResponse {
@@ -189,7 +189,7 @@ class StellarEventSource: NSObject, URLSessionDataDelegate {
         }
     }
 
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard state != .closed else {
             return
         }
