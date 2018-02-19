@@ -211,9 +211,16 @@ public struct TransactionEnvelope: XDRCodable {
 
 public struct TxInfo {
     let tx: Transaction
-    public var createdAt: String
-    public var source: String
-    public var hash: String
+    public let createdAt: String
+    public let source: String
+    public let hash: String
+
+    public var asset: String? {
+        switch tx.operations.first!.body {
+        case .PAYMENT (let op): return op.asset.assetCode
+        default: return nil
+        }
+    }
 
     public var isPayment: Bool {
         switch tx.operations.first!.body {
