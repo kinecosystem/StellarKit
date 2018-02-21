@@ -28,6 +28,10 @@ public enum Memo: XDRCodable {
             return text
         }
 
+        if case let .MEMO_HASH(data) = self, let s = String(data: data, encoding: .utf8) {
+            return s
+        }
+
         return nil
     }
 
