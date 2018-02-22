@@ -93,7 +93,7 @@ public enum Memo: XDRCodable {
 
         switch self {
         case .MEMO_NONE: break
-        case .MEMO_TEXT (let text): try container.encode(text + (text.count < 28 ? "\0" : ""))
+        case .MEMO_TEXT (let text): try container.encode(text)
         case .MEMO_ID (let id): try container.encode(id)
         case .MEMO_HASH (let hash): try container.encode(WrappedData32(hash))
         case .MEMO_RETURN (let hash): try container.encode(WrappedData32(hash))

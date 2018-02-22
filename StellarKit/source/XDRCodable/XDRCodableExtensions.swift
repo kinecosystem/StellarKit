@@ -73,6 +73,11 @@ extension FixedWidthInteger where Self: XDRDecodable {
 extension Data: XDRCodable {
     public func xdrEncode(to encoder: XDREncoder) throws {
         try encoder.encode(map { $0 })
+
+        let padding = Data(repeating: 0, count: 4 - count % 4)
+        if (1...3).contains(padding.count) {
+            try padding.xdrEncodeFixed(to: encoder)
+        }
     }
 
     public func xdrEncodeFixed(to encoder: XDREncoder) throws {
