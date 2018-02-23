@@ -9,28 +9,37 @@
 import Foundation
 
 public class StellarEventSource: NSObject, URLSessionDataDelegate {
-    enum State {
+    private enum State {
         case connecting
         case open
         case closed
     }
 
-    let url: URL
+    public struct Event {
+        let id: String?
+        let event: String?
+        let data: String?
+    }
 
-    var state = State.connecting
+    private let url: URL
 
-    var urlSession: URLSession?
-    var task: URLSessionDataTask?
-    var retryTime = 3000
+    private var state = State.connecting
+
+    private var urlSession: URLSession?
+    private var task: URLSessionDataTask?
+    private var retryTime = 3000
 
     public private(set) var lastEventId: String?
 
-    var onMessageCallback: ((_ id: String?, _ event: String?, _ data: String?) -> Void)?
+    public private(set) var emitter: Observable<Event>!
+
+    private var onMessageCallback: ((_ id: String?, _ event: String?, _ data: String?) -> Void)?
 
     init(url: URL, lastEventId: String? = nil) {
         self.url = url
         self.lastEventId = lastEventId
-        
+        self.emitter = Observable<Event>()
+
         super.init()
 
         connect()
@@ -70,6 +79,8 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
 
         task?.cancel()
         urlSession?.invalidateAndCancel()
+        urlSession = nil
+        emitter = nil
     }
 
     func onMessage(_ callback: @escaping ((_ id: String?, _ event: String?, _ data: String?) -> Void)) {
@@ -173,6 +184,7 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
 
                 if eventName == "message" {
                     onMessageCallback?(id, eventName, data)
+                    emitter?.next(Event(id: id, event: eventName, data: data))
                 }
             }
         }

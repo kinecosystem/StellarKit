@@ -168,9 +168,7 @@ public class Stellar {
         }
     }
 
-    public func watch(account: String,
-                      lastEventId: String?,
-                      closure: @escaping (TxInfo) -> Void) -> StellarEventSource {
+    public func watch(account: String, lastEventId: String?) -> TxWatch {
         var url = baseURL
             .appendingPathComponent("accounts")
             .appendingPathComponent(account)
@@ -182,21 +180,7 @@ public class Stellar {
             eventId = nil
         }
 
-        let eventSource = StellarEventSource(url: url, lastEventId: eventId)
-        eventSource.onMessage { _, _, data in
-            guard
-                let jsonData = data?.data(using: .utf8),
-                let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-                let unwrappedJSON = json,
-                let txInfo = try? TxInfo(json: unwrappedJSON)
-                else {
-                    return
-            }
-
-            closure(txInfo)
-        }
-
-        return eventSource
+        return TxWatch(eventSource: StellarEventSource(url: url, lastEventId: eventId))
     }
 
     // MARK: -
@@ -334,6 +318,35 @@ extension Stellar {
 
                 return postTransaction(baseURL: self.baseURL, envelope: envelope)
         }
+    }
+}
+
+//MARK: -
+
+public class TxWatch {
+    public let eventSource: StellarEventSource
+    public let emitter: Observable<TxInfo>
+
+    init(eventSource: StellarEventSource) {
+        self.eventSource = eventSource
+
+        self.emitter = eventSource.emitter.flatMap({ event -> TxInfo? in
+            guard
+                let jsonData = event.data?.data(using: .utf8),
+                let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
+                let unwrappedJSON = json,
+                let txInfo = try? TxInfo(json: unwrappedJSON)
+                else {
+                    return nil
+            }
+
+            return txInfo
+        })
+    }
+
+    deinit {
+        eventSource.close()
+        emitter.unlink()
     }
 }
 
