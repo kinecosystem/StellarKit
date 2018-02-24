@@ -13,7 +13,7 @@ struct HorizonError: Decodable {
     let title: String
     let status: Int
     let detail: String
-    let instance: String
+    let instance: String?
     let extras: Extras?
 
     struct Extras: Decodable {
