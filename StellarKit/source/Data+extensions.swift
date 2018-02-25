@@ -66,7 +66,7 @@ public extension Data {
 
         forEach {
             let bs = String($0, radix: 2)
-            let padding = String(repeating: "0", count: 8 - bs.length)
+            let padding = String(repeating: "0", count: 8 - bs.count)
 
             s += padding + bs
         }
