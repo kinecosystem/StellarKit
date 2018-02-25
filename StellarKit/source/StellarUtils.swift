@@ -80,24 +80,6 @@ func postTransaction(baseURL: URL, envelope: TransactionEnvelope) -> Promise<Str
     }
 }
 
-func accountDetails(baseURL: URL, account: String) -> Promise<AccountDetails> {
-    let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
-
-    return issue(request: URLRequest(url: url))
-        .then { data in
-            if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
-                if horizonError.status == 404 {
-                    throw StellarError.missingAccount
-                }
-                else {
-                    throw StellarError.unknownError(horizonError)
-                }
-            }
-
-            return try Promise<AccountDetails>(JSONDecoder().decode(AccountDetails.self, from: data))
-    }
-}
-
 func issue(request: URLRequest) -> Promise<Data> {
     let p = Promise<Data>()
 

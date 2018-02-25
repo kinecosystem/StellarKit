@@ -25,7 +25,7 @@ struct HorizonError: Decodable {
     }
 }
 
-struct AccountDetails: Decodable {
+public struct AccountDetails: Decodable {
     let id: String
     let accountId: String
     let sequence: String
