@@ -4,3 +4,6 @@
 [submodule "keychain-swift"]
 	path = StellarKit/third-party/keychain-swift
 	url = https://github.com/filippovdev/keychain-swift.git
+[submodule "kin-util-ios"]
+	path = kin-util-ios
+	url = https://github.com/kinfoundation/kin-util-ios.git
