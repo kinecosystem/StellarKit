@@ -53,6 +53,10 @@ extension String: XDRCodable {
         } else {
             throw XDRDecoder.Error.invalidUTF8(utf8)
         }
+
+        if utf8.count % 4 != 0 {
+            _ = try (0..<(4 - utf8.count % 4)).forEach { _ in try _ = UInt8(fromBinary: decoder) }
+        }
     }
 }
 
@@ -84,9 +88,13 @@ extension Data: XDRCodable {
         try forEach { try $0.encode(to: encoder) }
     }
 
-    public init(fromBinary xdrDecoder: XDRDecoder) throws {
-        let bytes: [UInt8] = try Array(fromBinary: xdrDecoder)
+    public init(fromBinary decoder: XDRDecoder) throws {
+        let bytes: [UInt8] = try Array(fromBinary: decoder)
         self.init(bytes: bytes)
+
+        if bytes.count % 4 != 0 {
+            _ = try (0..<(4 - bytes.count % 4)).forEach { _ in try _ = UInt8(fromBinary: decoder) }
+        }
     }
 
     public init(fromBinary xdrDecoder: XDRDecoder, count: Int) throws {
