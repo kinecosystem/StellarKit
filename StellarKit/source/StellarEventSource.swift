@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KinUtil
 
 public class StellarEventSource: NSObject, URLSessionDataDelegate {
     private enum State {

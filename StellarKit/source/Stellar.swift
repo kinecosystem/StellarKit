@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KinUtil
 
 public protocol Account {
     var publicKey: String? { get }

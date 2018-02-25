@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KinUtil
 
 private func networrkIdSHA256(_ networkId: String) throws -> Data {
     guard let sha256 = networkId.data(using: .utf8)?.sha256 else {
