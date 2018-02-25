@@ -36,6 +36,7 @@
 		8291DA9820353E02002C10F5 /* StellarEventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8291DA9720353E01002C10F5 /* StellarEventSource.swift */; };
 		82B8DC6D2022000000773D21 /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B8DC6C2022000000773D21 /* PromiseTests.swift */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
+		82F2FA8C203FECD600E754BD /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F2FA8B203FECD600E754BD /* Observable.swift */; };
 		82FD8B2320264D9A00A126C0 /* XDRCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B1F20264D9800A126C0 /* XDRCodable.swift */; };
 		82FD8B2420264D9A00A126C0 /* XDRDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2020264D9800A126C0 /* XDRDecoder.swift */; };
 		82FD8B2520264D9A00A126C0 /* XDREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2120264D9800A126C0 /* XDREncoder.swift */; };
@@ -177,6 +178,7 @@
 		8291DA9720353E01002C10F5 /* StellarEventSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarEventSource.swift; sourceTree = "<group>"; };
 		82B8DC6C2022000000773D21 /* PromiseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
+		82F2FA8B203FECD600E754BD /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		82FD8B1F20264D9800A126C0 /* XDRCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRCodable.swift; sourceTree = "<group>"; };
 		82FD8B2020264D9800A126C0 /* XDRDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRDecoder.swift; sourceTree = "<group>"; };
 		82FD8B2120264D9800A126C0 /* XDREncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDREncoder.swift; sourceTree = "<group>"; };
@@ -356,6 +358,7 @@
 				8291DA9720353E01002C10F5 /* StellarEventSource.swift */,
 				82340C44200138E50034204F /* StellarResults.swift */,
 				8240640920200C620055D70A /* Promise.swift */,
+				82F2FA8B203FECD600E754BD /* Observable.swift */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -741,6 +744,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82F2FA8C203FECD600E754BD /* Observable.swift in Sources */,
 				E96F24B82013D6D90017EF68 /* RandomBytes.swift in Sources */,
 				E96F24732013D6D90017EF68 /* GenericHash.swift in Sources */,
 				E96F24712013D6D90017EF68 /* Auth.swift in Sources */,
