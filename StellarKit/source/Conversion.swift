@@ -26,18 +26,17 @@ func base32KeyToData(key: String) -> Data {
 }
 
 func publicKeyToBase32(_ key: Data) -> String {
-    var d = Data([VersionBytes.ed25519PublicKey])
-
-    d.append(key)
-    d.append(contentsOf: d.crc16)
-
-    return dataToBase32(d)
+    return dataToBase32(key, type: VersionBytes.ed25519PublicKey)
 }
 
 func seedToBase32(_ seed: Data) -> String {
-    var d = Data([VersionBytes.ed25519SecretSeed])
+    return dataToBase32(seed, type: VersionBytes.ed25519SecretSeed)
+}
 
-    d.append(seed)
+private func dataToBase32(_ data: Data, type: UInt8) -> String {
+    var d = Data([type])
+
+    d.append(data)
     d.append(contentsOf: d.crc16)
 
     return dataToBase32(d)

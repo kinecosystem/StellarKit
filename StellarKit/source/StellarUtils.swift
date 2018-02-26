@@ -9,7 +9,7 @@
 import Foundation
 import KinUtil
 
-private func networrkIdSHA256(_ networkId: String) throws -> Data {
+private func networkIdSHA256(_ networkId: String) throws -> Data {
     guard let sha256 = networkId.data(using: .utf8)?.sha256 else {
         throw StellarError.dataEncodingFailed
     }
@@ -21,7 +21,7 @@ func sign(transaction tx: Transaction,
           signer: Account,
           hint: Data,
           networkId: String) throws -> TransactionEnvelope {
-    let sha256 = try networrkIdSHA256(networkId)
+    let sha256 = try networkIdSHA256(networkId)
 
     let payload = TransactionSignaturePayload(networkId: WD32(sha256),
                                               taggedTransaction: .ENVELOPE_TYPE_TX(tx))
