@@ -256,6 +256,10 @@ public struct TxInfo {
         return tx.memo.data
     }
 
+    public var sequence: UInt64 {
+        return tx.seqNum
+    }
+
     init(json: [String: Any]) throws {
         let envB64 = json["envelope_xdr"] as? String
         let envData = Data(base64Encoded: envB64!)
