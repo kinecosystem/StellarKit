@@ -182,49 +182,22 @@ public class Stellar {
         return TxWatch(eventSource: StellarEventSource(url: url))
     }
 
-    // MARK: -
+    public func accountDetails(baseURL: URL, account: String) -> Promise<AccountDetails> {
+        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
-    public func createAccountOp(destination: String,
-                                balance: Int64,
-                                source: Account? = nil) -> Operation {
-        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: destination)))
+        return issue(request: URLRequest(url: url))
+            .then { data in
+                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
+                    if horizonError.status == 404 {
+                        throw StellarError.missingAccount
+                    }
+                    else {
+                        throw StellarError.unknownError(horizonError)
+                    }
+                }
 
-        var sourcePK: PublicKey? = nil
-        if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
+                return try Promise<AccountDetails>(JSONDecoder().decode(AccountDetails.self, from: data))
         }
-
-        return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.CREATE_ACCOUNT(CreateAccountOp(destination: destPK,
-                                                                             balance: balance)))
-    }
-
-    public func paymentOp(destination: String,
-                          amount: Int64,
-                          source: Account? = nil,
-                          asset: Asset? = nil) -> Operation {
-        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: destination)))
-
-        var sourcePK: PublicKey? = nil
-        if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
-        }
-
-        return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                                asset: asset ?? self.asset,
-                                                                amount: amount)))
-
-    }
-
-    public func trustOp(source: Account? = nil, asset: Asset? = nil) -> Operation {
-        var sourcePK: PublicKey? = nil
-        if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
-        }
-
-        return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.asset)))
     }
 
     // MARK: -
@@ -290,23 +263,52 @@ public class Stellar {
                 return p.signal(accountDetails.seqNum)
         }
     }
+}
 
-    func accountDetails(baseURL: URL, account: String) -> Promise<AccountDetails> {
-        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
+//MARK: - Operations
 
-        return issue(request: URLRequest(url: url))
-            .then { data in
-                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
-                    if horizonError.status == 404 {
-                        throw StellarError.missingAccount
-                    }
-                    else {
-                        throw StellarError.unknownError(horizonError)
-                    }
-                }
+extension Stellar {
+    public func createAccountOp(destination: String,
+                                balance: Int64,
+                                source: Account? = nil) -> Operation {
+        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: destination)))
 
-                return try Promise<AccountDetails>(JSONDecoder().decode(AccountDetails.self, from: data))
+        var sourcePK: PublicKey? = nil
+        if let source = source, let pk = source.publicKey {
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
         }
+
+        return Operation(sourceAccount: sourcePK,
+                         body: Operation.Body.CREATE_ACCOUNT(CreateAccountOp(destination: destPK,
+                                                                             balance: balance)))
+    }
+
+    public func paymentOp(destination: String,
+                          amount: Int64,
+                          source: Account? = nil,
+                          asset: Asset? = nil) -> Operation {
+        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: destination)))
+
+        var sourcePK: PublicKey? = nil
+        if let source = source, let pk = source.publicKey {
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
+        }
+
+        return Operation(sourceAccount: sourcePK,
+                         body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
+                                                                asset: asset ?? self.asset,
+                                                                amount: amount)))
+
+    }
+
+    public func trustOp(source: Account? = nil, asset: Asset? = nil) -> Operation {
+        var sourcePK: PublicKey? = nil
+        if let source = source, let pk = source.publicKey {
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
+        }
+
+        return Operation(sourceAccount: sourcePK,
+                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.asset)))
     }
 }
 
