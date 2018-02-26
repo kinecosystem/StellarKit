@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import StellarKit
+import KinUtil
 
 struct MockStellarAccount: Account {
     var publicKey: String? {
