@@ -145,15 +145,23 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
 
             if let location = string.range(of: ":")?.lowerBound {
                 let key = String(string[..<location])
-                var val = String(string[string.index(after: location)..<string.endIndex])
+                let val = String(string[string.index(after: location)..<string.endIndex])
 
-                val = val.hasPrefix(" ") ? String(val.dropFirst()) : val
+                #if swift(>=4.0)
+                    var value = val
+                #else
+                    guard var value = val else {
+                    continue
+                    }
+                #endif
+
+                value = value.hasPrefix(" ") ? String(value.dropFirst()) : value
 
                 switch key {
                 case "id": id = val
                 case "event": eventName = val
-                case "data": data = val
-                case "retry": retryTime = Int(val) ?? retryTime
+                case "data": data = value
+                case "retry": retryTime = Int(value) ?? retryTime
                 default: break
                 }
 

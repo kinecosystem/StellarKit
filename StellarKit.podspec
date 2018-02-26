@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
-  s.version     = "0.1.7"
+  s.version     = "0.2.0"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/kinfoundation/StellarKit.git"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
@@ -10,7 +10,9 @@ Pod::Spec.new do |s|
   s.author      = { 'Kin Foundation' => 'kin@kik.com' }
   s.source      = { :git => "https://github.com/kinfoundation/StellarKit.git", :tag => s.version, :submodules => true }
 
+  s.dependency 'KinUtil', '0.0.1'
   s.ios.deployment_target = "8.0"
+  s.swift_version = "3.2"
 
   s.preserve_paths        = 'StellarKit/third-party/swift-sodium/Sodium/libsodium/module.modulemap', 'StellarKit/third-party/swift-sodium/Sodium/libsodium/libsodium-ios.a'
   s.source_files          = 'StellarKit/source/**/*.swift', 'StellarKit/third-party/swift-sodium/Sodium/*.{swift,h}', 'StellarKit/third-party/swift-sodium/Sodium/libsodium/*.h', 'StellarKit/third-party/keychain-swift/KeychainSwift/*.swift', 'StellarKit/third-party/EventSource/EventSource/*.swift'
