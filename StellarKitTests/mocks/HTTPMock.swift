@@ -169,8 +169,7 @@ class RequestMock {
 
     private func variable(_ string: String) -> String? {
         if string.starts(with: "${") && string.last == "}" {
-            let s = string.substring(fromIndex: 2)
-            return s.substring(toIndex: s.count - 1)
+            return string[2..<(string.count - 1)]
         }
 
         return nil

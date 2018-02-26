@@ -99,7 +99,7 @@ class HorizonMock {
                 return self?.malformedTransaction()
             }
 
-            let urlEncodedStr = bodyString.substring(fromIndex: 3)
+            let urlEncodedStr = bodyString[3..<bodyString.count]
 
             guard
                 let base64Str = urlEncodedStr.removingPercentEncoding,
