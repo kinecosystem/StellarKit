@@ -22,7 +22,7 @@
 		82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BDC1FFE24EE0034204F /* Stellar.swift */; };
 		82340C45200138E50034204F /* StellarResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C44200138E50034204F /* StellarResults.swift */; };
 		82340C4B20014BFC0034204F /* StellarErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340C4A20014BFC0034204F /* StellarErrors.swift */; };
-		82343AAA2024A97900848CF4 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82343AA92024A97900848CF4 /* Types.swift */; };
+		82343AAA2024A97900848CF4 /* WrappedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82343AA92024A97900848CF4 /* WrappedData.swift */; };
 		824063B120147DCD0055D70A /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AC20147DCD0055D70A /* Asset.swift */; };
 		824063B220147DCD0055D70A /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AD20147DCD0055D70A /* Operation.swift */; };
 		824063B320147DCD0055D70A /* Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AE20147DCD0055D70A /* Operations.swift */; };
@@ -184,7 +184,7 @@
 		82340BDC1FFE24EE0034204F /* Stellar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stellar.swift; sourceTree = "<group>"; };
 		82340C44200138E50034204F /* StellarResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarResults.swift; sourceTree = "<group>"; };
 		82340C4A20014BFC0034204F /* StellarErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarErrors.swift; sourceTree = "<group>"; };
-		82343AA92024A97900848CF4 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		82343AA92024A97900848CF4 /* WrappedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrappedData.swift; sourceTree = "<group>"; };
 		824063AC20147DCD0055D70A /* Asset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
 		824063AD20147DCD0055D70A /* Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
 		824063AE20147DCD0055D70A /* Operations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Operations.swift; sourceTree = "<group>"; };
@@ -423,7 +423,7 @@
 				824063AE20147DCD0055D70A /* Operations.swift */,
 				824063AF20147DCD0055D70A /* PublicKey.swift */,
 				824063B020147DCD0055D70A /* Transaction.swift */,
-				82343AA92024A97900848CF4 /* Types.swift */,
+				82343AA92024A97900848CF4 /* WrappedData.swift */,
 			);
 			path = types;
 			sourceTree = "<group>";
@@ -801,7 +801,7 @@
 				E96F24732013D6D90017EF68 /* GenericHash.swift in Sources */,
 				E96F24712013D6D90017EF68 /* Auth.swift in Sources */,
 				82FD8B2420264D9A00A126C0 /* XDRDecoder.swift in Sources */,
-				82343AAA2024A97900848CF4 /* Types.swift in Sources */,
+				82343AAA2024A97900848CF4 /* WrappedData.swift in Sources */,
 				8291DA9820353E02002C10F5 /* StellarEventSource.swift in Sources */,
 				824063B320147DCD0055D70A /* Operations.swift in Sources */,
 				E96F24762013D6D90017EF68 /* KeyExchange.swift in Sources */,
