@@ -258,9 +258,7 @@ public class Stellar {
     public func sequence(account: String) -> Promise<UInt64> {
         return accountDetails(baseURL: baseURL, account: account)
             .then { accountDetails in
-                let p = Promise<UInt64>()
-
-                return p.signal(accountDetails.seqNum)
+                return Promise<UInt64>().signal(accountDetails.seqNum)
         }
     }
 }
