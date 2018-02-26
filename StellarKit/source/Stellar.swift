@@ -175,13 +175,11 @@ public class Stellar {
             .appendingPathComponent(account)
             .appendingPathComponent("transactions")
 
-        var eventId = lastEventId
         if let lastEventId = lastEventId {
             url = URL(string: url.absoluteString + "?cursor=\(lastEventId)")!
-            eventId = nil
         }
 
-        return TxWatch(eventSource: StellarEventSource(url: url, lastEventId: eventId))
+        return TxWatch(eventSource: StellarEventSource(url: url))
     }
 
     // MARK: -
