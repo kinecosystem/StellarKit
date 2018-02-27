@@ -39,47 +39,6 @@ func sign(transaction tx: Transaction,
                                                                signature: signature)])
 }
 
-func postTransaction(baseURL: URL, envelope: TransactionEnvelope) -> Promise<String> {
-    let envelopeData: Data
-    do {
-        envelopeData = try Data(XDREncoder.encode(envelope))
-    }
-    catch {
-        return Promise<String>(error)
-    }
-
-    guard let urlEncodedEnvelope = envelopeData.base64EncodedString().urlEncoded else {
-        return Promise<String>(StellarError.urlEncodingFailed)
-    }
-
-    guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
-        return Promise<String>(StellarError.dataEncodingFailed)
-    }
-
-    var request = URLRequest(url: baseURL.appendingPathComponent("transactions"))
-    request.httpMethod = "POST"
-    request.httpBody = httpBody
-
-    return issue(request: request)
-        .then { data in
-            if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data),
-                let resultXDR = horizonError.extras?.resultXDR,
-                let error = errorFromResponse(resultXDR: resultXDR) {
-                throw error
-            }
-
-            do {
-                let txResponse = try JSONDecoder().decode(TransactionResponse.self,
-                                                          from: data)
-
-                return Promise<String>(txResponse.hash)
-            }
-            catch {
-                throw error
-            }
-    }
-}
-
 func issue(request: URLRequest) -> Promise<Data> {
     let p = Promise<Data>()
 

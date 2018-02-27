@@ -59,10 +59,34 @@ class StellarBaseTests: XCTestCase {
         super.tearDown()
     }
 
+    func fund(account: String) -> Promise<String> {
+        let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
+        let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
+
+        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: funderPK)))
+
+        let funder = MockStellarAccount(seedStr: funderSK)
+
+        return stellar.sequence(account: funderPK)
+            .then { sequence in
+                let tx = Transaction(sourceAccount: sourcePK,
+                                     seqNum: sequence + 1,
+                                     timeBounds: nil,
+                                     memo: .MEMO_NONE,
+                                     operations: [self.stellar.createAccountOp(destination: account,
+                                                                               balance: 10 * 10000000)])
+
+                let envelope = try self.stellar.sign(transaction: tx,
+                                                     signer: funder)
+
+                return self.stellar.postTransaction(baseURL: self.stellar.baseURL, envelope: envelope)
+        }
+    }
+
     func test_trust() {
         let e = expectation(description: "")
 
-        self.stellar.fund(account: account.publicKey!)
+        fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account)
@@ -81,7 +105,7 @@ class StellarBaseTests: XCTestCase {
     func test_double_trust() {
         let e = expectation(description: "")
 
-        stellar.fund(account: account.publicKey!)
+        fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account)
@@ -128,7 +152,7 @@ class StellarBaseTests: XCTestCase {
     func test_payment_from_unfunded_account() {
         let e = expectation(description: "")
 
-        stellar.fund(account: account2.publicKey!)
+        fund(account: account2.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account2)
@@ -161,9 +185,9 @@ class StellarBaseTests: XCTestCase {
 
         let stellar = self.stellar
 
-        stellar.fund(account: account.publicKey!)
+        fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
-                return stellar.fund(account: self.account2.publicKey!)
+                return self.fund(account: self.account2.publicKey!)
             }
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
@@ -199,7 +223,7 @@ class StellarBaseTests: XCTestCase {
     func test_payment_to_trusting_account() {
         let e = expectation(description: "")
 
-        stellar.fund(account: account.publicKey!)
+        fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account)
@@ -223,7 +247,7 @@ class StellarBaseTests: XCTestCase {
     func test_balance() {
         let e = expectation(description: "")
 
-        stellar.fund(account: account.publicKey!)
+        fund(account: account.publicKey!)
             .then { txHash -> Promise<String> in
                 return self.stellar.trust(asset: self.stellar.asset,
                                           account: self.account)

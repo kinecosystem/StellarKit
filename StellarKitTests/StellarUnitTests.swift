@@ -38,4 +38,3 @@ class StellarUnitTests: StellarBaseTests {
         super.tearDown()
     }
 }
-

@@ -75,7 +75,7 @@ public class Stellar {
                 let envelope = try self.sign(transaction: tx,
                                              signer: source)
 
-                return postTransaction(baseURL: self.baseURL, envelope: envelope)
+                return self.postTransaction(baseURL: self.baseURL, envelope: envelope)
             }
             .transformError(handler: { (error) -> Error in
                 if case StellarError.missingAccount = error {
@@ -123,7 +123,7 @@ public class Stellar {
                         let envelope = try self.sign(transaction: tx,
                                                      signer: account)
 
-                        return postTransaction(baseURL: self.baseURL, envelope: envelope)
+                        return self.postTransaction(baseURL: self.baseURL, envelope: envelope)
                     }
                     .then { txHash in
                         p.signal(txHash)
@@ -261,6 +261,47 @@ public class Stellar {
                 return Promise<UInt64>().signal(accountDetails.seqNum)
         }
     }
+
+    public func postTransaction(baseURL: URL, envelope: TransactionEnvelope) -> Promise<String> {
+        let envelopeData: Data
+        do {
+            envelopeData = try Data(XDREncoder.encode(envelope))
+        }
+        catch {
+            return Promise<String>(error)
+        }
+
+        guard let urlEncodedEnvelope = envelopeData.base64EncodedString().urlEncoded else {
+            return Promise<String>(StellarError.urlEncodingFailed)
+        }
+
+        guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
+            return Promise<String>(StellarError.dataEncodingFailed)
+        }
+
+        var request = URLRequest(url: baseURL.appendingPathComponent("transactions"))
+        request.httpMethod = "POST"
+        request.httpBody = httpBody
+
+        return issue(request: request)
+            .then { data in
+                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data),
+                    let resultXDR = horizonError.extras?.resultXDR,
+                    let error = errorFromResponse(resultXDR: resultXDR) {
+                    throw error
+                }
+
+                do {
+                    let txResponse = try JSONDecoder().decode(TransactionResponse.self,
+                                                              from: data)
+
+                    return Promise<String>(txResponse.hash)
+                }
+                catch {
+                    throw error
+                }
+        }
+    }
 }
 
 //MARK: - Operations
@@ -310,34 +351,6 @@ extension Stellar {
     }
 }
 
-extension Stellar {
-    // This is for testing only.
-    // The account used for funding exists only on test-net.
-    /// :nodoc:
-    public func fund(account: String) -> Promise<String> {
-        let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
-        let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
-
-        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: funderPK)))
-
-        return self.sequence(account: funderPK)
-            .then { sequence in
-                let tx = Transaction(sourceAccount: sourcePK,
-                                     seqNum: sequence + 1,
-                                     timeBounds: nil,
-                                     memo: .MEMO_NONE,
-                                     operations: [self.createAccountOp(destination: account,
-                                                                       balance: 10 * 10000000)])
-
-                let envelope = try self.sign(transaction: tx,
-                                             signer: StellarAccount(publicKey: funderPK,
-                                                                    secretKey: funderSK))
-
-                return postTransaction(baseURL: self.baseURL, envelope: envelope)
-        }
-    }
-}
-
 //MARK: -
 
 public class TxWatch {
@@ -364,30 +377,5 @@ public class TxWatch {
     deinit {
         eventSource.close()
         emitter.unlink()
-    }
-}
-
-//MARK: -
-
-// This is for testing only.
-/// :nodoc:
-private struct StellarAccount: Account {
-    var publicKey: String?
-    var secretKey: String
-
-    var sign: ((Data) throws -> Data)?
-
-    init(publicKey: String?, secretKey: String) {
-        self.publicKey = publicKey
-        self.secretKey = secretKey
-
-        self.sign = { message in
-            guard let keyPair = KeyUtils.keyPair(from: secretKey) else {
-                throw StellarError.unknownError(nil)
-            }
-
-            return try KeyUtils.sign(message: message,
-                                     signingKey: keyPair.secretKey)
-        }
     }
 }
