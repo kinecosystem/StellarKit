@@ -26,22 +26,22 @@ struct HorizonError: Decodable {
 }
 
 public struct AccountDetails: Decodable {
-    let id: String
-    let accountId: String
-    let sequence: String
-    let balances: [Balance]
+    public let id: String
+    public let accountId: String
+    public let sequence: String
+    public let balances: [Balance]
 
-    var seqNum: UInt64 {
+    public var seqNum: UInt64 {
         return UInt64(sequence) ?? 0
     }
 
-    struct Balance: Decodable {
-        let balance: String
-        let assetType: String
-        let assetCode: String?
-        let assetIssuer: String?
+    public struct Balance: Decodable {
+        public let balance: String
+        public let assetType: String
+        public let assetCode: String?
+        public let assetIssuer: String?
 
-        var balanceNum: Decimal {
+        public var balanceNum: Decimal {
             return Decimal(string: balance) ?? Decimal()
         }
 
