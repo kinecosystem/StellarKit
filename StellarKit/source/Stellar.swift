@@ -145,7 +145,7 @@ public class Stellar {
      - Returns: A promise which will be signalled with the result of the operation.
      */
     public func balance(account: String, asset: Asset? = nil) -> Promise<Decimal> {
-        return accountDetails(baseURL: baseURL, account: account)
+        return accountDetails(account: account)
             .then { accountDetails in
                 let p = Promise<Decimal>()
 
@@ -182,7 +182,7 @@ public class Stellar {
         return TxWatch(eventSource: StellarEventSource(url: url))
     }
 
-    public func accountDetails(baseURL: URL, account: String) -> Promise<AccountDetails> {
+    public func accountDetails(account: String) -> Promise<AccountDetails> {
         let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         return issue(request: URLRequest(url: url))
@@ -256,7 +256,7 @@ public class Stellar {
     }
 
     public func sequence(account: String) -> Promise<UInt64> {
-        return accountDetails(baseURL: baseURL, account: account)
+        return accountDetails(account: account)
             .then { accountDetails in
                 return Promise<UInt64>().signal(accountDetails.seqNum)
         }
