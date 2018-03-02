@@ -169,10 +169,16 @@ public class Stellar {
         }
     }
 
-    public func watch(account: String, lastEventId: String?) -> TxWatch {
+    public func watch(account: String? = nil, lastEventId: String?) -> TxWatch {
         var url = baseURL
-            .appendingPathComponent("accounts")
-            .appendingPathComponent(account)
+
+        if let account = account {
+            url = url
+                .appendingPathComponent("accounts")
+                .appendingPathComponent(account)
+        }
+
+        url = url
             .appendingPathComponent("transactions")
 
         if let lastEventId = lastEventId {
