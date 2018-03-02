@@ -53,3 +53,47 @@ struct ChangeTrustOp: XDRCodable {
         self.asset = asset
     }
 }
+
+struct SetOptionsOp: XDRCodable {
+    let inflationDest: PublicKey?
+    let clearFlags: UInt32?
+    let setFlags: UInt32?
+    let masterWeight: UInt32?
+    let lowThreshold: UInt32?
+    let medThreshold: UInt32?
+    let highThreshold: UInt32?
+    let homeDomain: String?
+    let signer: Signer?
+
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+
+        inflationDest = try container.decode(Array<PublicKey>.self).first
+        clearFlags = try container.decode(Array<UInt32>.self).first
+        setFlags = try container.decode(Array<UInt32>.self).first
+        masterWeight = try container.decode(Array<UInt32>.self).first
+        lowThreshold = try container.decode(Array<UInt32>.self).first
+        medThreshold = try container.decode(Array<UInt32>.self).first
+        highThreshold = try container.decode(Array<UInt32>.self).first
+        homeDomain = try container.decode(Array<String>.self).first
+        signer = try container.decode(Array<Signer>.self).first
+    }
+}
+
+struct ManageOfferOp: XDRCodable {
+    let buying: Asset
+    let selling: Asset
+    let amount: Int64
+    let price: Price
+    let offerId: Int64
+
+    struct Price:XDRCodable {
+        let n: Int32
+        let d: Int32
+    }
+}
+
+struct Signer: XDRCodable {
+    let key: SignerKey
+    let weight: UInt32
+}

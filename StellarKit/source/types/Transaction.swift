@@ -227,10 +227,15 @@ public struct TxInfo {
     }
 
     public var isPayment: Bool {
-        switch tx.operations.first!.body {
-        case .PAYMENT: return true
-        default: return false
+        guard let body = tx.operations.first?.body else {
+            return false
         }
+
+        if case Operation.Body.PAYMENT = body {
+            return true
+        }
+
+        return false
     }
 
     public var amount: Int64? {

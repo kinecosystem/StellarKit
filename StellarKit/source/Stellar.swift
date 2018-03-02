@@ -169,7 +169,9 @@ public class Stellar {
         }
     }
 
-    public func watch(account: String? = nil, lastEventId: String?) -> TxWatch {
+    public func watch(account: String? = nil,
+                      lastEventId: String?,
+                      descending: Bool = false) -> TxWatch {
         var url = baseURL
 
         if let account = account {
@@ -181,8 +183,10 @@ public class Stellar {
         url = url
             .appendingPathComponent("transactions")
 
+        url = URL(string: url.absoluteString + "?order=\(descending ? "desc" : "asc")")!
+
         if let lastEventId = lastEventId {
-            url = URL(string: url.absoluteString + "?cursor=\(lastEventId)")!
+            url = URL(string: url.absoluteString + "&cursor=\(lastEventId)")!
         }
 
         return TxWatch(eventSource: StellarEventSource(url: url))
