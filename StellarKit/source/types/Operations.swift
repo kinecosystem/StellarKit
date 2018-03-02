@@ -93,6 +93,10 @@ struct ManageOfferOp: XDRCodable {
     }
 }
 
+struct AccountMergeOp: XDRCodable {
+    let destination: PublicKey
+}
+
 struct Signer: XDRCodable {
     let key: SignerKey
     let weight: UInt32

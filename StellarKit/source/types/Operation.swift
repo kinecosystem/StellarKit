@@ -51,6 +51,7 @@ public struct Operation: XDRCodable {
         case CHANGE_TRUST (ChangeTrustOp)
         case MANAGE_OFFER (ManageOfferOp)
         case SET_OPTIONS (SetOptionsOp)
+        case ACCOUNT_MERGE (AccountMergeOp)
 
         init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
@@ -68,6 +69,8 @@ public struct Operation: XDRCodable {
                 self = .SET_OPTIONS(try container.decode(SetOptionsOp.self))
             case OperationType.MANAGE_OFFER:
                 self = .MANAGE_OFFER(try container.decode(ManageOfferOp.self))
+            case OperationType.ACCOUNT_MERGE:
+                self = .ACCOUNT_MERGE(try container.decode(AccountMergeOp.self))
             default:
                 self = .CREATE_ACCOUNT(try container.decode(CreateAccountOp.self))
             }
@@ -80,6 +83,7 @@ public struct Operation: XDRCodable {
             case .CHANGE_TRUST: return OperationType.CHANGE_TRUST
             case .SET_OPTIONS: return OperationType.SET_OPTIONS
             case .MANAGE_OFFER: return OperationType.MANAGE_OFFER
+            case .ACCOUNT_MERGE: return OperationType.ACCOUNT_MERGE
             }
         }
 
@@ -102,6 +106,9 @@ public struct Operation: XDRCodable {
                 try container.encode(op)
 
             case .MANAGE_OFFER(let op):
+                try container.encode(op)
+
+            case .ACCOUNT_MERGE(let op):
                 try container.encode(op)
             }
         }
