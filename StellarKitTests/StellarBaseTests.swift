@@ -39,9 +39,9 @@ class StellarBaseTests: XCTestCase {
     var endpoint: String { return "override me" }
 
     lazy var stellar: Stellar =
-        Stellar(baseURL: URL(string: endpoint)!,
-                asset: Asset(assetCode: "KIN",
-                             issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"))
+        Stellar(node: StellarNode(baseURL: URL(string: endpoint)!,
+                                  asset: Asset(assetCode: "KIN",
+                                               issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")))
 
     var account: Account!
     var account2: Account!
@@ -79,7 +79,7 @@ class StellarBaseTests: XCTestCase {
                 let envelope = try self.stellar.sign(transaction: tx,
                                                      signer: funder)
 
-                return self.stellar.postTransaction(baseURL: self.stellar.baseURL, envelope: envelope)
+                return self.stellar.postTransaction(baseURL: self.stellar.node.baseURL, envelope: envelope)
         }
     }
 
@@ -88,7 +88,7 @@ class StellarBaseTests: XCTestCase {
 
         fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+                return self.stellar.trust(asset: self.stellar.node.asset,
                                           account: self.account)
             }
             .then { _ in
@@ -107,11 +107,11 @@ class StellarBaseTests: XCTestCase {
 
         fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+                return self.stellar.trust(asset: self.stellar.node.asset,
                                           account: self.account)
             }
             .then { txHash -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+                return self.stellar.trust(asset: self.stellar.node.asset,
                                           account: self.account)
             }
             .then { _ in
@@ -154,7 +154,7 @@ class StellarBaseTests: XCTestCase {
 
         fund(account: account2.publicKey!)
             .then { _ -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+                return self.stellar.trust(asset: self.stellar.node.asset,
                                           account: self.account2)
             }
             .then { txHash -> Promise<String> in
@@ -190,11 +190,11 @@ class StellarBaseTests: XCTestCase {
                 return self.fund(account: self.account2.publicKey!)
             }
             .then { _ -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+                return self.stellar.trust(asset: self.stellar.node.asset,
                                           account: self.account)
             }
             .then { txHash -> Promise<String> in
-                return stellar.trust(asset: stellar.asset,
+                return stellar.trust(asset: stellar.node.asset,
                                      account: self.account2)
             }
             .then { txHash -> Promise<String> in
@@ -225,7 +225,7 @@ class StellarBaseTests: XCTestCase {
 
         fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+                return self.stellar.trust(asset: self.stellar.node.asset,
                                           account: self.account)
             }
             .then { txHash -> Promise<String> in
@@ -249,7 +249,7 @@ class StellarBaseTests: XCTestCase {
 
         fund(account: account.publicKey!)
             .then { txHash -> Promise<String> in
-                return self.stellar.trust(asset: self.stellar.asset,
+                return self.stellar.trust(asset: self.stellar.node.asset,
                                           account: self.account)
             }
             .then { txHash -> Promise<Decimal> in

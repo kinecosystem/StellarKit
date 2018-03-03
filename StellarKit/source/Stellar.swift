@@ -17,31 +17,42 @@ public protocol Account {
 
 typealias WD32 = WrappedData32
 
+public enum NetworkId: String {
+    case test = "Test SDF Network ; September 2015"
+    case main = "Public Global Stellar Network ; September 2015"
+}
+
+public struct StellarNode {
+    public let baseURL: URL
+    public let asset: Asset
+
+    let networkId: NetworkId
+
+    public init(baseURL: URL,
+                asset: Asset? = nil,
+                networkId: NetworkId = .test) {
+        self.baseURL = baseURL
+        self.asset = asset ?? .ASSET_TYPE_NATIVE
+        self.networkId = networkId
+    }
+}
+
 /**
  `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
  supporting non-native assets.
  */
 public class Stellar {
-    public let baseURL: URL
-    public let asset: Asset
-
-    private let networkId: String
+    public let node: StellarNode
 
     // MARK: -
 
     /**
      Instantiates an instance of `Stellar`.
 
-     - parameter baseURL: The `URL` of the Horizon end-point to communicate with.
-     - parameter asset: The asset which will be used by default.
-     - parameter networkId: The identifier for the Stellar network.  The default is the test-net.
+     - parameter node: A `StellarNode` instance, describing the network to communicate with.
      */
-    public init(baseURL: URL,
-                asset: Asset? = nil,
-                networkId: String = "Test SDF Network ; September 2015") {
-        self.baseURL = baseURL
-        self.asset = asset ?? .ASSET_TYPE_NATIVE
-        self.networkId = networkId
+    public init(node: StellarNode) {
+        self.node = node
     }
 
     // MARK: -
@@ -75,15 +86,15 @@ public class Stellar {
                 let envelope = try self.sign(transaction: tx,
                                              signer: source)
 
-                return self.postTransaction(baseURL: self.baseURL, envelope: envelope)
+                return self.postTransaction(baseURL: self.node.baseURL, envelope: envelope)
             }
             .transformError(handler: { (error) -> Error in
                 if case StellarError.missingAccount = error {
-                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
+                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.node.asset)
                 }
 
                 if case StellarError.missingBalance = error {
-                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
+                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.node.asset)
                 }
 
                 return error
@@ -123,7 +134,7 @@ public class Stellar {
                         let envelope = try self.sign(transaction: tx,
                                                      signer: account)
 
-                        return self.postTransaction(baseURL: self.baseURL, envelope: envelope)
+                        return self.postTransaction(baseURL: self.node.baseURL, envelope: envelope)
                     }
                     .then { txHash in
                         p.signal(txHash)
@@ -149,7 +160,7 @@ public class Stellar {
             .then { accountDetails in
                 let p = Promise<Decimal>()
 
-                let asset = asset ?? self.asset
+                let asset = asset ?? self.node.asset
 
                 for balance in accountDetails.balances {
                     let code = balance.assetCode
@@ -172,7 +183,7 @@ public class Stellar {
     public func watch(account: String? = nil,
                       lastEventId: String?,
                       descending: Bool = false) -> TxWatch {
-        var url = baseURL
+        var url = node.baseURL
 
         if let account = account {
             url = url
@@ -193,7 +204,7 @@ public class Stellar {
     }
 
     public func accountDetails(account: String) -> Promise<AccountDetails> {
-        let url = baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
+        let url = node.baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         return issue(request: URLRequest(url: url))
             .then { data in
@@ -262,7 +273,7 @@ public class Stellar {
         return try StellarKit.sign(transaction: tx,
                                    signer: signer,
                                    hint: KeyUtils.key(base32: publicKey).suffix(4),
-                                   networkId: networkId)
+                                   networkId: node.networkId.rawValue)
     }
 
     public func sequence(account: String) -> Promise<UInt64> {
@@ -345,7 +356,7 @@ extension Stellar {
 
         return Operation(sourceAccount: sourcePK,
                          body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                                asset: asset ?? self.asset,
+                                                                asset: asset ?? self.node.asset,
                                                                 amount: amount)))
 
     }
@@ -357,7 +368,7 @@ extension Stellar {
         }
 
         return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.asset)))
+                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.node.asset)))
     }
 }
 
