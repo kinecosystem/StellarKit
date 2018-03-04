@@ -75,10 +75,10 @@ public class Stellar {
                         memo: Memo = .MEMO_NONE) -> Promise<String> {
         return balance(account: destination, asset: asset)
             .then { _ -> Promise<Transaction> in
-                let op = self.paymentOp(destination: destination,
-                                        amount: amount,
-                                        source: nil,
-                                        asset: asset)
+                let op = Operation.paymentOp(destination: destination,
+                                             amount: amount,
+                                             source: nil,
+                                             asset: asset ?? self.asset)
 
                 return self.transaction(source: source, operations: [ op ], memo: memo)
             }
@@ -129,7 +129,7 @@ public class Stellar {
                     return
                 }
 
-                self.transaction(source: account, operations: [self.trustOp(asset: asset)])
+                self.transaction(source: account, operations: [Operation.changeTrustOp(asset: asset)])
                     .then { tx -> Promise<String> in
                         let envelope = try self.sign(transaction: tx,
                                                      signer: account)
@@ -322,53 +322,6 @@ public class Stellar {
                     throw error
                 }
         }
-    }
-}
-
-//MARK: - Operations
-
-extension Stellar {
-    public func createAccountOp(destination: String,
-                                balance: Int64,
-                                source: Account? = nil) -> Operation {
-        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: destination)))
-
-        var sourcePK: PublicKey? = nil
-        if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
-        }
-
-        return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.CREATE_ACCOUNT(CreateAccountOp(destination: destPK,
-                                                                             balance: balance)))
-    }
-
-    public func paymentOp(destination: String,
-                          amount: Int64,
-                          source: Account? = nil,
-                          asset: Asset? = nil) -> Operation {
-        let destPK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: destination)))
-
-        var sourcePK: PublicKey? = nil
-        if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
-        }
-
-        return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                                asset: asset ?? self.asset,
-                                                                amount: amount)))
-
-    }
-
-    public func trustOp(source: Account? = nil, asset: Asset? = nil) -> Operation {
-        var sourcePK: PublicKey? = nil
-        if let source = source, let pk = source.publicKey {
-            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
-        }
-
-        return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.asset)))
     }
 }
 
