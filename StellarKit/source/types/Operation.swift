@@ -54,6 +54,7 @@ public struct Operation: XDRCodable {
         case CREATE_PASSIVE_OFFER (CreatePassiveOfferOp)
         case SET_OPTIONS (SetOptionsOp)
         case ACCOUNT_MERGE (AccountMergeOp)
+        case MANAGE_DATA (ManageDataOp)
 
         init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
@@ -77,8 +78,10 @@ public struct Operation: XDRCodable {
                 self = .CREATE_PASSIVE_OFFER(try container.decode(CreatePassiveOfferOp.self))
             case OperationType.ACCOUNT_MERGE:
                 self = .ACCOUNT_MERGE(try container.decode(AccountMergeOp.self))
+            case OperationType.MANAGE_DATA:
+                self = .MANAGE_DATA(try container.decode(ManageDataOp.self))
             default:
-                self = .CREATE_ACCOUNT(try container.decode(CreateAccountOp.self))
+                fatalError("Invalid Op specified: \(discriminant)")
             }
         }
         
@@ -92,6 +95,7 @@ public struct Operation: XDRCodable {
             case .MANAGE_OFFER: return OperationType.MANAGE_OFFER
             case .CREATE_PASSIVE_OFFER: return OperationType.CREATE_PASSIVE_OFFER
             case .ACCOUNT_MERGE: return OperationType.ACCOUNT_MERGE
+            case .MANAGE_DATA: return OperationType.MANAGE_DATA
             }
         }
 
@@ -123,6 +127,9 @@ public struct Operation: XDRCodable {
                 try container.encode(op)
 
             case .ACCOUNT_MERGE(let op):
+                try container.encode(op)
+
+            case .MANAGE_DATA(let op):
                 try container.encode(op)
             }
         }

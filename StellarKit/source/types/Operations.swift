@@ -109,6 +109,20 @@ public struct AccountMergeOp: XDRCodable {
     let destination: PublicKey
 }
 
+public struct ManageDataOp: XDRCodable {
+    let dataName: String
+    let dataValue: Data?
+
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+
+        dataName = try container.decode(String.self)
+
+        let data = try container.decode(Array<UInt8>.self)
+        dataValue = data.isEmpty ? nil : Data(bytes: data)
+    }
+}
+
 public struct Signer: XDRCodable {
     let key: SignerKey
     let weight: UInt32
