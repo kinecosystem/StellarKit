@@ -87,7 +87,19 @@ struct ManageOfferOp: XDRCodable {
     let price: Price
     let offerId: Int64
 
-    struct Price:XDRCodable {
+    struct Price: XDRCodable {
+        let n: Int32
+        let d: Int32
+    }
+}
+
+struct CreatePassiveOfferOp: XDRCodable {
+    let buying: Asset
+    let selling: Asset
+    let amount: Int64
+    let price: Price
+
+    struct Price: XDRCodable {
         let n: Int32
         let d: Int32
     }
