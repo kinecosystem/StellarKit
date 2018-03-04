@@ -8,6 +8,18 @@
 
 import Foundation
 
+private func decodeData(from container: UnkeyedDecodingContainer, capacity: Int) throws -> Data {
+    var container = container
+    var d = Data(capacity: capacity)
+
+    for _ in 0 ..< capacity {
+        let decoded = try container.decode(UInt8.self)
+        d.append(decoded)
+    }
+
+    return d
+}
+
 public struct CreateAccountOp: XDRCodable {
     let destination: PublicKey
     let balance: Int64
@@ -61,6 +73,31 @@ public struct ChangeTrustOp: XDRCodable {
     public init(asset: Asset, limit: Int64 = Int64.max) {
         self.asset = asset
         self.limit = limit
+    }
+}
+
+public struct AllowTrustOp: XDRCodable {
+    let trustor: PublicKey
+    let asset: Data
+    let authorize: Bool
+
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+
+        trustor = try container.decode(PublicKey.self)
+
+        let discriminant = try container.decode(Int32.self)
+        if discriminant == AssetType.ASSET_TYPE_CREDIT_ALPHANUM4 {
+            asset = try decodeData(from: container, capacity: 4)
+        }
+        else if discriminant == AssetType.ASSET_TYPE_CREDIT_ALPHANUM12 {
+            asset = try decodeData(from: container, capacity: 12)
+        }
+        else {
+            fatalError("Unsupported asset type: \(discriminant)")
+        }
+
+        authorize = try container.decode(Bool.self)
     }
 }
 
@@ -132,3 +169,4 @@ public struct Price: XDRCodable {
     let n: Int32
     let d: Int32
 }
+
