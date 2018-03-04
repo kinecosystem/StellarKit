@@ -48,6 +48,7 @@ public struct Operation: XDRCodable {
     enum Body: XDRCodable {
         case CREATE_ACCOUNT (CreateAccountOp)
         case PAYMENT (PaymentOp)
+        case PATH_PAYMENT (PathPaymentOp)
         case CHANGE_TRUST (ChangeTrustOp)
         case MANAGE_OFFER (ManageOfferOp)
         case CREATE_PASSIVE_OFFER (CreatePassiveOfferOp)
@@ -62,10 +63,12 @@ public struct Operation: XDRCodable {
             switch discriminant {
             case OperationType.CREATE_ACCOUNT:
                 self = .CREATE_ACCOUNT(try container.decode(CreateAccountOp.self))
-            case OperationType.CHANGE_TRUST:
-                self = .CHANGE_TRUST(try container.decode(ChangeTrustOp.self))
             case OperationType.PAYMENT:
                 self = .PAYMENT(try container.decode(PaymentOp.self))
+            case OperationType.PATH_PAYMENT:
+                self = .PATH_PAYMENT(try container.decode(PathPaymentOp.self))
+            case OperationType.CHANGE_TRUST:
+                self = .CHANGE_TRUST(try container.decode(ChangeTrustOp.self))
             case OperationType.SET_OPTIONS:
                 self = .SET_OPTIONS(try container.decode(SetOptionsOp.self))
             case OperationType.MANAGE_OFFER:
@@ -83,6 +86,7 @@ public struct Operation: XDRCodable {
             switch self {
             case .CREATE_ACCOUNT: return OperationType.CREATE_ACCOUNT
             case .PAYMENT: return OperationType.PAYMENT
+            case .PATH_PAYMENT: return OperationType.PATH_PAYMENT
             case .CHANGE_TRUST: return OperationType.CHANGE_TRUST
             case .SET_OPTIONS: return OperationType.SET_OPTIONS
             case .MANAGE_OFFER: return OperationType.MANAGE_OFFER
@@ -101,6 +105,9 @@ public struct Operation: XDRCodable {
                 try container.encode(op)
 
             case .PAYMENT (let op):
+                try container.encode(op)
+
+            case .PATH_PAYMENT (let op):
                 try container.encode(op)
 
             case .CHANGE_TRUST (let op):

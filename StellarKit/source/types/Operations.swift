@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CreateAccountOp: XDRCodable {
+public struct CreateAccountOp: XDRCodable {
     let destination: PublicKey
     let balance: Int64
 
@@ -38,23 +38,33 @@ struct PaymentOp: XDRCodable {
     }
 }
 
-struct ChangeTrustOp: XDRCodable {
-    let asset: Asset
-    let limit: Int64 = Int64.max
+public struct PathPaymentOp: XDRCodable {
+    let sendAsset: Asset
+    let sendMax: Int64
+    let destination: PublicKey
+    let destAsset: Asset
+    let destAmount: Int64
+    let path: Array<Asset>
+}
 
-    init(from decoder: Decoder) throws {
+public struct ChangeTrustOp: XDRCodable {
+    let asset: Asset
+    let limit: Int64
+
+    public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
 
         asset = try container.decode(Asset.self)
-        _ = try container.decode(Int64.self)
+        limit = try container.decode(Int64.self)
     }
 
-    init(asset: Asset) {
+    public init(asset: Asset, limit: Int64 = Int64.max) {
         self.asset = asset
+        self.limit = limit
     }
 }
 
-struct SetOptionsOp: XDRCodable {
+public struct SetOptionsOp: XDRCodable {
     let inflationDest: PublicKey?
     let clearFlags: UInt32?
     let setFlags: UInt32?
@@ -80,36 +90,31 @@ struct SetOptionsOp: XDRCodable {
     }
 }
 
-struct ManageOfferOp: XDRCodable {
+public struct ManageOfferOp: XDRCodable {
     let buying: Asset
     let selling: Asset
     let amount: Int64
     let price: Price
     let offerId: Int64
-
-    struct Price: XDRCodable {
-        let n: Int32
-        let d: Int32
-    }
 }
 
-struct CreatePassiveOfferOp: XDRCodable {
+public struct CreatePassiveOfferOp: XDRCodable {
     let buying: Asset
     let selling: Asset
     let amount: Int64
     let price: Price
-
-    struct Price: XDRCodable {
-        let n: Int32
-        let d: Int32
-    }
 }
 
-struct AccountMergeOp: XDRCodable {
+public struct AccountMergeOp: XDRCodable {
     let destination: PublicKey
 }
 
-struct Signer: XDRCodable {
+public struct Signer: XDRCodable {
     let key: SignerKey
     let weight: UInt32
+}
+
+public struct Price: XDRCodable {
+    let n: Int32
+    let d: Int32
 }
