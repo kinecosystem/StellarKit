@@ -24,15 +24,12 @@ public enum NetworkId: String {
 
 public struct StellarNode {
     public let baseURL: URL
-    public let asset: Asset
 
     let networkId: NetworkId
 
     public init(baseURL: URL,
-                asset: Asset? = nil,
                 networkId: NetworkId = .test) {
         self.baseURL = baseURL
-        self.asset = asset ?? .ASSET_TYPE_NATIVE
         self.networkId = networkId
     }
 }
@@ -43,6 +40,7 @@ public struct StellarNode {
  */
 public class Stellar {
     public let node: StellarNode
+    public let asset: Asset
 
     // MARK: -
 
@@ -50,9 +48,11 @@ public class Stellar {
      Instantiates an instance of `Stellar`.
 
      - parameter node: A `StellarNode` instance, describing the network to communicate with.
+     - parameter asset: The default `Asset` used by methods which require one.
      */
-    public init(node: StellarNode) {
+    public init(node: StellarNode, asset: Asset? = nil) {
         self.node = node
+        self.asset = asset ?? .ASSET_TYPE_NATIVE
     }
 
     // MARK: -
@@ -90,11 +90,11 @@ public class Stellar {
             }
             .transformError(handler: { (error) -> Error in
                 if case StellarError.missingAccount = error {
-                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.node.asset)
+                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
                 }
 
                 if case StellarError.missingBalance = error {
-                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.node.asset)
+                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
                 }
 
                 return error
@@ -160,7 +160,7 @@ public class Stellar {
             .then { accountDetails in
                 let p = Promise<Decimal>()
 
-                let asset = asset ?? self.node.asset
+                let asset = asset ?? self.asset
 
                 for balance in accountDetails.balances {
                     let code = balance.assetCode
@@ -356,7 +356,7 @@ extension Stellar {
 
         return Operation(sourceAccount: sourcePK,
                          body: Operation.Body.PAYMENT(PaymentOp(destination: destPK,
-                                                                asset: asset ?? self.node.asset,
+                                                                asset: asset ?? self.asset,
                                                                 amount: amount)))
 
     }
@@ -368,7 +368,7 @@ extension Stellar {
         }
 
         return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.node.asset)))
+                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset ?? self.asset)))
     }
 }
 
