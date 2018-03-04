@@ -77,6 +77,8 @@ public enum Memo: XDRCodable {
         switch discriminant {
         case MemoType.MEMO_NONE:
             self = .MEMO_NONE
+        case MemoType.MEMO_ID:
+            self = .MEMO_ID(try container.decode(UInt64.self))
         case MemoType.MEMO_TEXT:
             self = .MEMO_TEXT(try container.decode(String.self))
         case MemoType.MEMO_HASH:
