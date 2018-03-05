@@ -41,9 +41,6 @@
 		82FD8B2420264D9A00A126C0 /* XDRDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2020264D9800A126C0 /* XDRDecoder.swift */; };
 		82FD8B2520264D9A00A126C0 /* XDREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2120264D9800A126C0 /* XDREncoder.swift */; };
 		82FD8B2620264D9A00A126C0 /* XDRCodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2220264D9900A126C0 /* XDRCodableExtensions.swift */; };
-		E96F241B2013D6C60017EF68 /* KeychainSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24162013D6C60017EF68 /* KeychainSwift.swift */; };
-		E96F241C2013D6C60017EF68 /* KeychainSwiftAccessOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24172013D6C60017EF68 /* KeychainSwiftAccessOptions.swift */; };
-		E96F241D2013D6C60017EF68 /* TegKeychainConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24182013D6C60017EF68 /* TegKeychainConstants.swift */; };
 		E96F24712013D6D90017EF68 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F241F2013D6D90017EF68 /* Auth.swift */; };
 		E96F24722013D6D90017EF68 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24202013D6D90017EF68 /* Box.swift */; };
 		E96F24732013D6D90017EF68 /* GenericHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24212013D6D90017EF68 /* GenericHash.swift */; };
@@ -205,9 +202,6 @@
 		82FD8B2020264D9800A126C0 /* XDRDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRDecoder.swift; sourceTree = "<group>"; };
 		82FD8B2120264D9800A126C0 /* XDREncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDREncoder.swift; sourceTree = "<group>"; };
 		82FD8B2220264D9900A126C0 /* XDRCodableExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRCodableExtensions.swift; sourceTree = "<group>"; };
-		E96F24162013D6C60017EF68 /* KeychainSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwift.swift; sourceTree = "<group>"; };
-		E96F24172013D6C60017EF68 /* KeychainSwiftAccessOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwiftAccessOptions.swift; sourceTree = "<group>"; };
-		E96F24182013D6C60017EF68 /* TegKeychainConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TegKeychainConstants.swift; sourceTree = "<group>"; };
 		E96F241F2013D6D90017EF68 /* Auth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		E96F24202013D6D90017EF68 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		E96F24212013D6D90017EF68 /* GenericHash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericHash.swift; sourceTree = "<group>"; };
@@ -446,7 +440,6 @@
 			isa = PBXGroup;
 			children = (
 				E96F241E2013D6D90017EF68 /* Sodium */,
-				E96F24132013D6C60017EF68 /* KeychainSwift */,
 			);
 			path = "third-party";
 			sourceTree = "<group>";
@@ -466,17 +459,6 @@
 				82F2FAE52043172A00E754BD /* KinUtilTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E96F24132013D6C60017EF68 /* KeychainSwift */ = {
-			isa = PBXGroup;
-			children = (
-				E96F24162013D6C60017EF68 /* KeychainSwift.swift */,
-				E96F24172013D6C60017EF68 /* KeychainSwiftAccessOptions.swift */,
-				E96F24182013D6C60017EF68 /* TegKeychainConstants.swift */,
-			);
-			name = KeychainSwift;
-			path = "keychain-swift/KeychainSwift";
 			sourceTree = "<group>";
 		};
 		E96F241E2013D6D90017EF68 /* Sodium */ = {
@@ -824,8 +806,6 @@
 				824063B220147DCD0055D70A /* Operation.swift in Sources */,
 				E96F24C02013D6D90017EF68 /* Utils.swift in Sources */,
 				E96F24722013D6D90017EF68 /* Box.swift in Sources */,
-				E96F241C2013D6C60017EF68 /* KeychainSwiftAccessOptions.swift in Sources */,
-				E96F241D2013D6C60017EF68 /* TegKeychainConstants.swift in Sources */,
 				E96F24BA2013D6D90017EF68 /* SecretStream.swift in Sources */,
 				8240BAF62028EAE0003F08FB /* HorizonResponses.swift in Sources */,
 				82340BBA1FFDF3390034204F /* Conversion.swift in Sources */,
@@ -835,7 +815,6 @@
 				E96F24BB2013D6D90017EF68 /* ShortHash.swift in Sources */,
 				824063B120147DCD0055D70A /* Asset.swift in Sources */,
 				82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */,
-				E96F241B2013D6C60017EF68 /* KeychainSwift.swift in Sources */,
 				E96F24B92013D6D90017EF68 /* SecretBox.swift in Sources */,
 				E96F24BE2013D6D90017EF68 /* Sodium.swift in Sources */,
 				824063B420147DCD0055D70A /* PublicKey.swift in Sources */,
