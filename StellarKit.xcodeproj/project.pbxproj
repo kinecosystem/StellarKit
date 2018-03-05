@@ -51,6 +51,8 @@
 		82BA1EB6204D0F5700396AE2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E96F24222013D6D90017EF68 /* Info.plist */; };
 		82BA1EB7204D0F5700396AE2 /* KeyDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24232013D6D90017EF68 /* KeyDerivation.swift */; };
 		82BA1EB8204D0F5700396AE2 /* KeyExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24242013D6D90017EF68 /* KeyExchange.swift */; };
+		82BA1EBA204D1C2C00396AE2 /* libsodium-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E96F245E2013D6D90017EF68 /* libsodium-osx.a */; };
+		82BA1EBB204D1C2C00396AE2 /* libsodium-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E96F245D2013D6D90017EF68 /* libsodium-ios.a */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		82F2FAE9204317A100E754BD /* KinUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F2FAEA204317A100E754BD /* KinUtil.framework */; };
 		82FD8B2320264D9A00A126C0 /* XDRCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B1F20264D9800A126C0 /* XDRCodable.swift */; };
@@ -112,8 +114,6 @@
 		E96F24AB2013D6D90017EF68 /* crypto_verify_32.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F245A2013D6D90017EF68 /* crypto_verify_32.h */; };
 		E96F24AC2013D6D90017EF68 /* crypto_verify_64.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F245B2013D6D90017EF68 /* crypto_verify_64.h */; };
 		E96F24AD2013D6D90017EF68 /* export.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F245C2013D6D90017EF68 /* export.h */; };
-		E96F24AE2013D6D90017EF68 /* libsodium-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E96F245D2013D6D90017EF68 /* libsodium-ios.a */; };
-		E96F24AF2013D6D90017EF68 /* libsodium-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E96F245E2013D6D90017EF68 /* libsodium-osx.a */; };
 		E96F24B02013D6D90017EF68 /* randombytes.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F24602013D6D90017EF68 /* randombytes.h */; };
 		E96F24B12013D6D90017EF68 /* randombytes_salsa20_random.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F24612013D6D90017EF68 /* randombytes_salsa20_random.h */; };
 		E96F24B22013D6D90017EF68 /* randombytes_sysrandom.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F24622013D6D90017EF68 /* randombytes_sysrandom.h */; };
@@ -293,8 +293,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				82F2FAE9204317A100E754BD /* KinUtil.framework in Frameworks */,
-				E96F24AE2013D6D90017EF68 /* libsodium-ios.a in Frameworks */,
-				E96F24AF2013D6D90017EF68 /* libsodium-osx.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,6 +300,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82BA1EBA204D1C2C00396AE2 /* libsodium-osx.a in Frameworks */,
+				82BA1EBB204D1C2C00396AE2 /* libsodium-ios.a in Frameworks */,
 				8261EF2C2043DECA001848CB /* KinUtil.framework in Frameworks */,
 				82340BA61FFDF2DA0034204F /* StellarKit.framework in Frameworks */,
 			);
@@ -1084,6 +1084,10 @@
 				DEVELOPMENT_TEAM = MZAK745F32;
 				INFOPLIST_FILE = StellarKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -1100,6 +1104,10 @@
 				DEVELOPMENT_TEAM = MZAK745F32;
 				INFOPLIST_FILE = StellarKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
