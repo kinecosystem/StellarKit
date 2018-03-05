@@ -7,21 +7,18 @@
 //
 
 import Foundation
-import libsodium
+import CCommonCrypto
 
 private func hash(data input: Data) -> Data? {
-    var output = Data(count: 32)
-    var result = -1
+    var output = Data(count: Int(CC_SHA256_DIGEST_LENGTH))
 
-    result = output.withUnsafeMutableBytes { outputPtr in
+    let result = output.withUnsafeMutableBytes { outputPtr in
         input.withUnsafeBytes{ inputPtr in
-            Int(crypto_hash_sha256(outputPtr,
-                                   inputPtr,
-                                   UInt64(input.count)))
+            CC_SHA256(inputPtr, CC_LONG(input.count), outputPtr);
         }
     }
 
-    if result != 0 {
+    if result == nil {
         return nil
     }
 

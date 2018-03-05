@@ -197,6 +197,7 @@
 		824063FF201F00530055D70A /* StellarUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StellarUnitTests.swift; path = StellarKitTests/StellarUnitTests.swift; sourceTree = SOURCE_ROOT; };
 		8240BAF52028EAE0003F08FB /* HorizonResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonResponses.swift; sourceTree = "<group>"; };
 		8291DA9720353E01002C10F5 /* StellarEventSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarEventSource.swift; sourceTree = "<group>"; };
+		82BA1E27204C6F9400396AE2 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
 		82F2FADD2043172A00E754BD /* KinUtil.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KinUtil.xcodeproj; path = "kin-util-ios/KinUtil/KinUtil.xcodeproj"; sourceTree = "<group>"; };
 		82F2FAEA204317A100E754BD /* KinUtil.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = KinUtil.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -369,6 +370,7 @@
 		82340BB61FFDF3030034204F /* source */ = {
 			isa = PBXGroup;
 			children = (
+				82BA1E26204C6F9400396AE2 /* CCommonCrypto */,
 				82343A9F20242DD100848CF4 /* XDRCodable */,
 				824063AB20147DCD0055D70A /* types */,
 				82340BB71FFDF3390034204F /* Conversion.swift */,
@@ -447,6 +449,14 @@
 				E96F24132013D6C60017EF68 /* KeychainSwift */,
 			);
 			path = "third-party";
+			sourceTree = "<group>";
+		};
+		82BA1E26204C6F9400396AE2 /* CCommonCrypto */ = {
+			isa = PBXGroup;
+			children = (
+				82BA1E27204C6F9400396AE2 /* module.modulemap */,
+			);
+			path = CCommonCrypto;
 			sourceTree = "<group>";
 		};
 		82F2FADE2043172A00E754BD /* Products */ = {
@@ -958,7 +968,7 @@
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium $(SRCROOT)/StellarKit/source/CCommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VALID_ARCHS = "arm64 armv7s armv7";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1015,7 +1025,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium $(SRCROOT)/StellarKit/source/CCommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 armv7s armv7";
