@@ -15,8 +15,6 @@ public protocol Account {
     var sign: ((Data) throws -> Data)? { get }
 }
 
-typealias WD32 = WrappedData32
-
 public enum NetworkId: String {
     case test = "Test SDF Network ; September 2015"
     case main = "Public Global Stellar Network ; September 2015"
@@ -27,12 +25,13 @@ public struct StellarNode {
 
     let networkId: NetworkId
 
-    public init(baseURL: URL,
-                networkId: NetworkId = .test) {
+    public init(baseURL: URL, networkId: NetworkId = .test) {
         self.baseURL = baseURL
         self.networkId = networkId
     }
 }
+
+typealias WD32 = WrappedData32
 
 /**
  `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on

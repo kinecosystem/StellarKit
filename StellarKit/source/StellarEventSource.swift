@@ -77,6 +77,8 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
     public func close() {
         state = .closed
 
+        emitter?.finish()
+
         task?.cancel()
         urlSession?.invalidateAndCancel()
         urlSession = nil
@@ -107,7 +109,7 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
 
         while let location = stringAccumulator.range(of: lineEnding)?.lowerBound {
             stringQueue.append(String(stringAccumulator[..<location]))
-            stringAccumulator = String(stringAccumulator[stringAccumulator.index(after: location)..<stringAccumulator.endIndex])
+            stringAccumulator = stringAccumulator.substring(from: stringAccumulator.index(after: location))
         }
     }
 

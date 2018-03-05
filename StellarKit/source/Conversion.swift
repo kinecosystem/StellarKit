@@ -8,18 +8,23 @@
 
 import Foundation
 
+private struct VersionBytes {
+    static let ed25519PublicKey: UInt8 = 6 << 3         // G
+    static let ed25519SecretSeed: UInt8 = 18 << 3       // S
+    static let preAuthTx: UInt8 = 19 << 3               // T
+    static let sha256Hash: UInt8 =  23 << 3             // X
+}
+
 func base32KeyToData(key: String) -> Data {
     // Stellar represents a key in base32 using a leading type identifier and a trailing 2-byte
     // checksum, for a total of 35 bytes.  The actual key is stored in bytes 2-33.
 
-    let binary = base32ToBinary(base32: key)
-
-    let keyData = binary[8..<264]
+    let binary: String = base32ToBinary(base32: key)
 
     var d = Data()
 
-    for i in stride(from: 0, to: keyData.count, by: 8) {
-        d.append(UInt8(keyData[i..<(i + 8)], radix: 2)!)
+    for i in stride(from: 8, to: 264, by: 8) {
+        d.append(UInt8(binary[i..<(i + 8)], radix: 2)!)
     }
 
     return d
@@ -60,21 +65,7 @@ private let toTable: [String: String] = {
 }()
 
 private func base32ToBinary(base32: String) -> String {
-    var s = ""
-    for c in base32 {
-        if c != "=" {
-            s += fromTable[String(c)]!
-        }
-    }
-
-    return s
-}
-
-private struct VersionBytes {
-    static let ed25519PublicKey: UInt8 = 6 << 3         // G
-    static let ed25519SecretSeed: UInt8 = 18 << 3       // S
-    static let preAuthTx: UInt8 = 19 << 3               // T
-    static let sha256Hash: UInt8 =  23 << 3             // X
+    return base32.reduce("") { $0 + fromTable[String($1)]! }
 }
 
 private func dataToBase32(_ data: Data) -> String {
