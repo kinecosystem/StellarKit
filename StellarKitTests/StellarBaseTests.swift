@@ -18,20 +18,20 @@ struct MockStellarAccount: Account {
     let keyPair: Sign.KeyPair
 
     init(seedStr: String) {
-        keyPair = KeyUtils.keyPair(from: seedStr)!
+        keyPair = TestKeyUtils.keyPair(from: seedStr)!
 
         let secretKey = keyPair.secretKey
 
         sign = { message in
-            return try KeyUtils.sign(message: message,
-                                     signingKey: secretKey)
+            return try TestKeyUtils.sign(message: message,
+                                         signingKey: secretKey)
         }
     }
 
     var sign: ((Data) throws -> Data)?
 
     init() {
-        self.init(seedStr: KeyUtils.base32(seed: KeyUtils.seed()!))
+        self.init(seedStr: KeyUtils.base32(seed: TestKeyUtils.seed()!))
     }
 }
 
