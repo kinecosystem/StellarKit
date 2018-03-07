@@ -45,6 +45,14 @@ public struct AccountDetails: Decodable {
             return Decimal(string: balance) ?? Decimal()
         }
 
+        public var asset: Asset? {
+            if let assetCode = assetCode, let assetIssuer = assetIssuer {
+                return Asset(assetCode: assetCode, issuer: assetIssuer)
+            }
+
+            return Asset.ASSET_TYPE_NATIVE
+        }
+
         enum CodingKeys: String, CodingKey {
             case balance
             case assetType = "asset_type"
