@@ -179,9 +179,9 @@ public class Stellar {
         }
     }
 
-    public func watch(account: String? = nil,
-                      lastEventId: String?,
-                      descending: Bool = false) -> TxWatch {
+    public func txWatch(account: String? = nil,
+                        lastEventId: String?,
+                        descending: Bool = false) -> TxWatch {
         var url = node.baseURL
 
         if let account = account {
@@ -200,6 +200,29 @@ public class Stellar {
         }
 
         return TxWatch(eventSource: StellarEventSource(url: url))
+    }
+
+    public func paymentWatch(account: String? = nil,
+                             lastEventId: String?,
+                             descending: Bool = false) -> PaymentWatch {
+        var url = node.baseURL
+
+        if let account = account {
+            url = url
+                .appendingPathComponent("accounts")
+                .appendingPathComponent(account)
+        }
+
+        url = url
+            .appendingPathComponent("payments")
+
+        url = URL(string: url.absoluteString + "?order=\(descending ? "desc" : "asc")")!
+
+        if let lastEventId = lastEventId {
+            url = URL(string: url.absoluteString + "&cursor=\(lastEventId)")!
+        }
+
+        return PaymentWatch(eventSource: StellarEventSource(url: url))
     }
 
     public func accountDetails(account: String) -> Promise<AccountDetails> {
@@ -321,34 +344,5 @@ public class Stellar {
                     throw error
                 }
         }
-    }
-}
-
-//MARK: -
-
-public class TxWatch {
-    public let eventSource: StellarEventSource
-    public let emitter: Observable<TxInfo>
-
-    init(eventSource: StellarEventSource) {
-        self.eventSource = eventSource
-
-        self.emitter = eventSource.emitter.flatMap({ event -> TxInfo? in
-            guard
-                let jsonData = event.data?.data(using: .utf8),
-                let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-                let unwrappedJSON = json,
-                let txInfo = try? TxInfo(json: unwrappedJSON)
-                else {
-                    return nil
-            }
-
-            return txInfo
-        })
-    }
-
-    deinit {
-        eventSource.close()
-        emitter.unlink()
     }
 }

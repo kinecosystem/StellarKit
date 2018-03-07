@@ -10,6 +10,7 @@
 		8214E887202CAB8000789C78 /* StellarBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E886202CAB8000789C78 /* StellarBaseTests.swift */; };
 		8214E889202F8AB000789C78 /* StellarUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E888202F8AB000789C78 /* StellarUtils.swift */; };
 		82191579204BC7D300450864 /* StellarOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82191578204BC7D300450864 /* StellarOps.swift */; };
+		82321F47204F80E700C5D557 /* Watches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82321F46204F80E700C5D557 /* Watches.swift */; };
 		82340BA61FFDF2DA0034204F /* StellarKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340B9C1FFDF2DA0034204F /* StellarKit.framework */; };
 		82340BAB1FFDF2DA0034204F /* StellarIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */; };
 		82340BAD1FFDF2DA0034204F /* StellarKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 82340B9F1FFDF2DA0034204F /* StellarKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -263,6 +264,7 @@
 		8214E886202CAB8000789C78 /* StellarBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarBaseTests.swift; sourceTree = "<group>"; };
 		8214E888202F8AB000789C78 /* StellarUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarUtils.swift; sourceTree = "<group>"; };
 		82191578204BC7D300450864 /* StellarOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarOps.swift; sourceTree = "<group>"; };
+		82321F46204F80E700C5D557 /* Watches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watches.swift; sourceTree = "<group>"; };
 		82340B9C1FFDF2DA0034204F /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82340B9F1FFDF2DA0034204F /* StellarKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StellarKit.h; sourceTree = "<group>"; };
 		82340BA01FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				8291DA9720353E01002C10F5 /* StellarEventSource.swift */,
 				82340C44200138E50034204F /* StellarResults.swift */,
 				82191578204BC7D300450864 /* StellarOps.swift */,
+				82321F46204F80E700C5D557 /* Watches.swift */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -1014,6 +1017,7 @@
 				82FD8B2420264D9A00A126C0 /* XDRDecoder.swift in Sources */,
 				82343AAA2024A97900848CF4 /* WrappedData.swift in Sources */,
 				8291DA9820353E02002C10F5 /* StellarEventSource.swift in Sources */,
+				82321F47204F80E700C5D557 /* Watches.swift in Sources */,
 				824063B320147DCD0055D70A /* Operations.swift in Sources */,
 				82FD8B2320264D9A00A126C0 /* XDRCodable.swift in Sources */,
 				8214E889202F8AB000789C78 /* StellarUtils.swift in Sources */,
