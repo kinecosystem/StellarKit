@@ -22,13 +22,6 @@ public struct TxInfo {
     public let source: String
     public let hash: String
 
-    public var asset: String? {
-        switch tx.operations.first!.body {
-        case .PAYMENT (let op): return op.asset.assetCode
-        default: return nil
-        }
-    }
-
     public var payments: [Payment] {
         return tx.operations.flatMap({ op in
             guard let body = tx.operations.first?.body else {

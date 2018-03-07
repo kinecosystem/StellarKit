@@ -19,7 +19,7 @@ public enum Asset: XDRCodable, Equatable {
     case ASSET_TYPE_CREDIT_ALPHANUM4 (Alpha4)
     case ASSET_TYPE_CREDIT_ALPHANUM12 (Alpha12)
 
-    var assetCode: String {
+    public var assetCode: String {
         switch self {
         case .ASSET_TYPE_NATIVE:
             return "native"
@@ -32,7 +32,7 @@ public enum Asset: XDRCodable, Equatable {
         }
     }
 
-    var issuer: String? {
+    public var issuer: String? {
         switch self {
         case .ASSET_TYPE_NATIVE:
             return nil
