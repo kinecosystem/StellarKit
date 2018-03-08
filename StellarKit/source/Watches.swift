@@ -2,7 +2,7 @@
 //  Watches.swift
 //  StellarKit
 //
-//  Created by Avi Shevin on 07/03/2018.
+//  Created by Kin Foundation.
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 

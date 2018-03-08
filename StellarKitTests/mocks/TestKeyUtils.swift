@@ -2,7 +2,7 @@
 //  TestKeyUtils.swift
 //  StellarKitTests
 //
-//  Created by Avi Shevin on 05/03/2018.
+//  Created by Kin Foundation.
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 
