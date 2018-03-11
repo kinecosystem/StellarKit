@@ -1,5 +1,5 @@
 //
-//  CommonCrypto.swift
+//  Data+extensions.swift
 //  StellarKit
 //
 //  Created by Kin Foundation
