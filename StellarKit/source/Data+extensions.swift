@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import CCommonCrypto
+import CommonCrypto
 
 private func hash(data input: Data) -> Data? {
     var output = Data(count: Int(CC_SHA256_DIGEST_LENGTH))

@@ -6,6 +6,20 @@
 	objectVersion = 48;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		82A12DBE20553FEA008841F2 /* CommonCryptoModuleMap */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 82A12DC220553FEA008841F2 /* Build configuration list for PBXAggregateTarget "CommonCryptoModuleMap" */;
+			buildPhases = (
+				82A12DC320554017008841F2 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = CommonCryptoModuleMap;
+			productName = CommonCryptoModuleMap;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		8214E887202CAB8000789C78 /* StellarBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E886202CAB8000789C78 /* StellarBaseTests.swift */; };
 		8214E889202F8AB000789C78 /* StellarUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E888202F8AB000789C78 /* StellarUtils.swift */; };
@@ -216,6 +230,13 @@
 			remoteGlobalIDString = 82340B9B1FFDF2DA0034204F;
 			remoteInfo = SwiftyStellar;
 		};
+		82A12DC42055402E008841F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82340B931FFDF2DA0034204F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 82A12DBE20553FEA008841F2;
+			remoteInfo = CommonCryptoModuleMap;
+		};
 		82BA20A4204D856100396AE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 82F2FADD2043172A00E754BD /* KinUtil.xcodeproj */;
@@ -294,7 +315,6 @@
 		824063FF201F00530055D70A /* StellarUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StellarUnitTests.swift; path = StellarKitTests/StellarUnitTests.swift; sourceTree = SOURCE_ROOT; };
 		8240BAF52028EAE0003F08FB /* HorizonResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonResponses.swift; sourceTree = "<group>"; };
 		8291DA9720353E01002C10F5 /* StellarEventSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarEventSource.swift; sourceTree = "<group>"; };
-		82BA1E27204C6F9400396AE2 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		82BA1EA7204D0EB300396AE2 /* TestKeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestKeyUtils.swift; sourceTree = "<group>"; };
 		82BA20A0204D856100396AE2 /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82BA20A1204D856100396AE2 /* StellarKit-macos-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "StellarKit-macos-Info.plist"; path = "/Users/avi/Projects/kin-core-ios/KinSDK/StellarKit/StellarKit-macos-Info.plist"; sourceTree = "<absolute>"; };
@@ -477,7 +497,6 @@
 		82340BB61FFDF3030034204F /* source */ = {
 			isa = PBXGroup;
 			children = (
-				82BA1E26204C6F9400396AE2 /* CCommonCrypto */,
 				82343A9F20242DD100848CF4 /* XDRCodable */,
 				824063AB20147DCD0055D70A /* types */,
 				82340BB71FFDF3390034204F /* Conversion.swift */,
@@ -557,14 +576,6 @@
 				E96F241E2013D6D90017EF68 /* Sodium */,
 			);
 			path = "third-party";
-			sourceTree = "<group>";
-		};
-		82BA1E26204C6F9400396AE2 /* CCommonCrypto */ = {
-			isa = PBXGroup;
-			children = (
-				82BA1E27204C6F9400396AE2 /* module.modulemap */,
-			);
-			path = CCommonCrypto;
 			sourceTree = "<group>";
 		};
 		82F2FADE2043172A00E754BD /* Products */ = {
@@ -832,6 +843,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				82A12DC52055402E008841F2 /* PBXTargetDependency */,
 				82F2FAE72043176F00E754BD /* PBXTargetDependency */,
 			);
 			name = StellarKit;
@@ -918,6 +930,10 @@
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 					};
+					82A12DBE20553FEA008841F2 = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
 					82BA2042204D856100396AE2 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -946,6 +962,7 @@
 				82340BA41FFDF2DA0034204F /* StellarKitTests */,
 				82340BC01FFDF3F30034204F /* StellarKitHost */,
 				82BA2042204D856100396AE2 /* StellarKit-macos */,
+				82A12DBE20553FEA008841F2 /* CommonCryptoModuleMap */,
 			);
 		};
 /* End PBXProject section */
@@ -1008,6 +1025,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		82A12DC320554017008841F2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This if-statement means we'll only run the main script if the CommonCryptoModuleMap directory doesn't exist\n# Because otherwise the rest of the script causes a full recompile for anything where CommonCrypto is a dependency\n# Do a \"Clean Build Folder\" to remove this directory and trigger the rest of the script to run\nif [ -d \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap\" ]; then\necho \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap directory already exists, so skipping the rest of the script.\"\nexit 0\nfi\n\nmkdir -p \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap\"\ncat <<EOF > \"${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap/module.modulemap\"\nmodule CommonCrypto [system] {\n    header \"${SDKROOT}/usr/include/CommonCrypto/CommonCrypto.h\"\n    export *\n}\nEOF";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		82340B971FFDF2DA0034204F /* Sources */ = {
@@ -1109,6 +1142,11 @@
 			target = 82340B9B1FFDF2DA0034204F /* StellarKit */;
 			targetProxy = 82340BA71FFDF2DA0034204F /* PBXContainerItemProxy */;
 		};
+		82A12DC52055402E008841F2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 82A12DBE20553FEA008841F2 /* CommonCryptoModuleMap */;
+			targetProxy = 82A12DC42055402E008841F2 /* PBXContainerItemProxy */;
+		};
 		82BA20A7204D863700396AE2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "KinUtil-macos";
@@ -1196,6 +1234,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1203,7 +1242,7 @@
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium $(SRCROOT)/StellarKit/source/CCommonCrypto";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VALID_ARCHS = "arm64 armv7s armv7";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1255,12 +1294,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${BUILT_PRODUCTS_DIR}/CommonCryptoModuleMap";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium $(SRCROOT)/StellarKit/source/CCommonCrypto";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 armv7s armv7";
@@ -1400,6 +1440,24 @@
 			};
 			name = Release;
 		};
+		82A12DBF20553FEA008841F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MZAK745F32;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		82A12DC020553FEA008841F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MZAK745F32;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		82BA209E204D856100396AE2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1500,6 +1558,15 @@
 			buildConfigurations = (
 				82340BD11FFDF3F30034204F /* Debug */,
 				82340BD21FFDF3F30034204F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		82A12DC220553FEA008841F2 /* Build configuration list for PBXAggregateTarget "CommonCryptoModuleMap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82A12DBF20553FEA008841F2 /* Debug */,
+				82A12DC020553FEA008841F2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
