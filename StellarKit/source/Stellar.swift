@@ -87,7 +87,7 @@ public class Stellar {
 
                 return self.postTransaction(baseURL: self.node.baseURL, envelope: envelope)
             }
-            .transformError(handler: { (error) -> Error in
+            .transformError(handler: { error -> Error in
                 if case StellarError.missingAccount = error {
                     return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
                 }
