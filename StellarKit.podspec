@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
-  s.version     = "0.2.1"
+  s.version     = "0.2.2"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/kinfoundation/StellarKit.git"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
@@ -15,11 +15,11 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "8.0"
   s.swift_version = "3.2"
 
-  s.preserve_paths        = 'StellarKit/source/CCommonCrypto/module.modulemap'
+  s.preserve_paths        = 'StellarKit/source/CommonCrypto/*'
   s.source_files          = 'StellarKit/source/**/*.swift'
 
   s.pod_target_xcconfig   = {
-    'SWIFT_INCLUDE_PATHS' => '$(PODS_TARGET_SRCROOT)/StellarKit/source/CCommonCrypto'
+    'SWIFT_INCLUDE_PATHS' => '$(PODS_TARGET_SRCROOT)/StellarKit/source/CommonCrypto'
   }
 
 end
