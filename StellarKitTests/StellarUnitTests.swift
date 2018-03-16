@@ -26,7 +26,7 @@ class StellarUnitTests: StellarBaseTests {
         horizonMock = HorizonMock()
 
         let nBalance = Balance(asset: .ASSET_TYPE_NATIVE, amount: 10000000)
-        let kBalance = Balance(asset: stellar.asset, amount: 10000000)
+        let kBalance = Balance(asset: self.config.asset, amount: 10000000)
 
         horizonMock?.inject(account: MockAccount(balances: [nBalance, kBalance]),
                             key: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")

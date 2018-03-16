@@ -15,46 +15,58 @@ public protocol Account {
     var sign: ((Data) throws -> Data)? { get }
 }
 
-public enum NetworkId: String {
-    case test = "Test SDF Network ; September 2015"
-    case main = "Public Global Stellar Network ; September 2015"
+fileprivate let testId = "Test SDF Network ; September 2015"
+fileprivate let mainId = "Public Global Stellar Network ; September 2015"
+
+public enum NetworkId {
+    case test
+    case main
+    case custom(String)
 }
 
-public struct StellarNode {
-    public let baseURL: URL
+extension NetworkId: LosslessStringConvertible {
+    public init?(_ description: String) {
+        switch description {
+        case testId: self = .test
+        case mainId: self = .main
+        default: self = .custom(description)
+        }
+    }
 
-    let networkId: NetworkId
-
-    public init(baseURL: URL, networkId: NetworkId = .test) {
-        self.baseURL = baseURL
-        self.networkId = networkId
+    public var description: String {
+        switch self {
+        case .test: return testId
+        case .main: return mainId
+        case .custom(let identifier): return identifier
+        }
     }
 }
-
-typealias WD32 = WrappedData32
 
 /**
  `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
  supporting non-native assets.
  */
-public class Stellar {
-    public let node: StellarNode
-    public let asset: Asset
+public struct Stellar {
+    public struct Node {
+        public let baseURL: URL
 
-    // MARK: -
+        let networkId: NetworkId
 
-    /**
-     Instantiates an instance of `Stellar`.
-
-     - parameter node: A `StellarNode` instance, describing the network to communicate with.
-     - parameter asset: The default `Asset` used by methods which require one.
-     */
-    public init(node: StellarNode, asset: Asset? = nil) {
-        self.node = node
-        self.asset = asset ?? .ASSET_TYPE_NATIVE
+        public init(baseURL: URL, networkId: NetworkId = .test) {
+            self.baseURL = baseURL
+            self.networkId = networkId
+        }
     }
 
-    // MARK: -
+    public struct Configuration {
+        public let node: Node
+        public let asset: Asset
+
+        public init(node: Node, asset: Asset = .ASSET_TYPE_NATIVE) {
+            self.node = node
+            self.asset = asset
+        }
+    }
 
     /**
      Sends a payment to the given account.
@@ -64,36 +76,39 @@ public class Stellar {
      - parameter amount: The amount to be sent.
      - parameter asset: The `Asset` to be sent.  Defaults to the `Asset` specified in the initializer.
      - parameter memo: A short string placed in the MEMO field of the transaction.
+     - parameter configuration: An object describing the network endpoint and default `Asset`.
 
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public func payment(source: Account,
-                        destination: String,
-                        amount: Int64,
-                        asset: Asset? = nil,
-                        memo: Memo = .MEMO_NONE) -> Promise<String> {
-        return balance(account: destination, asset: asset)
+    public static func payment(source: Account,
+                               destination: String,
+                               amount: Int64,
+                               asset: Asset? = nil,
+                               memo: Memo = .MEMO_NONE,
+                               configuration: Configuration) -> Promise<String> {
+        return balance(account: destination, asset: asset, configuration: configuration)
             .then { _ -> Promise<Transaction> in
                 let op = Operation.paymentOp(destination: destination,
                                              amount: amount,
                                              source: nil,
-                                             asset: asset ?? self.asset)
+                                             asset: asset ?? configuration.asset)
 
-                return self.transaction(source: source, operations: [ op ], memo: memo)
+                return self.transaction(source: source, operations: [ op ], memo: memo, configuration: configuration)
             }
             .then { tx -> Promise<String> in
                 let envelope = try self.sign(transaction: tx,
-                                             signer: source)
+                                             signer: source,
+                                             configuration: configuration)
 
-                return self.postTransaction(baseURL: self.node.baseURL, envelope: envelope)
+                return self.postTransaction(baseURL: configuration.node.baseURL, envelope: envelope)
             }
             .transformError({ error -> Error in
                 if case StellarError.missingAccount = error {
-                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
+                    return StellarError.destinationNotReadyForAsset(error, asset ?? configuration.asset)
                 }
 
                 if case StellarError.missingBalance = error {
-                    return StellarError.destinationNotReadyForAsset(error, asset ?? self.asset)
+                    return StellarError.destinationNotReadyForAsset(error, asset ?? configuration.asset)
                 }
 
                 return error
@@ -105,10 +120,13 @@ public class Stellar {
 
      - parameter asset: The `Asset` to trust.
      - parameter account: The `Account` which will trust the given asset.
+     - parameter configuration: An object describing the network endpoint and default `Asset`.
 
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public func trust(asset: Asset, account: Account) -> Promise<String> {
+    public static func trust(asset: Asset,
+                             account: Account,
+                             configuration: Configuration) -> Promise<String> {
         let p = Promise<String>()
 
         guard let destination = account.publicKey else {
@@ -117,7 +135,7 @@ public class Stellar {
             return p
         }
 
-        balance(account: destination, asset: asset)
+        balance(account: destination, asset: asset, configuration: configuration)
             .then { _ -> Void in
                 p.signal("-na-")
             }
@@ -128,12 +146,13 @@ public class Stellar {
                     return
                 }
 
-                self.transaction(source: account, operations: [Operation.changeTrustOp(asset: asset)])
+                self.transaction(source: account, operations: [Operation.changeTrustOp(asset: asset)], configuration: configuration)
                     .then { tx -> Promise<String> in
                         let envelope = try self.sign(transaction: tx,
-                                                     signer: account)
+                                                     signer: account,
+                                                     configuration: configuration)
 
-                        return self.postTransaction(baseURL: self.node.baseURL, envelope: envelope)
+                        return self.postTransaction(baseURL: configuration.node.baseURL, envelope: envelope)
                     }
                     .then { txHash in
                         p.signal(txHash)
@@ -151,15 +170,18 @@ public class Stellar {
 
      - parameter account: The `Account` whose balance will be retrieved.
      - parameter asset: The `Asset` whose balance will be obtained.  Defaults to the `Asset` specified in the initializer.
+     - parameter configuration: An object describing the network endpoint and default `Asset`.
 
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public func balance(account: String, asset: Asset? = nil) -> Promise<Decimal> {
-        return accountDetails(account: account)
+    public static func balance(account: String,
+                               asset: Asset? = nil,
+                               configuration: Configuration) -> Promise<Decimal> {
+        return accountDetails(account: account, configuration: configuration)
             .then { accountDetails in
                 let p = Promise<Decimal>()
 
-                let asset = asset ?? self.asset
+                let asset = asset ?? configuration.asset
 
                 for balance in accountDetails.balances {
                     let code = balance.assetCode
@@ -179,10 +201,21 @@ public class Stellar {
         }
     }
 
-    public func txWatch(account: String? = nil,
-                        lastEventId: String?,
-                        descending: Bool = false) -> TxWatch {
-        var url = node.baseURL
+    /**
+     Observe transactions on the given node.  When `account` is non-`nil`, observations are
+     limited to transactions involving the given account.
+
+     - parameter account: The `Account` whose transactions will be observed.  Optional.
+     - parameter lastEventId: If non-`nil`, only transactions with a later event Id will be observed.
+     The string _now_ will only observe transactions completed after observation begins.
+     - parameter configuration: An object describing the network endpoint and default `Asset`.
+
+     - Returns: An instance of `TxWatch`, which contains an `Observable` which emits `TxInfo` objects.
+     */
+    public static func txWatch(account: String? = nil,
+                               lastEventId: String?,
+                               configuration: Configuration) -> TxWatch {
+        var url = configuration.node.baseURL
 
         if let account = account {
             url = url
@@ -193,8 +226,6 @@ public class Stellar {
         url = url
             .appendingPathComponent("transactions")
 
-        url = URL(string: url.absoluteString + "?order=\(descending ? "desc" : "asc")")!
-
         if let lastEventId = lastEventId {
             url = URL(string: url.absoluteString + "&cursor=\(lastEventId)")!
         }
@@ -202,10 +233,21 @@ public class Stellar {
         return TxWatch(eventSource: StellarEventSource(url: url))
     }
 
-    public func paymentWatch(account: String? = nil,
-                             lastEventId: String?,
-                             descending: Bool = false) -> PaymentWatch {
-        var url = node.baseURL
+    /**
+     Observe payments on the given node.  When `account` is non-`nil`, observations are
+     limited to payments involving the given account.
+
+     - parameter account: The `Account` whose payments will be observed.  Optional.
+     - parameter lastEventId: If non-`nil`, only payments with a later event Id will be observed.
+     The string _now_ will only observe payments made after observation begins.
+     - parameter configuration: An object describing the network endpoint and default `Asset`.
+
+     - Returns: An instance of `PaymentWatch`, which contains an `Observable` which emits `PaymentEvent` objects.
+     */
+    public static func paymentWatch(account: String? = nil,
+                                    lastEventId: String?,
+                                    configuration: Configuration) -> PaymentWatch {
+        var url = configuration.node.baseURL
 
         if let account = account {
             url = url
@@ -216,8 +258,6 @@ public class Stellar {
         url = url
             .appendingPathComponent("payments")
 
-        url = URL(string: url.absoluteString + "?order=\(descending ? "desc" : "asc")")!
-
         if let lastEventId = lastEventId {
             url = URL(string: url.absoluteString + "&cursor=\(lastEventId)")!
         }
@@ -225,8 +265,16 @@ public class Stellar {
         return PaymentWatch(eventSource: StellarEventSource(url: url))
     }
 
-    public func accountDetails(account: String) -> Promise<AccountDetails> {
-        let url = node.baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
+    /**
+     Obtain details for the given account.
+
+     - parameter account: The `Account` whose details will be retrieved.
+     - parameter configuration: An object describing the network endpoint and default `Asset`.
+
+     - Returns: A promise which will be signalled with the result of the operation.
+     */
+    public static func accountDetails(account: String, configuration: Configuration) -> Promise<AccountDetails> {
+        let url = configuration.node.baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         return issue(request: URLRequest(url: url))
             .then { data in
@@ -245,10 +293,11 @@ public class Stellar {
 
     // MARK: -
 
-    public func transaction(source: Account,
-                            operations: [Operation],
-                            sequence: UInt64 = 0,
-                            memo: Memo = .MEMO_NONE) -> Promise<Transaction> {
+    public static func transaction(source: Account,
+                                   operations: [Operation],
+                                   sequence: UInt64 = 0,
+                                   memo: Memo = .MEMO_NONE,
+                                   configuration: Configuration) -> Promise<Transaction> {
         let p = Promise<Transaction>()
 
         guard let sourceKey = source.publicKey else {
@@ -275,7 +324,7 @@ public class Stellar {
             return p
         }
 
-        self.sequence(account: sourceKey)
+        self.sequence(account: sourceKey, configuration: configuration)
             .then {
                 comp($0 + 1)
             }
@@ -286,8 +335,9 @@ public class Stellar {
         return p
     }
 
-    public func sign(transaction tx: Transaction,
-                     signer: Account) throws -> TransactionEnvelope {
+    public static func sign(transaction tx: Transaction,
+                            signer: Account,
+                            configuration: Configuration) throws -> TransactionEnvelope {
         guard let publicKey = signer.publicKey else {
             throw StellarError.missingPublicKey
         }
@@ -295,17 +345,17 @@ public class Stellar {
         return try StellarKit.sign(transaction: tx,
                                    signer: signer,
                                    hint: KeyUtils.key(base32: publicKey).suffix(4),
-                                   networkId: node.networkId.rawValue)
+                                   networkId: configuration.node.networkId.description)
     }
 
-    public func sequence(account: String) -> Promise<UInt64> {
-        return accountDetails(account: account)
+    public static func sequence(account: String, configuration: Configuration) -> Promise<UInt64> {
+        return accountDetails(account: account, configuration: configuration)
             .then { accountDetails in
                 return Promise<UInt64>().signal(accountDetails.seqNum)
         }
     }
 
-    public func postTransaction(baseURL: URL, envelope: TransactionEnvelope) -> Promise<String> {
+    public static func postTransaction(baseURL: URL, envelope: TransactionEnvelope) -> Promise<String> {
         let envelopeData: Data
         do {
             envelopeData = try Data(XDREncoder.encode(envelope))

@@ -8,6 +8,10 @@
 
 import Foundation
 
+typealias WD4 = WrappedData32
+typealias WD12 = WrappedData32
+typealias WD32 = WrappedData32
+
 private func decodeData(from decoder: XDRDecoder, capacity: Int) throws -> Data {
     var d = Data(capacity: capacity)
 
@@ -59,16 +63,6 @@ extension WrappedData {
     }
 }
 
-struct WrappedData32: WrappedData, Equatable {
-    static let capacity: Int = 32
-
-    var wrapped: Data
-
-    init() {
-        wrapped = Data()
-    }
-}
-
 struct WrappedData4: WrappedData {
     static let capacity: Int = 4
 
@@ -81,6 +75,16 @@ struct WrappedData4: WrappedData {
 
 struct WrappedData12: WrappedData {
     static let capacity: Int = 12
+
+    var wrapped: Data
+
+    init() {
+        wrapped = Data()
+    }
+}
+
+struct WrappedData32: WrappedData, Equatable {
+    static let capacity: Int = 32
 
     var wrapped: Data
 
