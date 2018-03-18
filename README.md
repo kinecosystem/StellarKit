@@ -2,7 +2,7 @@
 
 A framework for interacting with the [Stellar](https://www.stellar.org) blockchain network.  StellarKit communicates with Horizon nodes.
 
-## Concepts
+## <a name="concepts"></a>Concepts
 
 #### Accounts
 
@@ -30,7 +30,7 @@ StellarKit exposes `Stellar`, which is a struct with static methods.  In additio
 
 ##### Stellar.Configuration
 
-```
+```Swift
 struct Configuration {
     let node: Node
     let asset: Asset
@@ -42,7 +42,7 @@ struct Configuration {
 
 ##### Stellar.Node
 
-```
+```Swift
 struct Node {
     let baseURL: URL
     let networkId: NetworkId
@@ -54,7 +54,7 @@ struct Node {
 
 ##### NetworkId
 
-```
+```Swift
 enum NetworkId {
     case test
     case main
@@ -67,3 +67,54 @@ Stellar identifies a network via a pre-defined string.  The Stellar Development 
 * `test` represents the Stellar Foundation's test net.
 * `main` represents the Stellar Foundation's public (live) net.
 * `custom` allows a user-defined identifier to be provided, to be used with private networks.
+
+##### Account
+
+```Swift
+public protocol Account {
+    var publicKey: String? { get }
+
+    var sign: ((Data) throws -> Data)? { get }
+}
+```
+
+`StellarKit` does not contain an implementation of the account concept.  Instead, it relies on the `Account` protocol to provide the required functionality.
+
+* `publicKey` is the string representation of the account's public key, as described in the <a href="#concepts">Concepts</a> section.
+* `sign` is a closure which accepts a Data object to be signed, and returns the signature.
+
+This design allows `StellarKit` to remain agnostic with respect to encryption implementations and account storage mechanisms.  It also avoids 3rd-party dependencies, as iOS (and macos) have no native implementations of ED25519 algorithms.
+
+##### Promises
+
+Most `Stellar` methods return a `Promise`, which is an abstraction over asynchronous processes which allows for chaining actions.  `StellarKit` uses a minimal implementation provided by [KinUtil](https://github.com/kinfoundation/kin-util-ios), to avoid 3rd-party dependencies.
+
+## Functionality
+
+At this time, `StellarKit` supports the following operations:
+
+* making payments
+* retrieving balances
+* trusting non-native assets
+* retrieving account details
+* observing changes
+
+Inline documentation describes how to use each method.
+
+## Getting Started
+
+The Stellar network is designed for the usage of non-native assets.  This section describes how to prepare an account to send and receive such assets.
+
+1. [Create the account](https://www.stellar.org/developers/horizon/reference/resources/operation.html#create-account) on the network.
+
+   This operation requires a funding account which has sufficient Lumens to provide the necessary reserve.  It is customary to provide extra to allow the account to pay transaction fees.  This operation is typically performed by a service, and is outside the scope of this framework.
+
+2. [Trust the asset](https://www.stellar.org/developers/horizon/reference/resources/operation.html#change-trust).
+
+   This operation is performed by `Stellar.trust(...)`.
+
+   ```Swift
+   public static func trust(asset: Asset,
+                            account: Account,
+                            configuration: Configuration) -> Promise<String>
+   ```
