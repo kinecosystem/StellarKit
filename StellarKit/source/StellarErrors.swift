@@ -7,22 +7,7 @@
 //
 
 import Foundation
-
-public enum StellarError: Error {
-    case memoTooLong (Any?)
-    case missingAccount
-    case missingPublicKey
-    case missingHash
-    case missingSequence
-    case missingBalance
-    case missingSignClosure
-    case urlEncodingFailed
-    case dataEncodingFailed
-    case signingFailed
-    case destinationNotReadyForAsset (Error, Asset)
-    case unknownError (Any?)
-    case internalInconsistency
-}
+import StellarErrors
 
 public enum TransactionError: Int32, Error {
     case txFAILED = -1               // one of the operations failed (none were applied)

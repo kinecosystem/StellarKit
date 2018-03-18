@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import StellarErrors
 import KinUtil
 
 public protocol Account {
@@ -104,11 +105,13 @@ public struct Stellar {
             }
             .transformError({ error -> Error in
                 if case StellarError.missingAccount = error {
-                    return StellarError.destinationNotReadyForAsset(error, asset ?? configuration.asset)
+                    return StellarError
+                        .destinationNotReadyForAsset(error, asset?.assetCode ?? configuration.asset.assetCode)
                 }
 
                 if case StellarError.missingBalance = error {
-                    return StellarError.destinationNotReadyForAsset(error, asset ?? configuration.asset)
+                    return StellarError
+                        .destinationNotReadyForAsset(error, asset?.assetCode ?? configuration.asset.assetCode)
                 }
 
                 return error

@@ -8,6 +8,7 @@
 
 import Foundation
 import StellarKit
+import StellarErrors
 
 enum KeyUtilsError: Error {
     case encodingFailed (String)

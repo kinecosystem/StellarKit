@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import StellarErrors
 import KinUtil
 
 private func networkIdSHA256(_ networkId: String) throws -> Data {

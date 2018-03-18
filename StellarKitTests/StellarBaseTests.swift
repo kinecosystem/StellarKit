@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import StellarKit
+import StellarErrors
 import KinUtil
 
 struct MockStellarAccount: Account {
