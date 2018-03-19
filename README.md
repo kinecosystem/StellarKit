@@ -26,19 +26,7 @@ In order to receive a non-native asset, an account must trust the issuer.  This 
 
 ## Design
 
-StellarKit exposes `Stellar`, which is a struct with static methods.  In addition to method-specific parameters, each method takes a parameter called `configuration`, of type `Stellar.Configuration`.
-
-##### Stellar.Configuration
-
-```Swift
-struct Configuration {
-    let node: Node
-    let asset: Asset
-}
-```
-
-* `node` represents the Horizon node.
-* `asset` defines the asset to be used by a method, if no asset is passed via its `asset` parameter.
+StellarKit exposes `Stellar`, which is a stateless struct with static methods.  In addition to method-specific parameters, each method takes a parameter called `node`, of type `Stellar.Node`.
 
 ##### Stellar.Node
 

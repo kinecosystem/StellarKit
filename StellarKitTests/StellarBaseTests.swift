@@ -38,10 +38,11 @@ struct MockStellarAccount: Account {
 
 class StellarBaseTests: XCTestCase {
     var endpoint: String { return "override me" }
-    
-    lazy var config = Stellar.Configuration(node: Stellar.Node(baseURL: URL(string: endpoint)!),
-                                            asset: Asset(assetCode: "KIN",
-                                                         issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")!)
+
+    let asset = Asset(assetCode: "KIN",
+                      issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")!
+    lazy var node = Stellar.Node(baseURL: URL(string: endpoint)!)
+
     var account: Account!
     var account2: Account!
     var issuer: Account!
@@ -66,7 +67,7 @@ class StellarBaseTests: XCTestCase {
         
         let funder = MockStellarAccount(seedStr: funderSK)
         
-        return Stellar.sequence(account: funderPK, configuration: config)
+        return Stellar.sequence(account: funderPK, node: node)
             .then { sequence in
                 let tx = Transaction(sourceAccount: sourcePK,
                                      seqNum: sequence + 1,
@@ -77,9 +78,9 @@ class StellarBaseTests: XCTestCase {
                 
                 let envelope = try Stellar.sign(transaction: tx,
                                                 signer: funder,
-                                                configuration: self.config)
+                                                node: self.node)
                 
-                return Stellar.postTransaction(baseURL: self.config.node.baseURL, envelope: envelope)
+                return Stellar.postTransaction(baseURL: self.node.baseURL, envelope: envelope)
         }
     }
     
@@ -88,9 +89,9 @@ class StellarBaseTests: XCTestCase {
         
         fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
-                return Stellar.trust(asset: self.config.asset,
+                return Stellar.trust(asset: self.asset,
                                      account: self.account,
-                                     configuration: self.config)
+                                     node: self.node)
             }
             .then { _ in
                 e.fulfill()
@@ -108,14 +109,14 @@ class StellarBaseTests: XCTestCase {
         
         fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
-                return Stellar.trust(asset: self.config.asset,
+                return Stellar.trust(asset: self.asset,
                                      account: self.account,
-                                     configuration: self.config)
+                                     node: self.node)
             }
             .then { txHash -> Promise<String> in
-                return Stellar.trust(asset: self.config.asset,
+                return Stellar.trust(asset: self.asset,
                                      account: self.account,
-                                     configuration: self.config)
+                                     node: self.node)
             }
             .then { _ in
                 e.fulfill()
@@ -134,7 +135,7 @@ class StellarBaseTests: XCTestCase {
         Stellar.payment(source: account,
                         destination: account2.publicKey!,
                         amount: 1,
-                        configuration: config)
+                        node: node)
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
                 e.fulfill()
@@ -158,15 +159,16 @@ class StellarBaseTests: XCTestCase {
         
         fund(account: account2.publicKey!)
             .then { _ -> Promise<String> in
-                return Stellar.trust(asset: self.config.asset,
+                return Stellar.trust(asset: self.asset,
                                      account: self.account2,
-                                     configuration: self.config)
+                                     node: self.node)
             }
             .then { txHash -> Promise<String> in
                 return Stellar.payment(source: self.account,
                                        destination: self.account2.publicKey!,
                                        amount: 1,
-                                       configuration: self.config)
+                                       asset: self.asset,
+                                       node: self.node)
             }
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
@@ -194,20 +196,21 @@ class StellarBaseTests: XCTestCase {
                 return self.fund(account: self.account2.publicKey!)
             }
             .then { _ -> Promise<String> in
-                return Stellar.trust(asset: self.config.asset,
+                return Stellar.trust(asset: self.asset,
                                      account: self.account,
-                                     configuration: self.config)
+                                     node: self.node)
             }
             .then { txHash -> Promise<String> in
-                return Stellar.trust(asset: self.config.asset,
+                return Stellar.trust(asset: self.asset,
                                      account: self.account2,
-                                     configuration: self.config)
+                                     node: self.node)
             }
             .then { txHash -> Promise<String> in
                 return Stellar.payment(source: self.account,
                                        destination: self.account2.publicKey!,
                                        amount: 1,
-                                       configuration: self.config)
+                                       asset: self.asset,
+                                       node: self.node)
             }
             .then { txHash -> Void in
                 XCTAssertTrue(false, "Expected error!")
@@ -232,15 +235,16 @@ class StellarBaseTests: XCTestCase {
         
         fund(account: account.publicKey!)
             .then { _ -> Promise<String> in
-                return Stellar.trust(asset: self.config.asset,
+                return Stellar.trust(asset: self.asset,
                                      account: self.account,
-                                     configuration: self.config)
+                                     node: self.node)
             }
             .then { txHash -> Promise<String> in
                 return Stellar.payment(source: self.issuer,
                                        destination: self.account.publicKey!,
                                        amount: 1,
-                                       configuration: self.config)
+                                       asset: self.asset,
+                                       node: self.node)
             }
             .then { _ in
                 e.fulfill()
@@ -258,12 +262,14 @@ class StellarBaseTests: XCTestCase {
         
         fund(account: account.publicKey!)
             .then { txHash -> Promise<String> in
-                return Stellar.trust(asset: self.config.asset,
+                return Stellar.trust(asset: self.asset,
                                      account: self.account,
-                                     configuration: self.config)
+                                     node: self.node)
             }
             .then { txHash -> Promise<Decimal> in
-                return Stellar.balance(account: self.account.publicKey!, configuration: self.config)
+                return Stellar.balance(account: self.account.publicKey!,
+                                       asset: self.asset,
+                                       node: self.node)
             }
             .then { _ in
                 e.fulfill()

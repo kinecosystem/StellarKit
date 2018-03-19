@@ -59,16 +59,6 @@ public struct Stellar {
         }
     }
 
-    public struct Configuration {
-        public let node: Node
-        public let asset: Asset
-
-        public init(node: Node, asset: Asset = .ASSET_TYPE_NATIVE) {
-            self.node = node
-            self.asset = asset
-        }
-    }
-
     /**
      Sends a payment to the given account.
 
@@ -84,34 +74,34 @@ public struct Stellar {
     public static func payment(source: Account,
                                destination: String,
                                amount: Int64,
-                               asset: Asset? = nil,
+                               asset: Asset = .ASSET_TYPE_NATIVE,
                                memo: Memo = .MEMO_NONE,
-                               configuration: Configuration) -> Promise<String> {
-        return balance(account: destination, asset: asset, configuration: configuration)
+                               node: Node) -> Promise<String> {
+        return balance(account: destination, asset: asset, node: node)
             .then { _ -> Promise<Transaction> in
                 let op = Operation.paymentOp(destination: destination,
                                              amount: amount,
                                              source: nil,
-                                             asset: asset ?? configuration.asset)
+                                             asset: asset)
 
-                return self.transaction(source: source, operations: [ op ], memo: memo, configuration: configuration)
+                return self.transaction(source: source, operations: [ op ], memo: memo, node: node)
             }
             .then { tx -> Promise<String> in
                 let envelope = try self.sign(transaction: tx,
                                              signer: source,
-                                             configuration: configuration)
+                                             node: node)
 
-                return self.postTransaction(baseURL: configuration.node.baseURL, envelope: envelope)
+                return self.postTransaction(baseURL: node.baseURL, envelope: envelope)
             }
             .transformError({ error -> Error in
                 if case StellarError.missingAccount = error {
                     return StellarError
-                        .destinationNotReadyForAsset(error, asset?.assetCode ?? configuration.asset.assetCode)
+                        .destinationNotReadyForAsset(error, asset.assetCode)
                 }
 
                 if case StellarError.missingBalance = error {
                     return StellarError
-                        .destinationNotReadyForAsset(error, asset?.assetCode ?? configuration.asset.assetCode)
+                        .destinationNotReadyForAsset(error, asset.assetCode)
                 }
 
                 return error
@@ -129,7 +119,7 @@ public struct Stellar {
      */
     public static func trust(asset: Asset,
                              account: Account,
-                             configuration: Configuration) -> Promise<String> {
+                             node: Node) -> Promise<String> {
         let p = Promise<String>()
 
         guard let destination = account.publicKey else {
@@ -138,7 +128,7 @@ public struct Stellar {
             return p
         }
 
-        balance(account: destination, asset: asset, configuration: configuration)
+        balance(account: destination, asset: asset, node: node)
             .then { _ -> Void in
                 p.signal("-na-")
             }
@@ -149,13 +139,13 @@ public struct Stellar {
                     return
                 }
 
-                self.transaction(source: account, operations: [Operation.changeTrustOp(asset: asset)], configuration: configuration)
+                self.transaction(source: account, operations: [Operation.changeTrustOp(asset: asset)], node: node)
                     .then { tx -> Promise<String> in
                         let envelope = try self.sign(transaction: tx,
                                                      signer: account,
-                                                     configuration: configuration)
+                                                     node: node)
 
-                        return self.postTransaction(baseURL: configuration.node.baseURL, envelope: envelope)
+                        return self.postTransaction(baseURL: node.baseURL, envelope: envelope)
                     }
                     .then { txHash in
                         p.signal(txHash)
@@ -178,13 +168,11 @@ public struct Stellar {
      - Returns: A promise which will be signalled with the result of the operation.
      */
     public static func balance(account: String,
-                               asset: Asset? = nil,
-                               configuration: Configuration) -> Promise<Decimal> {
-        return accountDetails(account: account, configuration: configuration)
+                               asset: Asset = .ASSET_TYPE_NATIVE,
+                               node: Node) -> Promise<Decimal> {
+        return accountDetails(account: account, node: node)
             .then { accountDetails in
                 let p = Promise<Decimal>()
-
-                let asset = asset ?? configuration.asset
 
                 for balance in accountDetails.balances {
                     let code = balance.assetCode
@@ -217,8 +205,8 @@ public struct Stellar {
      */
     public static func txWatch(account: String? = nil,
                                lastEventId: String?,
-                               configuration: Configuration) -> TxWatch {
-        var url = configuration.node.baseURL
+                               node: Node) -> TxWatch {
+        var url = node.baseURL
 
         if let account = account {
             url = url
@@ -249,8 +237,8 @@ public struct Stellar {
      */
     public static func paymentWatch(account: String? = nil,
                                     lastEventId: String?,
-                                    configuration: Configuration) -> PaymentWatch {
-        var url = configuration.node.baseURL
+                                    node: Node) -> PaymentWatch {
+        var url = node.baseURL
 
         if let account = account {
             url = url
@@ -276,8 +264,8 @@ public struct Stellar {
 
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public static func accountDetails(account: String, configuration: Configuration) -> Promise<AccountDetails> {
-        let url = configuration.node.baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
+    public static func accountDetails(account: String, node: Node) -> Promise<AccountDetails> {
+        let url = node.baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
 
         return issue(request: URLRequest(url: url))
             .then { data in
@@ -300,7 +288,7 @@ public struct Stellar {
                                    operations: [Operation],
                                    sequence: UInt64 = 0,
                                    memo: Memo = .MEMO_NONE,
-                                   configuration: Configuration) -> Promise<Transaction> {
+                                   node: Node) -> Promise<Transaction> {
         let p = Promise<Transaction>()
 
         guard let sourceKey = source.publicKey else {
@@ -327,7 +315,7 @@ public struct Stellar {
             return p
         }
 
-        self.sequence(account: sourceKey, configuration: configuration)
+        self.sequence(account: sourceKey, node: node)
             .then {
                 comp($0 + 1)
             }
@@ -340,7 +328,7 @@ public struct Stellar {
 
     public static func sign(transaction tx: Transaction,
                             signer: Account,
-                            configuration: Configuration) throws -> TransactionEnvelope {
+                            node: Node) throws -> TransactionEnvelope {
         guard let publicKey = signer.publicKey else {
             throw StellarError.missingPublicKey
         }
@@ -348,11 +336,11 @@ public struct Stellar {
         return try StellarKit.sign(transaction: tx,
                                    signer: signer,
                                    hint: KeyUtils.key(base32: publicKey).suffix(4),
-                                   networkId: configuration.node.networkId.description)
+                                   networkId: node.networkId.description)
     }
 
-    public static func sequence(account: String, configuration: Configuration) -> Promise<UInt64> {
-        return accountDetails(account: account, configuration: configuration)
+    public static func sequence(account: String, node: Node) -> Promise<UInt64> {
+        return accountDetails(account: account, node: node)
             .then { accountDetails in
                 return Promise<UInt64>().signal(accountDetails.seqNum)
         }
@@ -397,5 +385,9 @@ public struct Stellar {
                     throw error
                 }
         }
+    }
+
+    private init() {
+
     }
 }
