@@ -81,8 +81,8 @@ public struct Stellar {
             .then { _ -> Promise<Transaction> in
                 let op = Operation.paymentOp(destination: destination,
                                              amount: amount,
-                                             source: nil,
-                                             asset: asset)
+                                             asset: asset,
+                                             source: source)
 
                 return self.transaction(source: source, operations: [ op ], memo: memo, node: node)
             }
@@ -91,7 +91,7 @@ public struct Stellar {
                                              signer: source,
                                              node: node)
 
-                return self.postTransaction(baseURL: node.baseURL, envelope: envelope)
+                return self.postTransaction(envelope: envelope, node: node)
             }
             .transformError({ error -> Error in
                 if case StellarError.missingAccount = error {
@@ -133,7 +133,7 @@ public struct Stellar {
                 p.signal("-na-")
             }
             .error { error in
-                if let error = error as? StellarError, case StellarError.missingAccount = error {
+                if case StellarError.missingAccount = error {
                     p.signal(error)
 
                     return
@@ -145,7 +145,7 @@ public struct Stellar {
                                                      signer: account,
                                                      node: node)
 
-                        return self.postTransaction(baseURL: node.baseURL, envelope: envelope)
+                        return self.postTransaction(envelope: envelope, node: node)
                     }
                     .then { txHash in
                         p.signal(txHash)
@@ -346,7 +346,7 @@ public struct Stellar {
         }
     }
 
-    public static func postTransaction(baseURL: URL, envelope: TransactionEnvelope) -> Promise<String> {
+    public static func postTransaction(envelope: TransactionEnvelope, node: Node) -> Promise<String> {
         let envelopeData: Data
         do {
             envelopeData = try Data(XDREncoder.encode(envelope))
@@ -363,7 +363,7 @@ public struct Stellar {
             return Promise<String>(StellarError.dataEncodingFailed)
         }
 
-        var request = URLRequest(url: baseURL.appendingPathComponent("transactions"))
+        var request = URLRequest(url: node.baseURL.appendingPathComponent("transactions"))
         request.httpMethod = "POST"
         request.httpBody = httpBody
 

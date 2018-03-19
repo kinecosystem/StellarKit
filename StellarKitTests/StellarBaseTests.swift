@@ -80,7 +80,7 @@ class StellarBaseTests: XCTestCase {
                                                 signer: funder,
                                                 node: self.node)
                 
-                return Stellar.postTransaction(baseURL: self.node.baseURL, envelope: envelope)
+                return Stellar.postTransaction(envelope: envelope, node: self.node)
         }
     }
     
