@@ -16,27 +16,52 @@ public struct Payment {
     public var asset: Asset
 }
 
-public struct TxInfo {
-    let tx: Transaction
-    public let createdAt: String
-    public let source: String
+public struct TxEvent: Decodable {
     public let hash: String
+    public let created_at: Date
+    public let source_account: String
+    public let envelope: TransactionEnvelope
+
+    enum CodingKeys: String, CodingKey {
+        case hash
+        case created_at
+        case source_account
+        case envelope = "envelope_xdr"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.hash = try container.decode(String.self, forKey: .hash)
+        self.created_at = try container.decode(Date.self, forKey: .created_at)
+        self.source_account = try container.decode(String.self, forKey: .source_account)
+
+        let b64 = try container.decode(String.self, forKey: .envelope)
+        let data = Data(base64Encoded: b64)!
+        self.envelope = try XDRDecoder(data: data).decode(TransactionEnvelope.self)
+    }
+}
+
+extension TxEvent {
+    public var memoText: String? {
+        return envelope.tx.memo.text
+    }
+
+    public var memoData: Data? {
+        return envelope.tx.memo.data
+    }
 
     public var payments: [Payment] {
-        return tx.operations.flatMap({ op in
-            guard let body = tx.operations.first?.body else {
-                return nil
-            }
-
-            if case let Operation.Body.PAYMENT(pOP) = body {
-                return Payment(source: op.sourceAccount?.publicKey ?? tx.sourceAccount.publicKey!,
+        return envelope.tx.operations.flatMap({ op in
+            if case let Operation.Body.PAYMENT(pOP) = op.body {
+                return Payment(source: op.sourceAccount?.publicKey ?? source_account,
                                destination: pOP.destination.publicKey!,
                                amount: Decimal(Double(pOP.amount) / Double(10_000_000)),
                                asset: pOP.asset)
             }
 
-            if case let Operation.Body.CREATE_ACCOUNT(cOP) = body {
-                return Payment(source: op.sourceAccount?.publicKey ?? tx.sourceAccount.publicKey!,
+            if case let Operation.Body.CREATE_ACCOUNT(cOP) = op.body {
+                return Payment(source: op.sourceAccount?.publicKey ?? source_account,
                                destination: cOP.destination.publicKey!,
                                amount: Decimal(Double(cOP.balance) / Double(10_000_000)),
                                asset: .ASSET_TYPE_NATIVE)
@@ -44,29 +69,6 @@ public struct TxInfo {
 
             return nil
         })
-    }
-
-    public var memoText: String? {
-        return tx.memo.text
-    }
-
-    public var memoData: Data? {
-        return tx.memo.data
-    }
-
-    public var sequence: UInt64 {
-        return tx.seqNum
-    }
-
-    init(json: [String: Any]) throws {
-        let envB64 = json["envelope_xdr"] as? String
-        let envData = Data(base64Encoded: envB64!)
-        let envelope = try XDRDecoder(data: envData!).decode(TransactionEnvelope.self)
-
-        tx = envelope.tx
-        createdAt = json["created_at"] as! String
-        source = json["source_account"] as! String
-        hash = json["hash"] as! String
     }
 }
 
@@ -138,22 +140,31 @@ extension PaymentEvent {
 
 public class TxWatch {
     public let eventSource: StellarEventSource
-    public let emitter: Observable<TxInfo>
+    public let emitter: Observable<TxEvent>
+
+    private static let formatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+
+        return df
+    }()
 
     init(eventSource: StellarEventSource) {
         self.eventSource = eventSource
 
-        self.emitter = eventSource.emitter.flatMap({ event -> TxInfo? in
-            guard
-                let jsonData = event.data?.data(using: .utf8),
-                let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-                let unwrappedJSON = json,
-                let txInfo = try? TxInfo(json: unwrappedJSON)
-                else {
-                    return nil
+        self.emitter = eventSource.emitter.flatMap({ event -> TxEvent? in
+            guard let jsonData = event.data?.data(using: .utf8) else {
+                return nil
             }
 
-            return txInfo
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .formatted(TxWatch.formatter)
+
+            guard let tx = try? decoder.decode(TxEvent.self, from: jsonData) else {
+                return nil
+            }
+
+            return tx
         })
     }
 
