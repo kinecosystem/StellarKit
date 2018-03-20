@@ -2,7 +2,7 @@
 //  Errors.swift
 //  StellarErrors
 //
-//  Created by Avi Shevin on 18/03/2018.
+//  Created by Kin Foundation.
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 

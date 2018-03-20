@@ -139,7 +139,9 @@ public struct Stellar {
                     return
                 }
 
-                self.transaction(source: account, operations: [Operation.changeTrustOp(asset: asset)], node: node)
+                self.transaction(source: account,
+                                 operations: [Operation.changeTrustOp(asset: asset)],
+                                 node: node)
                     .then { tx -> Promise<String> in
                         let envelope = try self.sign(transaction: tx,
                                                      signer: account,
@@ -206,20 +208,7 @@ public struct Stellar {
     public static func txWatch(account: String? = nil,
                                lastEventId: String?,
                                node: Node) -> TxWatch {
-        var url = node.baseURL
-
-        if let account = account {
-            url = url
-                .appendingPathComponent("accounts")
-                .appendingPathComponent(account)
-        }
-
-        url = url
-            .appendingPathComponent("transactions")
-
-        if let lastEventId = lastEventId {
-            url = URL(string: url.absoluteString + "&cursor=\(lastEventId)")!
-        }
+        let url = Endpoint(url: node.baseURL).account(account).transactions().cursor(lastEventId).url
 
         return TxWatch(eventSource: StellarEventSource(url: url))
     }
@@ -238,20 +227,7 @@ public struct Stellar {
     public static func paymentWatch(account: String? = nil,
                                     lastEventId: String?,
                                     node: Node) -> PaymentWatch {
-        var url = node.baseURL
-
-        if let account = account {
-            url = url
-                .appendingPathComponent("accounts")
-                .appendingPathComponent(account)
-        }
-
-        url = url
-            .appendingPathComponent("payments")
-
-        if let lastEventId = lastEventId {
-            url = URL(string: url.absoluteString + "&cursor=\(lastEventId)")!
-        }
+        let url = Endpoint(url: node.baseURL).account(account).payments().cursor(lastEventId).url
 
         return PaymentWatch(eventSource: StellarEventSource(url: url))
     }
@@ -265,7 +241,7 @@ public struct Stellar {
      - Returns: A promise which will be signalled with the result of the operation.
      */
     public static func accountDetails(account: String, node: Node) -> Promise<AccountDetails> {
-        let url = node.baseURL.appendingPathComponent("accounts").appendingPathComponent(account)
+        let url = Endpoint(url: node.baseURL).account(account).url
 
         return issue(request: URLRequest(url: url))
             .then { data in

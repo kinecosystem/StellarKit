@@ -33,6 +33,7 @@
 		824063FA201E23FA0055D70A /* HorizonMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063F9201E23FA0055D70A /* HorizonMock.swift */; };
 		82406400201F00530055D70A /* StellarUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063FF201F00530055D70A /* StellarUnitTests.swift */; };
 		8240BAF62028EAE0003F08FB /* HorizonResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8240BAF52028EAE0003F08FB /* HorizonResponses.swift */; };
+		824138532060ADF300D7117E /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824138522060ADF300D7117E /* Endpoint.swift */; };
 		8261EF2C2043DECA001848CB /* KinUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F2FAE32043172A00E754BD /* KinUtil.framework */; };
 		828CB539205E23FA007C679C /* StellarErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 828CB537205E23FA007C679C /* StellarErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		828CB53C205E23FA007C679C /* StellarErrors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 828CB535205E23F9007C679C /* StellarErrors.framework */; };
@@ -342,6 +343,7 @@
 		824063F9201E23FA0055D70A /* HorizonMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonMock.swift; sourceTree = "<group>"; };
 		824063FF201F00530055D70A /* StellarUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StellarUnitTests.swift; path = StellarKitTests/StellarUnitTests.swift; sourceTree = SOURCE_ROOT; };
 		8240BAF52028EAE0003F08FB /* HorizonResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonResponses.swift; sourceTree = "<group>"; };
+		824138522060ADF300D7117E /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		828CB535205E23F9007C679C /* StellarErrors.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarErrors.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		828CB537205E23FA007C679C /* StellarErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StellarErrors.h; sourceTree = "<group>"; };
 		828CB538205E23FA007C679C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -558,6 +560,7 @@
 				82340C44200138E50034204F /* StellarResults.swift */,
 				82191578204BC7D300450864 /* StellarOps.swift */,
 				82321F46204F80E700C5D557 /* Watches.swift */,
+				824138522060ADF300D7117E /* Endpoint.swift */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -1156,6 +1159,7 @@
 				82340BDD1FFE24EE0034204F /* Stellar.swift in Sources */,
 				82191579204BC7D300450864 /* StellarOps.swift in Sources */,
 				82340C45200138E50034204F /* StellarResults.swift in Sources */,
+				824138532060ADF300D7117E /* Endpoint.swift in Sources */,
 				82340BD41FFDF7780034204F /* Data+extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
