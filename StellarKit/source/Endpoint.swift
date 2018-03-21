@@ -84,7 +84,7 @@ private func transactions(url: URL) -> TransactionsEndpoint {
 
 private func cursor(url: URL, cursor: String?) -> CursorEndpoint {
     if let cursor = cursor {
-        return CursorEndpoint(url: URL(string: url.absoluteString + "&cursor=\(cursor)")!)
+        return CursorEndpoint(url: URL(string: url.absoluteString + "?cursor=\(cursor)")!)
     }
 
     return CursorEndpoint(url: url)
