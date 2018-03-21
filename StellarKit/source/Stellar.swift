@@ -180,7 +180,7 @@ public struct Stellar {
                     let code = balance.assetCode
                     let issuer = balance.assetIssuer
 
-                    if (code == "native" && asset.assetCode == "native") {
+                    if (balance.assetType == "native" && asset.assetCode == "native") {
                         return p.signal(balance.balanceNum)
                     }
 

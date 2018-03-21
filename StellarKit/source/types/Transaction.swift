@@ -104,7 +104,7 @@ public enum Memo: XDRCodable {
     }
 }
 
-struct TimeBounds: XDRCodable {
+public struct TimeBounds: XDRCodable {
     let minTime: UInt64
     let maxTime: UInt64
 }
@@ -124,6 +124,18 @@ public struct Transaction: XDRCodable {
         }
 
         return nil
+    }
+
+    public init(sourceAccount: String,
+                seqNum: UInt64,
+                timeBounds: TimeBounds?,
+                memo: Memo,
+                operations: [Operation]) {
+        self.init(sourceAccount: .PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceAccount))),
+                  seqNum: seqNum,
+                  timeBounds: timeBounds,
+                  memo: memo,
+                  operations: operations)
     }
 
     init(sourceAccount: PublicKey,
