@@ -16,7 +16,7 @@ public struct Payment {
     public var asset: Asset
 }
 
-public struct TxEvent: Decodable {
+public struct TxEvent: Decodable, Equatable {
     public let hash: String
     public let created_at: Date
     public let source_account: String
@@ -39,6 +39,10 @@ public struct TxEvent: Decodable {
         let b64 = try container.decode(String.self, forKey: .envelope)
         let data = Data(base64Encoded: b64)!
         self.envelope = try XDRDecoder(data: data).decode(TransactionEnvelope.self)
+    }
+
+    public static func ==(lhs: TxEvent, rhs: TxEvent) -> Bool {
+        return lhs.hash == rhs.hash
     }
 }
 
