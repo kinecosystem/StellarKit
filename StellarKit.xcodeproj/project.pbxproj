@@ -14,7 +14,6 @@
 		82340BA61FFDF2DA0034204F /* StellarKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82340B9C1FFDF2DA0034204F /* StellarKit.framework */; };
 		82340BAB1FFDF2DA0034204F /* StellarIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */; };
 		82340BAD1FFDF2DA0034204F /* StellarKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 82340B9F1FFDF2DA0034204F /* StellarKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		82340BBA1FFDF3390034204F /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB71FFDF3390034204F /* Conversion.swift */; };
 		82340BC41FFDF3F30034204F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BC31FFDF3F30034204F /* AppDelegate.swift */; };
 		82340BC61FFDF3F30034204F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BC51FFDF3F30034204F /* ViewController.swift */; };
 		82340BC91FFDF3F30034204F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340BC71FFDF3F30034204F /* Main.storyboard */; };
@@ -75,7 +74,6 @@
 		82BA204B204D856100396AE2 /* StellarUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E888202F8AB000789C78 /* StellarUtils.swift */; };
 		82BA204C204D856100396AE2 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AD20147DCD0055D70A /* Operation.swift */; };
 		82BA204D204D856100396AE2 /* HorizonResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8240BAF52028EAE0003F08FB /* HorizonResponses.swift */; };
-		82BA204E204D856100396AE2 /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340BB71FFDF3390034204F /* Conversion.swift */; };
 		82BA204F204D856100396AE2 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063B020147DCD0055D70A /* Transaction.swift */; };
 		82BA2050204D856100396AE2 /* XDREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2120264D9800A126C0 /* XDREncoder.swift */; };
 		82BA2051204D856100396AE2 /* XDRCodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2220264D9900A126C0 /* XDRCodableExtensions.swift */; };
@@ -325,7 +323,6 @@
 		82340BA51FFDF2DA0034204F /* StellarKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StellarKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarIntegrationTests.swift; sourceTree = "<group>"; };
 		82340BAC1FFDF2DA0034204F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		82340BB71FFDF3390034204F /* Conversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversion.swift; sourceTree = "<group>"; };
 		82340BC11FFDF3F30034204F /* StellarKitHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StellarKitHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82340BC31FFDF3F30034204F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		82340BC51FFDF3F30034204F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -564,7 +561,6 @@
 				82A12DC620556AA6008841F2 /* CommonCrypto */,
 				82343A9F20242DD100848CF4 /* XDRCodable */,
 				824063AB20147DCD0055D70A /* types */,
-				82340BB71FFDF3390034204F /* Conversion.swift */,
 				82340BD31FFDF7780034204F /* Data+extensions.swift */,
 				8240BAF52028EAE0003F08FB /* HorizonResponses.swift */,
 				82ECAB8B2003290F0010E31F /* KeyUtils.swift */,
@@ -1202,7 +1198,6 @@
 				8214E889202F8AB000789C78 /* StellarUtils.swift in Sources */,
 				824063B220147DCD0055D70A /* Operation.swift in Sources */,
 				8240BAF62028EAE0003F08FB /* HorizonResponses.swift in Sources */,
-				82340BBA1FFDF3390034204F /* Conversion.swift in Sources */,
 				824063B520147DCD0055D70A /* Transaction.swift in Sources */,
 				82FD8B2520264D9A00A126C0 /* XDREncoder.swift in Sources */,
 				82FD8B2620264D9A00A126C0 /* XDRCodableExtensions.swift in Sources */,
@@ -1282,7 +1277,6 @@
 				82BA204C204D856100396AE2 /* Operation.swift in Sources */,
 				8241388F206171FD00D7117E /* Endpoint.swift in Sources */,
 				82BA204D204D856100396AE2 /* HorizonResponses.swift in Sources */,
-				82BA204E204D856100396AE2 /* Conversion.swift in Sources */,
 				82BA204F204D856100396AE2 /* Transaction.swift in Sources */,
 				828CB54A205E24BA007C679C /* StellarErrors.swift in Sources */,
 				82BA2050204D856100396AE2 /* XDREncoder.swift in Sources */,
