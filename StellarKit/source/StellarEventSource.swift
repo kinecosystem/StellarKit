@@ -34,8 +34,6 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
 
     public private(set) var emitter: Observable<Event>!
 
-    private var onMessageCallback: ((_ id: String?, _ event: String?, _ data: String?) -> Void)?
-
     init(url: URL) {
         self.url = url
         self.emitter = Observable<Event>()
@@ -83,10 +81,6 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
         urlSession?.invalidateAndCancel()
         urlSession = nil
         emitter = nil
-    }
-
-    func onMessage(_ callback: @escaping ((_ id: String?, _ event: String?, _ data: String?) -> Void)) {
-        onMessageCallback = callback
     }
 
     var lineEnding = ""
@@ -144,25 +138,18 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
                 continue
             }
 
-            if let location = string.range(of: ":")?.lowerBound {
-                let key = String(string[..<location])
-                let val = String(string[string.index(after: location)..<string.endIndex])
+            let parts = string.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false)
+            if parts.count == 2 {
+                let key = String(parts[0])
+                var val = String(parts[1])
 
-                #if swift(>=4.0)
-                    var value = val
-                #else
-                    guard var value = val else {
-                    continue
-                    }
-                #endif
-
-                value = value.hasPrefix(" ") ? String(value.dropFirst()) : value
+                val = val.hasPrefix(" ") ? String(val.dropFirst()) : val
 
                 switch key {
                 case "id": id = val
                 case "event": eventName = val
-                case "data": data = value
-                case "retry": retryTime = Int(value) ?? retryTime
+                case "data": data = val
+                case "retry": retryTime = Int(val) ?? retryTime
                 default: break
                 }
 
@@ -193,7 +180,6 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
                 let (id, eventName, data) = parse(event)
 
                 if eventName == "message" {
-                    onMessageCallback?(id, eventName, data)
                     emitter?.next(Event(id: id, event: eventName, data: data))
                 }
             }

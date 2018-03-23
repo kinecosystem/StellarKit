@@ -27,7 +27,7 @@ func sign(transaction tx: Transaction,
     let payload = TransactionSignaturePayload(networkId: WD32(sha256),
                                               taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
-    let message = try Data(bytes: XDREncoder.encode(payload)).sha256
+    let message = try XDREncoder.encode(payload).sha256
 
     guard let sign = signer.sign else {
         throw StellarError.missingSignClosure
@@ -45,7 +45,7 @@ func issue(request: URLRequest) -> Promise<Data> {
 
     URLSession
         .shared
-        .dataTask(with: request, completionHandler: { (data, response, error) in
+        .dataTask(with: request, completionHandler: { (data, _, error) in
             if let error = error {
                 p.signal(error)
 

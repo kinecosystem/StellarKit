@@ -38,11 +38,11 @@ struct MockStellarAccount: Account {
 
 class StellarBaseTests: XCTestCase {
     var endpoint: String { return "override me" }
-
+    
     let asset = Asset(assetCode: "KIN",
                       issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")!
     lazy var node = Stellar.Node(baseURL: URL(string: endpoint)!)
-
+    
     var account: Account!
     var account2: Account!
     var issuer: Account!
@@ -73,8 +73,8 @@ class StellarBaseTests: XCTestCase {
                                      seqNum: sequence + 1,
                                      timeBounds: nil,
                                      memo: .MEMO_NONE,
-                                     operations: [Operation.createAccountOp(destination: account,
-                                                                            balance: 10 * 10000000)])
+                                     operations: [Operation.createAccount(destination: account,
+                                                                          balance: 10 * 10000000)])
                 
                 let envelope = try Stellar.sign(transaction: tx,
                                                 signer: funder,

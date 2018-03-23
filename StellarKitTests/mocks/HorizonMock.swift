@@ -276,7 +276,7 @@ class HorizonMock {
                 "result_codes": [
                     "transaction": resultCode,
                 ],
-                "result_xdr": try! Data(bytes: XDREncoder.encode(transactionResult)).base64EncodedString()
+                "result_xdr": try! XDREncoder.encode(transactionResult).base64EncodedString()
             ],
             ]
 
@@ -288,12 +288,12 @@ class HorizonMock {
             "hash": "-",
             "ledger": 1,
             "result_xdr":
-                try! Data(bytes: XDREncoder.encode(
-                TransactionResult(feeCharged: 100,
-                                            result: .txSUCCESS([OperationResult
-                                                .opINNER(OperationResult.Tr
-                                                    .PAYMENT(PaymentResult.success))]))))
-                .base64EncodedString(),
+                try! XDREncoder.encode(
+                    TransactionResult(feeCharged: 100,
+                                      result: .txSUCCESS([OperationResult
+                                        .opINNER(OperationResult.Tr
+                                            .PAYMENT(PaymentResult.success))])))
+                    .base64EncodedString(),
             ]
 
         return try! JSONSerialization.data(withJSONObject: d, options: [])
@@ -304,12 +304,12 @@ class HorizonMock {
             "hash": "-",
             "ledger": 1,
             "result_xdr":
-                try! Data(bytes: XDREncoder.encode(
+                try! XDREncoder.encode(
                     TransactionResult(feeCharged: 100,
-                                            result: .txSUCCESS([OperationResult
-                                                .opINNER(OperationResult.Tr
-                                                    .CREATE_ACCOUNT(CreateAccountResult.success))]))))
-                .base64EncodedString(),
+                                      result: .txSUCCESS([OperationResult
+                                        .opINNER(OperationResult.Tr
+                                            .CREATE_ACCOUNT(CreateAccountResult.success))])))
+                    .base64EncodedString(),
             ]
 
         return try! JSONSerialization.data(withJSONObject: d, options: [])
@@ -320,12 +320,12 @@ class HorizonMock {
             "hash": "-",
             "ledger": 1,
             "result_xdr":
-                try! Data(bytes: XDREncoder.encode(
+                try! XDREncoder.encode(
                     TransactionResult(feeCharged: 100,
                                       result: .txSUCCESS([OperationResult
                                         .opINNER(OperationResult.Tr
-                                            .CHANGE_TRUST(ChangeTrustResult.success))]))))
-                .base64EncodedString(),
+                                            .CHANGE_TRUST(ChangeTrustResult.success))])))
+                    .base64EncodedString(),
             ]
 
         return try! JSONSerialization.data(withJSONObject: d, options: [])

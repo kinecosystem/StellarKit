@@ -36,10 +36,10 @@ public class XDREncoder {
 /// A convenience function for creating an encoder, encoding a value, and
 /// extracting the resulting data.
 public extension XDREncoder {
-    static func encode(_ value: XDREncodable) throws -> [UInt8] {
+    static func encode(_ value: XDREncodable) throws -> Data {
         let encoder = XDREncoder()
         try value.xdrEncode(to: encoder)
-        return encoder.data
+        return Data(bytes: encoder.data)
     }
 }
 
