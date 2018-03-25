@@ -70,7 +70,7 @@ class StellarBaseTests: XCTestCase {
         return Stellar.sequence(account: funderPK, node: node)
             .then { sequence in
                 let tx = Transaction(sourceAccount: sourcePK,
-                                     seqNum: sequence + 1,
+                                     seqNum: sequence,
                                      timeBounds: nil,
                                      memo: .MEMO_NONE,
                                      operations: [StellarKit.Operation.createAccount(destination: account,
