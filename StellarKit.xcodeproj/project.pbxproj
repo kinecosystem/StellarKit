@@ -1503,7 +1503,6 @@
 					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
 				);
 				MACH_O_TYPE = staticlib;
-				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-function-bodies=100";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -1534,7 +1533,6 @@
 					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
 				);
 				MACH_O_TYPE = staticlib;
-				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-function-bodies=100";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -1738,7 +1736,6 @@
 					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
 				);
 				MACH_O_TYPE = staticlib;
-				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-function-bodies=100";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = StellarKit;
 				SDKROOT = macosx;
@@ -1771,7 +1768,6 @@
 					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
 				);
 				MACH_O_TYPE = staticlib;
-				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-function-bodies=100";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = StellarKit;
 				SDKROOT = macosx;

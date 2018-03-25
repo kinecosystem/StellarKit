@@ -102,7 +102,8 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
         }
 
         while let location = stringAccumulator.range(of: lineEnding)?.lowerBound {
-            stringQueue.append(String(stringAccumulator[..<location]))
+            let s: Substring = stringAccumulator[..<location]
+            stringQueue.append(String(s))
             stringAccumulator = stringAccumulator.substring(from: stringAccumulator.index(after: location))
         }
     }

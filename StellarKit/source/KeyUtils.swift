@@ -25,8 +25,9 @@ public struct KeyUtils {
 
         var d = Data()
 
-        for i in stride(from: 8, to: 264, by: 8) {
-            d.append(UInt8(binary[i..<(i + 8)], radix: 2)!)
+        for i: Int in stride(from: 8, to: 264, by: 8) {
+            let s: String = binary[i..<(i + 8)]
+            d.append(UInt8(s, radix: 2)!)
         }
 
         return d

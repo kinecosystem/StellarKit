@@ -73,8 +73,8 @@ class StellarBaseTests: XCTestCase {
                                      seqNum: sequence + 1,
                                      timeBounds: nil,
                                      memo: .MEMO_NONE,
-                                     operations: [Operation.createAccount(destination: account,
-                                                                          balance: 10 * 10000000)])
+                                     operations: [StellarKit.Operation.createAccount(destination: account,
+                                                                                     balance: 10 * 10000000)])
                 
                 let envelope = try Stellar.sign(transaction: tx,
                                                 signer: funder,
