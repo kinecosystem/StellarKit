@@ -7,26 +7,9 @@
 //
 
 import Foundation
-import CommonCrypto
-
-private func hash(data input: Data) -> Data? {
-    var output = Data(count: Int(CC_SHA256_DIGEST_LENGTH))
-
-    let result = output.withUnsafeMutableBytes { outputPtr in
-        input.withUnsafeBytes{ inputPtr in
-            CC_SHA256(inputPtr, CC_LONG(input.count), outputPtr);
-        }
-    }
-
-    if result == nil {
-        return nil
-    }
-
-    return output
-}
 
 public extension Data {
     var sha256: Data {
-        return hash(data: self)!
+        return Data(bytes: SHA256([UInt8](self)).digest())
     }
 }
