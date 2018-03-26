@@ -8,8 +8,9 @@
 
 import Foundation
 import KinUtil
+import Dispatch
 
-public class StellarEventSource: NSObject, URLSessionDataDelegate {
+public final class StellarEventSource: NSObject, URLSessionDataDelegate {
     private enum State {
         case connecting
         case open
@@ -34,7 +35,7 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
 
     public private(set) var emitter: Observable<Event>!
 
-    init(url: URL) {
+    public init(url: URL) {
         self.url = url
         self.emitter = Observable<Event>()
 
@@ -43,7 +44,7 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
         connect()
     }
 
-    func connect() {
+    private func connect() {
         guard state != .closed else {
             return
         }
@@ -83,11 +84,11 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
         emitter = nil
     }
 
-    var lineEnding = ""
-    var stringQueue = [String]()
-    var stringAccumulator = ""
+    private var lineEnding = ""
+    private var stringQueue = [String]()
+    private var stringAccumulator = ""
 
-    func determineLineEnding(_ string: String) {
+    private func determineLineEnding(_ string: String) {
         let cr = string.contains("\r")
         let lf = string.contains("\n")
 
@@ -96,7 +97,7 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
             : (lf ? "\n" : "")
     }
 
-    func extractLines() {
+    private func extractLines() {
         guard lineEnding != "" else {
             return
         }
@@ -108,7 +109,7 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
         }
     }
 
-    func extractEvents() -> [[String]] {
+    private func extractEvents() -> [[String]] {
         var events = [[String]]()
         var event = [String]()
 
@@ -129,7 +130,7 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
         return events
     }
 
-    func parse(_ event: [String]) -> (String?, String?, String?) {
+    private func parse(_ event: [String]) -> (String?, String?, String?) {
         var id: String?
         var eventName: String?
         var data: String?
@@ -199,12 +200,22 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
         }
     }
 
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    #if os(Linux)
+    public typealias TaskError = NSError
+    #else
+    public typealias TaskError = Error
+    #endif
+
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: TaskError?) {
         guard state != .closed else {
             return
         }
 
-        let code = (error as NSError?)?.code
+        #if os(Linux)
+            let code = error?.code
+        #else
+            let code = (error as NSError?)?.code
+        #endif
 
         if error == nil || code != -999 {
             DispatchQueue.global().asyncAfter(deadline: .now() + Double(retryTime / 1000)) {

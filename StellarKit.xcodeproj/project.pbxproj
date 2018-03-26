@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8213D92A20692E9500A940ED /* SHA256.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8213D92920692E9500A940ED /* SHA256.swift */; };
 		8214E887202CAB8000789C78 /* StellarBaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E886202CAB8000789C78 /* StellarBaseTests.swift */; };
 		8214E889202F8AB000789C78 /* StellarUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8214E888202F8AB000789C78 /* StellarUtils.swift */; };
 		82191579204BC7D300450864 /* StellarOps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82191578204BC7D300450864 /* StellarOps.swift */; };
@@ -313,6 +314,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8213D92920692E9500A940ED /* SHA256.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHA256.swift; sourceTree = "<group>"; };
 		8214E886202CAB8000789C78 /* StellarBaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarBaseTests.swift; sourceTree = "<group>"; };
 		8214E888202F8AB000789C78 /* StellarUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarUtils.swift; sourceTree = "<group>"; };
 		82191578204BC7D300450864 /* StellarOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarOps.swift; sourceTree = "<group>"; };
@@ -352,8 +354,6 @@
 		828CB538205E23FA007C679C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		828CB54C205E24CD007C679C /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		8291DA9720353E01002C10F5 /* StellarEventSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarEventSource.swift; sourceTree = "<group>"; };
-		82A12DC720556ACB008841F2 /* CommonCrypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonCrypto.h; sourceTree = "<group>"; };
-		82A12DC820556BB6008841F2 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		82BA1EA7204D0EB300396AE2 /* TestKeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestKeyUtils.swift; sourceTree = "<group>"; };
 		82BA20A0204D856100396AE2 /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82BA20A1204D856100396AE2 /* StellarKit-macos-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "StellarKit-macos-Info.plist"; path = "/Users/avi/Projects/kin-core-ios/KinSDK/StellarKit/StellarKit-macos-Info.plist"; sourceTree = "<absolute>"; };
@@ -558,7 +558,6 @@
 		82340BB61FFDF3030034204F /* source */ = {
 			isa = PBXGroup;
 			children = (
-				82A12DC620556AA6008841F2 /* CommonCrypto */,
 				82343A9F20242DD100848CF4 /* XDRCodable */,
 				824063AB20147DCD0055D70A /* types */,
 				82340BD31FFDF7780034204F /* Data+extensions.swift */,
@@ -636,6 +635,7 @@
 			isa = PBXGroup;
 			children = (
 				E96F241E2013D6D90017EF68 /* Sodium */,
+				8213D92920692E9500A940ED /* SHA256.swift */,
 			);
 			path = "third-party";
 			sourceTree = "<group>";
@@ -648,15 +648,6 @@
 				828CB54C205E24CD007C679C /* Errors.swift */,
 			);
 			path = StellarErrors;
-			sourceTree = "<group>";
-		};
-		82A12DC620556AA6008841F2 /* CommonCrypto */ = {
-			isa = PBXGroup;
-			children = (
-				82A12DC720556ACB008841F2 /* CommonCrypto.h */,
-				82A12DC820556BB6008841F2 /* module.modulemap */,
-			);
-			path = CommonCrypto;
 			sourceTree = "<group>";
 		};
 		82F2FADE2043172A00E754BD /* Products */ = {
@@ -1208,6 +1199,7 @@
 				82191579204BC7D300450864 /* StellarOps.swift in Sources */,
 				82340C45200138E50034204F /* StellarResults.swift in Sources */,
 				824138532060ADF300D7117E /* Endpoint.swift in Sources */,
+				8213D92A20692E9500A940ED /* SHA256.swift in Sources */,
 				82340BD41FFDF7780034204F /* Data+extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1407,15 +1399,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/StellarKit/source/CommonCrypto";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
+				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium $(SRCROOT)/StellarKit/source/CommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VALID_ARCHS = "arm64 armv7s armv7";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1467,13 +1457,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/StellarKit/source/CommonCrypto";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
+				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium $(SRCROOT)/StellarKit/source/CommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 armv7s armv7";
@@ -1555,6 +1543,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StellarKitHost.app/StellarKitHost";
@@ -1575,6 +1564,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StellarKitHost.app/StellarKitHost";
@@ -1590,8 +1580,10 @@
 				DEVELOPMENT_TEAM = MZAK745F32;
 				INFOPLIST_FILE = StellarKitHost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "${PROJECT_DIR}/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1606,8 +1598,10 @@
 				DEVELOPMENT_TEAM = MZAK745F32;
 				INFOPLIST_FILE = StellarKitHost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "${PROJECT_DIR}/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1731,10 +1725,6 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
-				);
 				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = StellarKit;
@@ -1763,10 +1753,6 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
-				);
 				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = StellarKit;

@@ -10,6 +10,7 @@
  Based on: https://github.com/mikeash/BinaryCoder
  */
 
+import CoreFoundation
 import Foundation
 
 /// A protocol for types which can be decoded from binary.

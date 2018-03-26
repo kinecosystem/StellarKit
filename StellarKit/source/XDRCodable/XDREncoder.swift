@@ -11,6 +11,7 @@
  */
 
 import CoreFoundation
+import Foundation
 
 /// A protocol for types which can be encoded to binary.
 public protocol XDREncodable: Encodable {

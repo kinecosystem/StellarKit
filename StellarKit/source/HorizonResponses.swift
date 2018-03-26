@@ -25,7 +25,7 @@ struct HorizonError: Decodable {
     }
 }
 
-public struct AccountDetails: Decodable {
+public struct AccountDetails: Decodable, CustomStringConvertible {
     public let id: String
     public let accountId: String
     public let sequence: String
@@ -35,7 +35,7 @@ public struct AccountDetails: Decodable {
         return UInt64(sequence) ?? 0
     }
 
-    public struct Balance: Decodable {
+    public struct Balance: Decodable, CustomStringConvertible {
         public let balance: String
         public let assetType: String
         public let assetCode: String?
@@ -53,12 +53,29 @@ public struct AccountDetails: Decodable {
             return Asset.ASSET_TYPE_NATIVE
         }
 
+        public var description: String {
+            return """
+            balance: \(balance)
+                code: \(assetCode ?? "native")
+                issuer: \(assetIssuer ?? "n/a")
+            """
+        }
+
         enum CodingKeys: String, CodingKey {
             case balance
             case assetType = "asset_type"
             case assetCode = "asset_code"
             case assetIssuer = "asset_issuer"
         }
+    }
+
+    public var description: String {
+        return """
+        id: \(id)
+        publicKey: \(accountId)
+        sequence: \(sequence)
+        balances: \(balances)
+        """
     }
 
     enum CodingKeys: String, CodingKey {
