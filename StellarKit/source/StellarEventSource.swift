@@ -8,6 +8,7 @@
 
 import Foundation
 import KinUtil
+import Dispatch
 
 public class StellarEventSource: NSObject, URLSessionDataDelegate {
     private enum State {
@@ -199,12 +200,22 @@ public class StellarEventSource: NSObject, URLSessionDataDelegate {
         }
     }
 
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    #if os(Linux)
+    public typealias TaskError = NSError
+    #else
+    public typealias TaskError = Error
+    #endif
+
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: TaskError?) {
         guard state != .closed else {
             return
         }
 
-        let code = (error as NSError?)?.code
+        #if os(Linux)
+            let code = error?.code
+        #else
+            let code = (error as NSError?)?.code
+        #endif
 
         if error == nil || code != -999 {
             DispatchQueue.global().asyncAfter(deadline: .now() + Double(retryTime / 1000)) {
