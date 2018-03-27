@@ -11,7 +11,8 @@ import XCTest
 
 class StellarUnitTests: StellarBaseTests {
     override var endpoint: String { return "https://horizon" }
-    
+    override var networkId: NetworkId { return .custom("") }
+
     var horizonMock: HorizonMock? = nil
     var registered = false
     
@@ -27,9 +28,12 @@ class StellarUnitTests: StellarBaseTests {
         
         let nBalance = Balance(asset: .ASSET_TYPE_NATIVE, amount: 10000000)
         let kBalance = Balance(asset: self.asset, amount: 10000000)
-        
+
         horizonMock?.inject(account: MockAccount(balances: [nBalance, kBalance]),
                             key: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")
+
+        horizonMock?.inject(account: MockAccount(balances: [nBalance]),
+                            key: "GCLBBAIDP34M4JACPQJUYNSPZCQK7IRHV7ETKV6U53JPYYUIIVDVJJFQ")
     }
     
     override func tearDown() {

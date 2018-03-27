@@ -10,5 +10,6 @@ import XCTest
 @testable import StellarKit
 
 class StellarIntegrationTests: StellarBaseTests {
-    override var endpoint: String { return "https://horizon-testnet.stellar.org" }
+    override var endpoint: String { return "http://localhost:8000" }
+    override var networkId: NetworkId { return .custom("private testnet") }
 }

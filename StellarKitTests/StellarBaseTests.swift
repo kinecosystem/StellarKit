@@ -38,10 +38,11 @@ struct MockStellarAccount: Account {
 
 class StellarBaseTests: XCTestCase {
     var endpoint: String { return "override me" }
+    var networkId: NetworkId { return .custom("override me") }
     
     let asset = Asset(assetCode: "KIN",
                       issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")!
-    lazy var node = Stellar.Node(baseURL: URL(string: endpoint)!)
+    lazy var node = Stellar.Node(baseURL: URL(string: endpoint)!, networkId: networkId)
     
     var account: Account!
     var account2: Account!
@@ -60,8 +61,8 @@ class StellarBaseTests: XCTestCase {
     }
     
     func fund(account: String) -> Promise<String> {
-        let funderPK = "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7"
-        let funderSK = "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35"
+        let funderPK = "GCLBBAIDP34M4JACPQJUYNSPZCQK7IRHV7ETKV6U53JPYYUIIVDVJJFQ"
+        let funderSK = "SDBDJVXHPVQGDXYHEVOBBV4XZUDD7IQTXM5XHZRLXRJVY5YMH4YUCNZC"
         
         let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: funderPK)))
         
@@ -74,7 +75,7 @@ class StellarBaseTests: XCTestCase {
                                      timeBounds: nil,
                                      memo: .MEMO_NONE,
                                      operations: [StellarKit.Operation.createAccount(destination: account,
-                                                                                     balance: 10 * 10000000)])
+                                                                                     balance: 100 * 10000000)])
                 
                 let envelope = try Stellar.sign(transaction: tx,
                                                 signer: funder,
