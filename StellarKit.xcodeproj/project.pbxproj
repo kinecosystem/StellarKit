@@ -1400,13 +1400,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
+				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VALID_ARCHS = "arm64 armv7s armv7";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1459,11 +1458,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
+				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 armv7s armv7";
@@ -1545,6 +1543,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StellarKitHost.app/StellarKitHost";
@@ -1565,6 +1564,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StellarKitHost.app/StellarKitHost";
@@ -1580,8 +1580,10 @@
 				DEVELOPMENT_TEAM = MZAK745F32;
 				INFOPLIST_FILE = StellarKitHost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "${PROJECT_DIR}/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1596,8 +1598,10 @@
 				DEVELOPMENT_TEAM = MZAK745F32;
 				INFOPLIST_FILE = StellarKitHost/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "${PROJECT_DIR}/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1721,10 +1725,6 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
-				);
 				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = StellarKit;
@@ -1753,10 +1753,6 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/StellarKit/third-party/swift-sodium/Sodium/libsodium",
-				);
 				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = StellarKit;
