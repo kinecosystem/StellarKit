@@ -4,5 +4,13 @@ xcode_project: StellarKit.xcodeproj
 xcode_scheme: StellarKit
 xcode_sdk: iphonesimulator8.4
 
+before_script:
+  - brew update && brew install libsodium
+  - git clone https://github.com/kinfoundation/travis-stellar-core-macos.git
+  - cd travis-stellar-core-macos && ./setup.sh && cd ..
+  - ./travis-stellar-core-macos/stellarcmd/stellarcmd -c ./travis-stellar-core-macos/stellarcmd/config.json info GCLBBAIDP34M4JACPQJUYNSPZCQK7IRHV7ETKV6U53JPYYUIIVDVJJFQ
+  - ./travis-stellar-core-macos/stellarcmd/stellarcmd -c ./travis-stellar-core-macos/stellarcmd/config.json create GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7
+  - ./travis-stellar-core-macos/stellarcmd/stellarcmd -c ./travis-stellar-core-macos/stellarcmd/config.json info GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7
+
 script:
-  - xcodebuild test -scheme StellarKit -destination 'platform=iOS Simulator,name=iPhone 8 Plus' -only-testing:StellarKitTests/StellarUnitTests
+  - xcodebuild test -scheme StellarKit -destination 'platform=iOS Simulator,name=iPhone 8 Plus'
