@@ -150,6 +150,7 @@
 		82BA209A204D856100396AE2 /* crypto_verify_64.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F245B2013D6D90017EF68 /* crypto_verify_64.h */; };
 		82BA209B204D856100396AE2 /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F24262013D6D90017EF68 /* core.h */; };
 		82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
+		82EE995120762BD8004CF368 /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EE995020762BD8004CF368 /* XDRTests.swift */; };
 		82F2FAE9204317A100E754BD /* KinUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F2FAEA204317A100E754BD /* KinUtil.framework */; };
 		82FD8B2320264D9A00A126C0 /* XDRCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B1F20264D9800A126C0 /* XDRCodable.swift */; };
 		82FD8B2420264D9A00A126C0 /* XDRDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2020264D9800A126C0 /* XDRDecoder.swift */; };
@@ -358,6 +359,7 @@
 		82BA20A0204D856100396AE2 /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82BA20A1204D856100396AE2 /* StellarKit-macos-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "StellarKit-macos-Info.plist"; path = "/Users/avi/Projects/kin-core-ios/KinSDK/StellarKit/StellarKit-macos-Info.plist"; sourceTree = "<absolute>"; };
 		82ECAB8B2003290F0010E31F /* KeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUtils.swift; sourceTree = "<group>"; };
+		82EE995020762BD8004CF368 /* XDRTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDRTests.swift; sourceTree = "<group>"; };
 		82F2FADD2043172A00E754BD /* KinUtil.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KinUtil.xcodeproj; path = "kin-util-ios/KinUtil/KinUtil.xcodeproj"; sourceTree = "<group>"; };
 		82F2FAEA204317A100E754BD /* KinUtil.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = KinUtil.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82FD8B1F20264D9800A126C0 /* XDRCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XDRCodable.swift; sourceTree = "<group>"; };
@@ -546,6 +548,7 @@
 		82340BA91FFDF2DA0034204F /* StellarKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				82EE995020762BD8004CF368 /* XDRTests.swift */,
 				824063F6201E062C0055D70A /* mocks */,
 				824063FF201F00530055D70A /* StellarUnitTests.swift */,
 				82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */,
@@ -1212,6 +1215,7 @@
 				8214E887202CAB8000789C78 /* StellarBaseTests.swift in Sources */,
 				82BA1EAE204D0F4C00396AE2 /* ShortHash.swift in Sources */,
 				82BA1EAF204D0F4C00396AE2 /* Sign.swift in Sources */,
+				82EE995120762BD8004CF368 /* XDRTests.swift in Sources */,
 				824063F8201E064B0055D70A /* HTTPMock.swift in Sources */,
 				82BA1EB0204D0F4C00396AE2 /* Sodium.swift in Sources */,
 				82BA1EB2204D0F4C00396AE2 /* Utils.swift in Sources */,
