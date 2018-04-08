@@ -31,18 +31,14 @@ public struct Operation: XDRCodable {
         self.body = body
     }
 
-    public init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        sourceAccount = try container.decode(Array<PublicKey>.self).first
-        body = try container.decode(Body.self)
+    public init(from decoder: XDRDecoder) throws {
+        sourceAccount = try decoder.decodeArray(PublicKey.self).first
+        body = try decoder.decode(Body.self)
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(sourceAccount)
-        try container.encode(body)
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encodeOptional(sourceAccount)
+        try encoder.encode(body)
     }
 
     enum Body: XDRCodable {
@@ -58,34 +54,32 @@ public struct Operation: XDRCodable {
         case INFLATION
         case MANAGE_DATA (ManageDataOp)
 
-        init(from decoder: Decoder) throws {
-            var container = try decoder.unkeyedContainer()
-
-            let discriminant = try container.decode(Int32.self)
+        init(from decoder: XDRDecoder) throws {
+            let discriminant = try decoder.decode(Int32.self)
 
             switch discriminant {
             case OperationType.CREATE_ACCOUNT:
-                self = .CREATE_ACCOUNT(try container.decode(CreateAccountOp.self))
+                self = .CREATE_ACCOUNT(try decoder.decode(CreateAccountOp.self))
             case OperationType.PAYMENT:
-                self = .PAYMENT(try container.decode(PaymentOp.self))
+                self = .PAYMENT(try decoder.decode(PaymentOp.self))
             case OperationType.PATH_PAYMENT:
-                self = .PATH_PAYMENT(try container.decode(PathPaymentOp.self))
+                self = .PATH_PAYMENT(try decoder.decode(PathPaymentOp.self))
             case OperationType.MANAGE_OFFER:
-                self = .MANAGE_OFFER(try container.decode(ManageOfferOp.self))
+                self = .MANAGE_OFFER(try decoder.decode(ManageOfferOp.self))
             case OperationType.CREATE_PASSIVE_OFFER:
-                self = .CREATE_PASSIVE_OFFER(try container.decode(CreatePassiveOfferOp.self))
+                self = .CREATE_PASSIVE_OFFER(try decoder.decode(CreatePassiveOfferOp.self))
             case OperationType.CHANGE_TRUST:
-                self = .CHANGE_TRUST(try container.decode(ChangeTrustOp.self))
+                self = .CHANGE_TRUST(try decoder.decode(ChangeTrustOp.self))
             case OperationType.ALLOW_TRUST:
-                self = .ALLOW_TRUST(try container.decode(AllowTrustOp.self))
+                self = .ALLOW_TRUST(try decoder.decode(AllowTrustOp.self))
             case OperationType.SET_OPTIONS:
-                self = .SET_OPTIONS(try container.decode(SetOptionsOp.self))
+                self = .SET_OPTIONS(try decoder.decode(SetOptionsOp.self))
             case OperationType.ACCOUNT_MERGE:
-                self = .ACCOUNT_MERGE(try container.decode(AccountMergeOp.self))
+                self = .ACCOUNT_MERGE(try decoder.decode(AccountMergeOp.self))
             case OperationType.INFLATION:
                 self = .INFLATION
             case OperationType.MANAGE_DATA:
-                self = .MANAGE_DATA(try container.decode(ManageDataOp.self))
+                self = .MANAGE_DATA(try decoder.decode(ManageDataOp.self))
             default:
                 fatalError("Invalid Op specified: \(discriminant)")
             }
@@ -107,44 +101,42 @@ public struct Operation: XDRCodable {
             }
         }
 
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-
-            try container.encode(discriminant())
+        func encode(to encoder: XDREncoder) throws {
+            try encoder.encode(discriminant())
 
             switch self {
             case .CREATE_ACCOUNT (let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .PAYMENT (let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .PATH_PAYMENT (let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .MANAGE_OFFER(let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .CREATE_PASSIVE_OFFER(let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .CHANGE_TRUST (let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .ALLOW_TRUST (let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .SET_OPTIONS (let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .ACCOUNT_MERGE(let op):
-                try container.encode(op)
+                try encoder.encode(op)
 
             case .INFLATION:
                 break
 
             case .MANAGE_DATA(let op):
-                try container.encode(op)
+                try encoder.encode(op)
             }
         }
     }

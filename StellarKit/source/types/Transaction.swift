@@ -70,41 +70,42 @@ public enum Memo: XDRCodable {
         }
     }
 
-    public init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        let discriminant = try container.decode(Int32.self)
+    public init(from decoder: XDRDecoder) throws {
+        let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
         case MemoType.MEMO_NONE:
             self = .MEMO_NONE
         case MemoType.MEMO_ID:
-            self = .MEMO_ID(try container.decode(UInt64.self))
+            self = .MEMO_ID(try decoder.decode(UInt64.self))
         case MemoType.MEMO_TEXT:
-            self = .MEMO_TEXT(try container.decode(String.self))
+            self = .MEMO_TEXT(try decoder.decode(String.self))
         case MemoType.MEMO_HASH:
-            self = .MEMO_HASH(try container.decode(WrappedData32.self).wrapped)
+            self = .MEMO_HASH(try decoder.decode(WrappedData32.self).wrapped)
         default:
             self = .MEMO_NONE
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(discriminant())
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
 
         switch self {
         case .MEMO_NONE: break
-        case .MEMO_TEXT (let text): try container.encode(text)
-        case .MEMO_ID (let id): try container.encode(id)
-        case .MEMO_HASH (let hash): try container.encode(WrappedData32(hash))
-        case .MEMO_RETURN (let hash): try container.encode(WrappedData32(hash))
+        case .MEMO_TEXT (let text): try encoder.encode(text)
+        case .MEMO_ID (let id): try encoder.encode(id)
+        case .MEMO_HASH (let hash): try encoder.encode(WrappedData32(hash))
+        case .MEMO_RETURN (let hash): try encoder.encode(WrappedData32(hash))
         }
     }
 }
 
-public struct TimeBounds: XDRCodable {
+public struct TimeBounds: XDRCodable, XDREncodableStruct {
+    public init(from decoder: XDRDecoder) throws {
+        minTime = try decoder.decode(UInt64.self)
+        maxTime = try decoder.decode(UInt64.self)
+    }
+
     let minTime: UInt64
     let maxTime: UInt64
 }
@@ -152,28 +153,24 @@ public struct Transaction: XDRCodable {
         self.fee = UInt32(100 * operations.count)
     }
 
-    public init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        sourceAccount = try container.decode(PublicKey.self)
-        fee = try container.decode(UInt32.self)
-        seqNum = try container.decode(UInt64.self)
-        timeBounds = try container.decode(Array<TimeBounds>.self).first
-        memo = try container.decode(Memo.self)
-        operations = try container.decode(Array<Operation>.self)
-        _ = try container.decode(Int32.self)
+    public init(from decoder: XDRDecoder) throws {
+        sourceAccount = try decoder.decode(PublicKey.self)
+        fee = try decoder.decode(UInt32.self)
+        seqNum = try decoder.decode(UInt64.self)
+        timeBounds = try decoder.decodeArray(TimeBounds.self).first
+        memo = try decoder.decode(Memo.self)
+        operations = try decoder.decodeArray(Operation.self)
+        _ = try decoder.decode(Int32.self)
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(sourceAccount)
-        try container.encode(fee)
-        try container.encode(seqNum)
-        try container.encode(timeBounds)
-        try container.encode(memo)
-        try container.encode(operations)
-        try container.encode(reserved)
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(sourceAccount)
+        try encoder.encode(fee)
+        try encoder.encode(seqNum)
+        try encoder.encodeOptional(timeBounds)
+        try encoder.encode(memo)
+        try encoder.encode(operations)
+        try encoder.encode(reserved)
     }
 }
 
@@ -183,7 +180,7 @@ struct EnvelopeType {
     static let ENVELOPE_TYPE_AUTH: Int32 = 3
 }
 
-struct TransactionSignaturePayload: XDREncodable {
+struct TransactionSignaturePayload: XDREncodableStruct {
     let networkId: WrappedData32
     let taggedTransaction: TaggedTransaction
 
@@ -196,19 +193,22 @@ struct TransactionSignaturePayload: XDREncodable {
             }
         }
 
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-
-            try container.encode(discriminant())
+        func encode(to encoder: XDREncoder) throws {
+            try encoder.encode(discriminant())
 
             switch self {
-            case .ENVELOPE_TYPE_TX (let tx): try container.encode(tx)
+            case .ENVELOPE_TYPE_TX (let tx): try encoder.encode(tx)
             }
         }
     }
 }
 
-struct DecoratedSignature: XDRCodable {
+struct DecoratedSignature: XDRCodable, XDREncodableStruct {
+    init(from decoder: XDRDecoder) throws {
+        hint = try decoder.decode(WrappedData4.self)
+        signature = try decoder.decode(Data.self)
+    }
+
     let hint: WrappedData4;
     let signature: Data
 
@@ -218,7 +218,12 @@ struct DecoratedSignature: XDRCodable {
     }
 }
 
-public struct TransactionEnvelope: XDRCodable {
+public struct TransactionEnvelope: XDRCodable, XDREncodableStruct {
+    public init(from decoder: XDRDecoder) throws {
+        tx = try decoder.decode(Transaction.self)
+        signatures = try decoder.decodeArray(DecoratedSignature.self)
+    }
+
     let tx: Transaction
     let signatures: [DecoratedSignature]
 

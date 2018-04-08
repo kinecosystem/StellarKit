@@ -67,7 +67,6 @@
 		82BA1EB8204D0F5700396AE2 /* KeyExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24242013D6D90017EF68 /* KeyExchange.swift */; };
 		82BA1EBA204D1C2C00396AE2 /* libsodium-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E96F245E2013D6D90017EF68 /* libsodium-osx.a */; };
 		82BA1EBB204D1C2C00396AE2 /* libsodium-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E96F245D2013D6D90017EF68 /* libsodium-ios.a */; };
-		82BA2046204D856100396AE2 /* XDRDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2020264D9800A126C0 /* XDRDecoder.swift */; };
 		82BA2047204D856100396AE2 /* WrappedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82343AA92024A97900848CF4 /* WrappedData.swift */; };
 		82BA2048204D856100396AE2 /* StellarEventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8291DA9720353E01002C10F5 /* StellarEventSource.swift */; };
 		82BA2049204D856100396AE2 /* Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AE20147DCD0055D70A /* Operations.swift */; };
@@ -76,8 +75,6 @@
 		82BA204C204D856100396AE2 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AD20147DCD0055D70A /* Operation.swift */; };
 		82BA204D204D856100396AE2 /* HorizonResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8240BAF52028EAE0003F08FB /* HorizonResponses.swift */; };
 		82BA204F204D856100396AE2 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063B020147DCD0055D70A /* Transaction.swift */; };
-		82BA2050204D856100396AE2 /* XDREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2120264D9800A126C0 /* XDREncoder.swift */; };
-		82BA2051204D856100396AE2 /* XDRCodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2220264D9900A126C0 /* XDRCodableExtensions.swift */; };
 		82BA2052204D856100396AE2 /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AC20147DCD0055D70A /* Asset.swift */; };
 		82BA2053204D856100396AE2 /* KeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82ECAB8B2003290F0010E31F /* KeyUtils.swift */; };
 		82BA2054204D856100396AE2 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824063AF20147DCD0055D70A /* PublicKey.swift */; };
@@ -153,9 +150,6 @@
 		82EE995120762BD8004CF368 /* XDRTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EE995020762BD8004CF368 /* XDRTests.swift */; };
 		82F2FAE9204317A100E754BD /* KinUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F2FAEA204317A100E754BD /* KinUtil.framework */; };
 		82FD8B2320264D9A00A126C0 /* XDRCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B1F20264D9800A126C0 /* XDRCodable.swift */; };
-		82FD8B2420264D9A00A126C0 /* XDRDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2020264D9800A126C0 /* XDRDecoder.swift */; };
-		82FD8B2520264D9A00A126C0 /* XDREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2120264D9800A126C0 /* XDREncoder.swift */; };
-		82FD8B2620264D9A00A126C0 /* XDRCodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FD8B2220264D9900A126C0 /* XDRCodableExtensions.swift */; };
 		E96F24772013D6D90017EF68 /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F24262013D6D90017EF68 /* core.h */; };
 		E96F24782013D6D90017EF68 /* crypto_aead_aes256gcm.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F24272013D6D90017EF68 /* crypto_aead_aes256gcm.h */; };
 		E96F24792013D6D90017EF68 /* crypto_aead_chacha20poly1305.h in Headers */ = {isa = PBXBuildFile; fileRef = E96F24282013D6D90017EF68 /* crypto_aead_chacha20poly1305.h */; };
@@ -1182,7 +1176,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82FD8B2420264D9A00A126C0 /* XDRDecoder.swift in Sources */,
 				82343AAA2024A97900848CF4 /* WrappedData.swift in Sources */,
 				8291DA9820353E02002C10F5 /* StellarEventSource.swift in Sources */,
 				82321F47204F80E700C5D557 /* Watches.swift in Sources */,
@@ -1193,8 +1186,6 @@
 				824063B220147DCD0055D70A /* Operation.swift in Sources */,
 				8240BAF62028EAE0003F08FB /* HorizonResponses.swift in Sources */,
 				824063B520147DCD0055D70A /* Transaction.swift in Sources */,
-				82FD8B2520264D9A00A126C0 /* XDREncoder.swift in Sources */,
-				82FD8B2620264D9A00A126C0 /* XDRCodableExtensions.swift in Sources */,
 				824063B120147DCD0055D70A /* Asset.swift in Sources */,
 				82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */,
 				824063B420147DCD0055D70A /* PublicKey.swift in Sources */,
@@ -1264,7 +1255,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82BA2046204D856100396AE2 /* XDRDecoder.swift in Sources */,
 				82BA2047204D856100396AE2 /* WrappedData.swift in Sources */,
 				82BA2048204D856100396AE2 /* StellarEventSource.swift in Sources */,
 				82BA2049204D856100396AE2 /* Operations.swift in Sources */,
@@ -1275,8 +1265,6 @@
 				82BA204D204D856100396AE2 /* HorizonResponses.swift in Sources */,
 				82BA204F204D856100396AE2 /* Transaction.swift in Sources */,
 				828CB54A205E24BA007C679C /* StellarErrors.swift in Sources */,
-				82BA2050204D856100396AE2 /* XDREncoder.swift in Sources */,
-				82BA2051204D856100396AE2 /* XDRCodableExtensions.swift in Sources */,
 				82BA2052204D856100396AE2 /* Asset.swift in Sources */,
 				824138902061720300D7117E /* Watches.swift in Sources */,
 				82BA2053204D856100396AE2 /* KeyUtils.swift in Sources */,

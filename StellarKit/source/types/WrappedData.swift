@@ -28,19 +28,18 @@ protocol WrappedData: XDRCodable, Equatable {
 
     var wrapped: Data { get set }
 
-    func xdrEncode(to encoder: XDREncoder) throws
+    func encode(to encoder: XDREncoder) throws
 
     init()
-    init(fromBinary decoder: XDRDecoder) throws
     init(_ data: Data)
 }
 
 extension WrappedData {
-    func xdrEncode(to encoder: XDREncoder) throws {
+    func encode(to encoder: XDREncoder) throws {
         try wrapped.forEach { try $0.encode(to: encoder) }
     }
 
-    init(fromBinary decoder: XDRDecoder) throws {
+    init(from decoder: XDRDecoder) throws {
         self.init()
         wrapped = try decodeData(from: decoder, capacity: Self.capacity)
     }

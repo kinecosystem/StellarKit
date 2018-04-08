@@ -29,12 +29,10 @@ enum PublicKey: XDRCodable, Equatable {
         return nil
     }
 
-    init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
+    init(from decoder: XDRDecoder) throws {
+        _ = try decoder.decode(Int32.self)
 
-        _ = try container.decode(Int32.self)
-
-        self = .PUBLIC_KEY_TYPE_ED25519(try container.decode(WrappedData32.self))
+        self = .PUBLIC_KEY_TYPE_ED25519(try decoder.decode(WrappedData32.self))
     }
     
     private func discriminant() -> Int32 {
@@ -43,14 +41,12 @@ enum PublicKey: XDRCodable, Equatable {
         }
     }
     
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(discriminant())
+    func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
 
         switch self {
         case .PUBLIC_KEY_TYPE_ED25519 (let key):
-            try container.encode(key)
+            try encoder.encode(key)
         }
     }
 
@@ -73,20 +69,18 @@ enum SignerKey: XDRCodable {
     case SIGNER_KEY_TYPE_PRE_AUTH_TX (WrappedData32)
     case SIGNER_KEY_TYPE_HASH_X (WrappedData32)
 
-    init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        let discriminant = try container.decode(Int32.self)
+    init(from decoder: XDRDecoder) throws {
+        let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
         case SignerKeyType.SIGNER_KEY_TYPE_ED25519:
-            self = .SIGNER_KEY_TYPE_ED25519(try container.decode(WrappedData32.self))
+            self = .SIGNER_KEY_TYPE_ED25519(try decoder.decode(WrappedData32.self))
         case SignerKeyType.SIGNER_KEY_TYPE_PRE_AUTH_TX:
-            self = .SIGNER_KEY_TYPE_PRE_AUTH_TX(try container.decode(WrappedData32.self))
+            self = .SIGNER_KEY_TYPE_PRE_AUTH_TX(try decoder.decode(WrappedData32.self))
         case SignerKeyType.SIGNER_KEY_TYPE_HASH_X:
-            self = .SIGNER_KEY_TYPE_HASH_X(try container.decode(WrappedData32.self))
+            self = .SIGNER_KEY_TYPE_HASH_X(try decoder.decode(WrappedData32.self))
         default:
-            self = .SIGNER_KEY_TYPE_ED25519(try container.decode(WrappedData32.self))
+            self = .SIGNER_KEY_TYPE_ED25519(try decoder.decode(WrappedData32.self))
         }
     }
 
@@ -98,15 +92,13 @@ enum SignerKey: XDRCodable {
         }
     }
 
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(discriminant())
+    func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
 
         switch self {
-        case .SIGNER_KEY_TYPE_ED25519 (let key): try container.encode(key)
-        case .SIGNER_KEY_TYPE_PRE_AUTH_TX (let key): try container.encode(key)
-        case .SIGNER_KEY_TYPE_HASH_X (let key): try container.encode(key)
+        case .SIGNER_KEY_TYPE_ED25519 (let key): try encoder.encode(key)
+        case .SIGNER_KEY_TYPE_PRE_AUTH_TX (let key): try encoder.encode(key)
+        case .SIGNER_KEY_TYPE_HASH_X (let key): try encoder.encode(key)
         }
     }
 }

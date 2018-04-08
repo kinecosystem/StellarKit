@@ -10,7 +10,13 @@ import XCTest
 import StellarKit
 
 class XDRTests: XCTestCase {
-    
+
+    func test_bool() {
+        let a: Bool = true
+        let x = try! XDREncoder.encode(a)
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decode(Bool.self))
+    }
+
     func test_uint8() {
         let a: UInt8 = 123
         let x = try! XDREncoder.encode(a)
@@ -44,19 +50,31 @@ class XDRTests: XCTestCase {
     func test_array() {
         let a: [UInt8] = [123]
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decode([UInt8].self))
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(UInt8.self))
+    }
+
+    func test_string_padded() {
+        let a = "a"
+        let x = try! XDREncoder.encode(a)
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decode(String.self))
+    }
+
+    func test_string_unpadded() {
+        let a = "abcd"
+        let x = try! XDREncoder.encode(a)
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decode(String.self))
     }
 
     func test_optional_not_nil() {
         let a: UInt8? = 123
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decode([UInt8].self).first)
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(UInt8.self).first)
     }
 
     func test_optional_nil() {
         let a: UInt8? = nil
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decode([UInt8].self).first)
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(UInt8.self).first)
     }
 
     func test_data() {
@@ -66,7 +84,17 @@ class XDRTests: XCTestCase {
     }
 
     func test_struct() {
-        struct S: XDRCodable {
+        struct S: XDRCodable, XDREncodableStruct {
+            init(from decoder: XDRDecoder) throws {
+                a = try decoder.decode(Int32.self)
+                b = try decoder.decode(String.self)
+            }
+
+            init(a: Int32, b: String) {
+                self.a = a
+                self.b = b
+            }
+            
             let a: Int32
             let b: String
         }

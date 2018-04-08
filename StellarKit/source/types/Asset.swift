@@ -43,19 +43,17 @@ public enum Asset: XDRCodable, Equatable {
         }
     }
     
-    public init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        let discriminant = try container.decode(Int32.self)
+    public init(from decoder: XDRDecoder) throws {
+        let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
         case AssetType.ASSET_TYPE_NATIVE:
             self = .ASSET_TYPE_NATIVE
         case AssetType.ASSET_TYPE_CREDIT_ALPHANUM4:
-            let a4 = try container.decode(Alpha4.self)
+            let a4 = try decoder.decode(Alpha4.self)
             self = .ASSET_TYPE_CREDIT_ALPHANUM4(a4)
         case AssetType.ASSET_TYPE_CREDIT_ALPHANUM12:
-            let a12 = try container.decode(Alpha12.self)
+            let a12 = try decoder.decode(Alpha12.self)
             self = .ASSET_TYPE_CREDIT_ALPHANUM12(a12)
         default:
             self = .ASSET_TYPE_NATIVE
@@ -99,6 +97,11 @@ public enum Asset: XDRCodable, Equatable {
     }
 
     public struct Alpha4: XDRCodable, Equatable {
+        public init(from decoder: XDRDecoder) throws {
+            assetCode = try decoder.decode(WrappedData4.self)
+            issuer = try decoder.decode(PublicKey.self)
+        }
+
         let assetCode: WrappedData4
         let issuer: PublicKey
 
@@ -107,10 +110,9 @@ public enum Asset: XDRCodable, Equatable {
             self.issuer = issuer
         }
 
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-            try container.encode(assetCode)
-            try container.encode(issuer)
+        public func encode(to encoder: XDREncoder) throws {
+            try encoder.encode(assetCode)
+            try encoder.encode(issuer)
         }
 
         public static func ==(lhs: Asset.Alpha4, rhs: Asset.Alpha4) -> Bool {
@@ -119,6 +121,11 @@ public enum Asset: XDRCodable, Equatable {
     }
 
     public struct Alpha12: XDRCodable, Equatable {
+        public init(from decoder: XDRDecoder) throws {
+            assetCode = try decoder.decode(WrappedData12.self)
+            issuer = try decoder.decode(PublicKey.self)
+        }
+
         let assetCode: WrappedData12
         let issuer: PublicKey
 
@@ -127,10 +134,9 @@ public enum Asset: XDRCodable, Equatable {
             self.issuer = issuer
         }
 
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-            try container.encode(assetCode)
-            try container.encode(issuer)
+        public func encode(to encoder: XDREncoder) throws {
+            try encoder.encode(assetCode)
+            try encoder.encode(issuer)
         }
 
         public static func ==(lhs: Asset.Alpha12, rhs: Asset.Alpha12) -> Bool {
@@ -146,18 +152,17 @@ public enum Asset: XDRCodable, Equatable {
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        try container.encode(discriminant())
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
 
         switch self {
         case .ASSET_TYPE_NATIVE: break
 
         case .ASSET_TYPE_CREDIT_ALPHANUM4 (let alpha4):
-            try container.encode(alpha4)
+            try encoder.encode(alpha4)
 
         case .ASSET_TYPE_CREDIT_ALPHANUM12 (let alpha12):
-            try container.encode(alpha12)
+            try encoder.encode(alpha12)
         }
     }
 

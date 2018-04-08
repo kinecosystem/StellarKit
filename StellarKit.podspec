@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
-  s.version     = "0.2.7"
+  s.version     = "0.3.0"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/kinfoundation/StellarKit.git"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
@@ -16,5 +16,8 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "8.0"
   s.swift_version = "3.2"
 
-  s.source_files          = 'StellarKit/source/**/*.swift', 'StellarKit/third-party/SHA256.swift'
+  s.source_files = 'StellarKit/source/*.swift',
+                   'StellarKit/source/types/*.swift',
+                   'StellarKit/source/XDRCodable/XDRCodable.swift',
+                   'StellarKit/third-party/SHA256.swift'
 end

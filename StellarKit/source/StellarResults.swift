@@ -26,7 +26,13 @@ struct TransactionResultCode {
     static let txINTERNAL_ERROR: Int32 = -11      // an unknown error occured
 }
 
-struct TransactionResult: XDRCodable {
+struct TransactionResult: XDRCodable, XDREncodableStruct {
+    init(from decoder: XDRDecoder) throws {
+        feeCharged = try decoder.decode(Int64.self)
+        result = try decoder.decode(Result.self)
+        _ = try decoder.decode(Int32.self)
+    }
+
     let feeCharged: Int64
     let result: Result
     let reserved: Int32 = 0
@@ -36,16 +42,14 @@ struct TransactionResult: XDRCodable {
         case txFAILED ([OperationResult])
         case txERROR (Int32)
 
-        init(from decoder: Decoder) throws {
-            var container = try decoder.unkeyedContainer()
-
-            let discriminant = try container.decode(Int32.self)
+        init(from decoder: XDRDecoder) throws {
+            let discriminant = try decoder.decode(Int32.self)
 
             switch discriminant {
             case TransactionResultCode.txSUCCESS:
-                self = .txSUCCESS(try container.decode(Array<OperationResult>.self))
+                self = .txSUCCESS(try decoder.decodeArray(OperationResult.self))
             case TransactionResultCode.txFAILED:
-                self = .txFAILED(try container.decode(Array<OperationResult>.self))
+                self = .txFAILED(try decoder.decodeArray(OperationResult.self))
             default:
                 self = .txERROR(discriminant)
             }
@@ -59,20 +63,18 @@ struct TransactionResult: XDRCodable {
             }
         }
 
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-
-            try container.encode(discriminant())
+        public func encode(to encoder: XDREncoder) throws {
+            try encoder.encode(discriminant())
 
             switch self {
             case .txSUCCESS (let ops):
-                try container.encode(ops)
+                try encoder.encode(ops)
 
             case .txFAILED (let ops):
-                try container.encode(ops)
+                try encoder.encode(ops)
 
             case .txERROR (let code):
-                try container.encode(code)
+                try encoder.encode(code)
             }
         }
     }
@@ -102,18 +104,16 @@ enum OperationResult: XDRCodable {
         case PAYMENT (PaymentResult)
         case unknown
 
-        init(from decoder: Decoder) throws {
-            var container = try decoder.unkeyedContainer()
-
-            let discriminant = try container.decode(Int32.self)
+        init(from decoder: XDRDecoder) throws {
+            let discriminant = try decoder.decode(Int32.self)
 
             switch discriminant {
             case OperationType.PAYMENT:
-                self = .PAYMENT(try container.decode(PaymentResult.self))
+                self = .PAYMENT(try decoder.decode(PaymentResult.self))
             case OperationType.CREATE_ACCOUNT:
-                self = .CREATE_ACCOUNT(try container.decode(CreateAccountResult.self))
+                self = .CREATE_ACCOUNT(try decoder.decode(CreateAccountResult.self))
             case OperationType.CHANGE_TRUST:
-                self = .CHANGE_TRUST(try container.decode(ChangeTrustResult.self))
+                self = .CHANGE_TRUST(try decoder.decode(ChangeTrustResult.self))
             default:
                 self = .unknown
             }
@@ -127,30 +127,26 @@ enum OperationResult: XDRCodable {
             }
         }
 
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.unkeyedContainer()
-
-            try container.encode(discriminant())
+        func encode(to encoder: XDREncoder) throws {
+            try encoder.encode(discriminant())
 
             switch self {
             case .CREATE_ACCOUNT (let result):
-                try container.encode(result)
+                try encoder.encode(result)
             case .PAYMENT (let result):
-                try container.encode(result)
+                try encoder.encode(result)
             default:
                 break
             }
         }
     }
 
-    init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        let discriminant = try container.decode(Int32.self)
+    init(from decoder: XDRDecoder) throws {
+        let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
         case OperationResultCode.opINNER:
-            self = .opINNER(try container.decode(Tr.self))
+            self = .opINNER(try decoder.decode(Tr.self))
         case OperationResultCode.opBAD_AUTH:
             self = .opBAD_AUTH
         case OperationResultCode.opNO_ACCOUNT:
@@ -168,14 +164,12 @@ enum OperationResult: XDRCodable {
         }
     }
 
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(discriminant())
+    func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
 
         switch self {
         case .opINNER (let tr):
-            try container.encode(tr)
+            try encoder.encode(tr)
         case .opBAD_AUTH:
             break
         case .opNO_ACCOUNT:
@@ -206,16 +200,12 @@ enum CreateAccountResult: XDRCodable {
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(discriminant())
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
     }
 
-    init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        let value = try container.decode(Int32.self)
+    init(from decoder: XDRDecoder) throws {
+        let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
     }
@@ -244,16 +234,12 @@ enum ChangeTrustResult: XDRCodable {
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(discriminant())
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
     }
 
-    init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        let value = try container.decode(Int32.self)
+    init(from decoder: XDRDecoder) throws {
+        let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
     }
@@ -288,16 +274,12 @@ enum PaymentResult: XDRCodable {
         }
     }
 
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-
-        try container.encode(discriminant())
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
     }
 
-    init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        let value = try container.decode(Int32.self)
+    init(from decoder: XDRDecoder) throws {
+        let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
     }
