@@ -42,7 +42,7 @@ class StellarBaseTests: XCTestCase {
     
     let asset = Asset(assetCode: "KIN",
                       issuer: "GBSJ7KFU2NXACVHVN2VWQIXIV5FWH6A7OIDDTEUYTCJYGY3FJMYIDTU7")!
-    lazy var node = Stellar.Node(baseURL: URL(string: endpoint)!, networkId: networkId)
+    var node: Stellar.Node!
     
     var account: Account!
     var account2: Account!
@@ -50,7 +50,9 @@ class StellarBaseTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
+
+        node = Stellar.Node(baseURL: URL(string: endpoint)!, networkId: networkId)
+
         account = MockStellarAccount()
         account2 = MockStellarAccount()
         issuer = MockStellarAccount(seedStr: "SAXSDD5YEU6GMTJ5IHA6K35VZHXFVPV6IHMWYAQPSEKJRNC5LGMUQX35")
