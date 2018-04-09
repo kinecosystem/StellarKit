@@ -78,6 +78,7 @@ public class XDREncoder {
 public class XDRDecoder {
     public enum Errors: Error {
         case prematureEndOfData
+        case stringDecodingFailed(Data)
     }
 
     private var data: Data
@@ -163,7 +164,7 @@ extension String: XDRCodable {
 
         let data = try Data(bytes: decoder.read(Int(length)))
         guard let s = String(bytes: data, encoding: .utf8) else {
-            fatalError()
+            throw XDRDecoder.Errors.stringDecodingFailed(data)
         }
 
         _ = try decoder.read((4 - Int(length) % 4) % 4)
