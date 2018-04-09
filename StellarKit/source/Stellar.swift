@@ -50,8 +50,7 @@ extension NetworkId: CustomStringConvertible {
 public struct Stellar {
     public struct Node {
         public let baseURL: URL
-        
-        let networkId: NetworkId
+        public let networkId: NetworkId
         
         public init(baseURL: URL, networkId: NetworkId = .test) {
             self.baseURL = baseURL

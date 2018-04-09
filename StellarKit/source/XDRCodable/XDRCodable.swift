@@ -6,6 +6,8 @@
 //  Copyright © 2018 Kin Foundation. All rights reserved.
 //
 
+import Foundation
+
 public typealias XDRCodable = XDREncodable & XDRDecodable
 
 public protocol XDREncodable {
