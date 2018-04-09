@@ -1,1 +1,0 @@
-../../../StellarKit/source/XDRCodable/XDREncoder.swift
