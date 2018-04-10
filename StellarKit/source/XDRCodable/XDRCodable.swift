@@ -32,7 +32,7 @@ extension XDREncodableStruct {
 }
 
 public class XDREncoder {
-    fileprivate var data = Data()
+    private var data = Data()
 
     public static func encode<T>(_ value: T) throws -> Data where T : XDREncodable {
         let encoder = XDREncoder()
@@ -72,6 +72,14 @@ public class XDREncoder {
         else {
             try self.encode(Int32(0))
         }
+    }
+
+    fileprivate func append(_ data: Data) {
+        self.data.append(data)
+    }
+
+    fileprivate func append<S>(_ data: S) where S: Sequence, S.Element == Data.Iterator.Element {
+        self.data.append(contentsOf: data)
     }
 }
 
@@ -128,11 +136,11 @@ public class XDRDecoder {
 
 extension Bool: XDRCodable {
     public init(from decoder: XDRDecoder) throws {
-        self = try decoder.decode(Int32.self) > 0
+        self = try decoder.decode(UInt32.self) > 0
     }
 
     public func encode(to encoder: XDREncoder) throws {
-        try encoder.encode(self ? Int32(1) : Int32(0))
+        try encoder.encode(self ? UInt32(1) : UInt32(0))
     }
 }
 
@@ -147,7 +155,7 @@ extension FixedWidthInteger where Self: XDRCodable {
         var v = self.bigEndian
 
         withUnsafeBytes(of: &v) {
-            encoder.data.append(contentsOf: $0.map { $0 })
+            encoder.append($0.map { $0 })
         }
     }
 }
@@ -176,14 +184,8 @@ extension String: XDRCodable {
         let length = Int32(self.lengthOfBytes(using: .utf8))
 
         try encoder.encode(length)
-        encoder.data.append(self.data(using: .utf8)!)
-
-        let extraBytes = length % 4
-        if extraBytes > 0 {
-            for _ in 0..<(4 - extraBytes) {
-                encoder.data.append(contentsOf: [0])
-            }
-        }
+        encoder.append(self.data(using: .utf8)!)
+        encoder.append(Array<UInt8>(repeating: 0, count: (4 - Int(length) % 4) % 4))
     }
 }
 
@@ -195,7 +197,7 @@ extension Data: XDRCodable {
 
     public func encode(to encoder: XDREncoder) throws {
         try encoder.encode(Int32(count))
-        encoder.data.append(self)
+        encoder.append(self)
     }
 }
 

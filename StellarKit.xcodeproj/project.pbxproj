@@ -39,6 +39,7 @@
 		8241388F206171FD00D7117E /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824138522060ADF300D7117E /* Endpoint.swift */; };
 		824138902061720300D7117E /* Watches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82321F46204F80E700C5D557 /* Watches.swift */; };
 		824138BC206180F500D7117E /* StellarErrors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8241388A2061712D00D7117E /* StellarErrors.framework */; };
+		8254C57F207C9DC000D78AD2 /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8254C57E207C9DC000D78AD2 /* Ledger.swift */; };
 		8261EF2C2043DECA001848CB /* KinUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F2FAE32043172A00E754BD /* KinUtil.framework */; };
 		828CB539205E23FA007C679C /* StellarErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 828CB537205E23FA007C679C /* StellarErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		828CB53C205E23FA007C679C /* StellarErrors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 828CB535205E23F9007C679C /* StellarErrors.framework */; };
@@ -344,6 +345,7 @@
 		824138522060ADF300D7117E /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		8241388A2061712D00D7117E /* StellarErrors.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarErrors.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8241388B2061712D00D7117E /* StellarErrors-macos-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "StellarErrors-macos-Info.plist"; path = "/Users/avi/Projects/kin-core-ios/KinSDK/StellarKit/StellarErrors-macos-Info.plist"; sourceTree = "<absolute>"; };
+		8254C57E207C9DC000D78AD2 /* Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
 		828CB535205E23F9007C679C /* StellarErrors.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarErrors.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		828CB537205E23FA007C679C /* StellarErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StellarErrors.h; sourceTree = "<group>"; };
 		828CB538205E23FA007C679C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -609,6 +611,7 @@
 			isa = PBXGroup;
 			children = (
 				824063AC20147DCD0055D70A /* Asset.swift */,
+				8254C57E207C9DC000D78AD2 /* Ledger.swift */,
 				824063AD20147DCD0055D70A /* Operation.swift */,
 				824063AE20147DCD0055D70A /* Operations.swift */,
 				824063AF20147DCD0055D70A /* PublicKey.swift */,
@@ -1178,6 +1181,7 @@
 			files = (
 				82343AAA2024A97900848CF4 /* WrappedData.swift in Sources */,
 				8291DA9820353E02002C10F5 /* StellarEventSource.swift in Sources */,
+				8254C57F207C9DC000D78AD2 /* Ledger.swift in Sources */,
 				82321F47204F80E700C5D557 /* Watches.swift in Sources */,
 				828CB54B205E24BD007C679C /* StellarErrors.swift in Sources */,
 				824063B320147DCD0055D70A /* Operations.swift in Sources */,
