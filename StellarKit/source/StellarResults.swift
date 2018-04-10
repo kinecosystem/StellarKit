@@ -27,12 +27,6 @@ struct TransactionResultCode {
 }
 
 struct TransactionResult: XDRCodable, XDREncodableStruct {
-    init(from decoder: XDRDecoder) throws {
-        feeCharged = try decoder.decode(Int64.self)
-        result = try decoder.decode(Result.self)
-        _ = try decoder.decode(Int32.self)
-    }
-
     let feeCharged: Int64
     let result: Result
     let reserved: Int32 = 0
@@ -77,6 +71,12 @@ struct TransactionResult: XDRCodable, XDREncodableStruct {
                 try encoder.encode(code)
             }
         }
+    }
+
+    init(from decoder: XDRDecoder) throws {
+        feeCharged = try decoder.decode(Int64.self)
+        result = try decoder.decode(Result.self)
+        _ = try decoder.decode(Int32.self)
     }
 
     init(feeCharged: Int64, result: Result) {

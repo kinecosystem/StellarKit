@@ -20,13 +20,13 @@ private func decodeData(from decoder: XDRDecoder, capacity: Int) throws -> Data 
 }
 
 public struct CreateAccountOp: XDRCodable, XDREncodableStruct {
+    let destination: PublicKey
+    let balance: Int64
+
     public init(from decoder: XDRDecoder) throws {
         destination = try decoder.decode(PublicKey.self)
         balance = try decoder.decode(Int64.self)
     }
-
-    let destination: PublicKey
-    let balance: Int64
 
     init(destination: PublicKey, balance: Int64) {
         self.destination = destination
@@ -34,31 +34,32 @@ public struct CreateAccountOp: XDRCodable, XDREncodableStruct {
     }
 }
 
-struct PaymentOp: XDRCodable {
+struct PaymentOp: XDRCodable, XDREncodableStruct {
+    let destination: PublicKey
+    let asset: Asset
+    let amount: Int64
+
     init(from decoder: XDRDecoder) throws {
         destination = try decoder.decode(PublicKey.self)
         asset = try decoder.decode(Asset.self)
         amount = try decoder.decode(Int64.self)
     }
 
-    let destination: PublicKey
-    let asset: Asset
-    let amount: Int64
-
     init(destination: PublicKey, asset: Asset, amount: Int64) {
         self.destination = destination
         self.asset = asset
         self.amount = amount
     }
-
-    public func encode(to encoder: XDREncoder) throws {
-        try encoder.encode(destination)
-        try encoder.encode(asset)
-        try encoder.encode(amount)
-    }
 }
 
 public struct PathPaymentOp: XDRCodable, XDREncodableStruct {
+    let sendAsset: Asset
+    let sendMax: Int64
+    let destination: PublicKey
+    let destAsset: Asset
+    let destAmount: Int64
+    let path: Array<Asset>
+
     public init(from decoder: XDRDecoder) throws {
         sendAsset = try decoder.decode(Asset.self)
         sendMax = try decoder.decode(Int64.self)
@@ -67,13 +68,6 @@ public struct PathPaymentOp: XDRCodable, XDREncodableStruct {
         destAmount = try decoder.decode(Int64.self)
         path = try decoder.decodeArray(Asset.self)
     }
-
-    let sendAsset: Asset
-    let sendMax: Int64
-    let destination: PublicKey
-    let destAsset: Asset
-    let destAmount: Int64
-    let path: Array<Asset>
 }
 
 public struct ChangeTrustOp: XDRCodable, XDREncodableStruct {
@@ -139,6 +133,12 @@ public struct SetOptionsOp: XDRCodable, XDREncodableStruct {
 }
 
 public struct ManageOfferOp: XDRCodable, XDREncodableStruct {
+    let buying: Asset
+    let selling: Asset
+    let amount: Int64
+    let price: Price
+    let offerId: Int64
+
     public init(from decoder: XDRDecoder) throws {
         buying = try decoder.decode(Asset.self)
         selling = try decoder.decode(Asset.self)
@@ -146,34 +146,28 @@ public struct ManageOfferOp: XDRCodable, XDREncodableStruct {
         price = try decoder.decode(Price.self)
         offerId = try decoder.decode(Int64.self)
     }
+}
 
+public struct CreatePassiveOfferOp: XDRCodable, XDREncodableStruct {
     let buying: Asset
     let selling: Asset
     let amount: Int64
     let price: Price
-    let offerId: Int64
-}
 
-public struct CreatePassiveOfferOp: XDRCodable, XDREncodableStruct {
     public init(from decoder: XDRDecoder) throws {
         buying = try decoder.decode(Asset.self)
         selling = try decoder.decode(Asset.self)
         amount = try decoder.decode(Int64.self)
         price = try decoder.decode(Price.self)
     }
-
-    let buying: Asset
-    let selling: Asset
-    let amount: Int64
-    let price: Price
 }
 
 public struct AccountMergeOp: XDRCodable, XDREncodableStruct {
+    let destination: PublicKey
+
     public init(from decoder: XDRDecoder) throws {
         destination = try decoder.decode(PublicKey.self)
     }
-
-    let destination: PublicKey
 }
 
 public struct ManageDataOp: XDRCodable, XDREncodableStruct {
@@ -189,22 +183,22 @@ public struct ManageDataOp: XDRCodable, XDREncodableStruct {
 }
 
 public struct Signer: XDRDecodable {
+    let key: SignerKey
+    let weight: UInt32
+
     public init(from decoder: XDRDecoder) throws {
         key = try decoder.decode(SignerKey.self)
         weight = try decoder.decode(UInt32.self)
     }
-
-    let key: SignerKey
-    let weight: UInt32
 }
 
 public struct Price: XDRDecodable {
+    let n: Int32
+    let d: Int32
+
     public init(from decoder: XDRDecoder) throws {
         n = try decoder.decode(Int32.self)
         d = try decoder.decode(Int32.self)
     }
-
-    let n: Int32
-    let d: Int32
 }
 

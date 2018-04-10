@@ -85,6 +85,9 @@ class XDRTests: XCTestCase {
 
     func test_struct() {
         struct S: XDRCodable, XDREncodableStruct {
+            let a: Int32
+            let b: String
+
             init(from decoder: XDRDecoder) throws {
                 a = try decoder.decode(Int32.self)
                 b = try decoder.decode(String.self)
@@ -94,9 +97,6 @@ class XDRTests: XCTestCase {
                 self.a = a
                 self.b = b
             }
-            
-            let a: Int32
-            let b: String
         }
 
         let s = S(a: 123, b: "a")

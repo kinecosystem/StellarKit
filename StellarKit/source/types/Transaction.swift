@@ -204,13 +204,13 @@ struct TransactionSignaturePayload: XDREncodableStruct {
 }
 
 struct DecoratedSignature: XDRCodable, XDREncodableStruct {
+    let hint: WrappedData4;
+    let signature: Data
+
     init(from decoder: XDRDecoder) throws {
         hint = try decoder.decode(WrappedData4.self)
         signature = try decoder.decode(Data.self)
     }
-
-    let hint: WrappedData4;
-    let signature: Data
 
     init(hint: WrappedData4, signature: Data) {
         self.hint = hint
@@ -219,13 +219,13 @@ struct DecoratedSignature: XDRCodable, XDREncodableStruct {
 }
 
 public struct TransactionEnvelope: XDRCodable, XDREncodableStruct {
+    let tx: Transaction
+    let signatures: [DecoratedSignature]
+
     public init(from decoder: XDRDecoder) throws {
         tx = try decoder.decode(Transaction.self)
         signatures = try decoder.decodeArray(DecoratedSignature.self)
     }
-
-    let tx: Transaction
-    let signatures: [DecoratedSignature]
 
     init(tx: Transaction, signatures: [DecoratedSignature]) {
         self.tx = tx
