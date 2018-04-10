@@ -21,12 +21,14 @@ public struct TxEvent: Decodable, Equatable {
     public let created_at: Date
     public let source_account: String
     public let envelope: TransactionEnvelope
+    public let meta: TransactionMeta
 
     enum CodingKeys: String, CodingKey {
         case hash
         case created_at
         case source_account
         case envelope = "envelope_xdr"
+        case meta = "result_meta_xdr"
     }
 
     public init(from decoder: Decoder) throws {
@@ -36,9 +38,13 @@ public struct TxEvent: Decodable, Equatable {
         self.created_at = try container.decode(Date.self, forKey: .created_at)
         self.source_account = try container.decode(String.self, forKey: .source_account)
 
-        let b64 = try container.decode(String.self, forKey: .envelope)
-        let data = Data(base64Encoded: b64)!
-        self.envelope = try XDRDecoder(data: data).decode(TransactionEnvelope.self)
+        let eb64 = try container.decode(String.self, forKey: .envelope)
+        self.envelope = try XDRDecoder(data: Data(base64Encoded: eb64)!)
+            .decode(TransactionEnvelope.self)
+
+        let xb64 = try container.decode(String.self, forKey: .meta)
+        self.meta = try XDRDecoder(data: Data(base64Encoded: xb64)!)
+            .decode(TransactionMeta.self)
     }
 
     public static func ==(lhs: TxEvent, rhs: TxEvent) -> Bool {
