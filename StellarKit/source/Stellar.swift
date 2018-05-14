@@ -26,7 +26,7 @@ public enum NetworkId {
 }
 
 extension NetworkId: CustomStringConvertible {
-    public init?(_ description: String) {
+    public init(_ description: String) {
         switch description {
         case testId: self = .test
         case mainId: self = .main
