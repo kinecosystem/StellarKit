@@ -214,3 +214,33 @@ public struct TransactionHistoryEntry: XDRDecodable {
     let txSet: TransactionSet
     let reserved: Int32 = 0
 }
+
+public struct TransactionResultPair: XDRDecodable {
+    public init(from decoder: XDRDecoder) throws {
+        transactionHash = try decoder.decode(WrappedData32.self)
+        result = try decoder.decode(TransactionResult.self)
+    }
+    
+    let transactionHash: WrappedData32
+    let result: TransactionResult
+}
+
+public struct TransactionResultSet: XDRDecodable {
+    public init(from decoder: XDRDecoder) throws {
+        results = try decoder.decodeArray(TransactionResultPair.self)
+    }
+    
+    let results: [TransactionResultPair]
+}
+
+public struct TransactionHistoryResultEntry: XDRDecodable {
+    public init(from decoder: XDRDecoder) throws {
+        ledgerSeq = try decoder.decode(UInt32.self)
+        txResultSet = try decoder.decode(TransactionResultSet.self)
+        _ = try decoder.decode(Int32.self)
+    }
+    
+    let ledgerSeq: UInt32
+    let txResultSet: TransactionResultSet
+    let reserved: Int32 = 0
+}
