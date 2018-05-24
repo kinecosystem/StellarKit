@@ -210,8 +210,8 @@ public struct TransactionHistoryEntry: XDRDecodable {
         _ = try decoder.decode(Int32.self)
     }
     
-    let ledgerSeq: UInt32
-    let txSet: TransactionSet
+    public let ledgerSeq: UInt32
+    public let txSet: TransactionSet
     let reserved: Int32 = 0
 }
 
@@ -221,7 +221,7 @@ public struct TransactionResultPair: XDRDecodable {
         result = try decoder.decode(TransactionResult.self)
     }
     
-    let transactionHash: WrappedData32
+    public let transactionHash: WrappedData32
     let result: TransactionResult
 }
 
@@ -230,7 +230,7 @@ public struct TransactionResultSet: XDRDecodable {
         results = try decoder.decodeArray(TransactionResultPair.self)
     }
     
-    let results: [TransactionResultPair]
+    public let results: [TransactionResultPair]
 }
 
 public struct TransactionHistoryResultEntry: XDRDecodable {
@@ -240,7 +240,7 @@ public struct TransactionHistoryResultEntry: XDRDecodable {
         _ = try decoder.decode(Int32.self)
     }
     
-    let ledgerSeq: UInt32
-    let txResultSet: TransactionResultSet
+    public let ledgerSeq: UInt32
+    public let txResultSet: TransactionResultSet
     let reserved: Int32 = 0
 }

@@ -102,6 +102,7 @@ enum OperationResult: XDRCodable {
         case CREATE_ACCOUNT (CreateAccountResult)
         case CHANGE_TRUST (ChangeTrustResult)
         case PAYMENT (PaymentResult)
+        case MANAGE_OFFER (ManageOfferResult)
         case unknown
 
         init(from decoder: XDRDecoder) throws {
@@ -114,6 +115,8 @@ enum OperationResult: XDRCodable {
                 self = .CREATE_ACCOUNT(try decoder.decode(CreateAccountResult.self))
             case OperationType.CHANGE_TRUST:
                 self = .CHANGE_TRUST(try decoder.decode(ChangeTrustResult.self))
+            case OperationType.MANAGE_OFFER:
+                self = .MANAGE_OFFER(try decoder.decode(ManageOfferResult.self))
             default:
                 self = .unknown
             }
@@ -285,3 +288,100 @@ enum PaymentResult: XDRCodable {
     }
 }
 
+struct ManageOfferResultCode {
+        // codes considered as "success" for the operation
+    static let MANAGE_OFFER_SUCCESS: Int32 = 0
+        
+        // codes considered as "failure" for the operation
+        static let MANAGE_OFFER_MALFORMED: Int32 = -1     // generated offer would be invalid
+        static let MANAGE_OFFER_SELL_NO_TRUST: Int32 = -2 // no trust line for what we're selling
+        static let MANAGE_OFFER_BUY_NO_TRUST: Int32 = -3  // no trust line for what we're buying
+        static let MANAGE_OFFER_SELL_NOT_AUTHORIZED: Int32 = -4 // not authorized to sell
+        static let MANAGE_OFFER_BUY_NOT_AUTHORIZED: Int32 = -5  // not authorized to buy
+        static let MANAGE_OFFER_LINE_FULL: Int32 = -6      // can't receive more of what it's buying
+        static let MANAGE_OFFER_UNDERFUNDED: Int32 = -7    // doesn't hold what it's trying to sell
+        static let MANAGE_OFFER_CROSS_SELF: Int32 = -8     // would cross an offer from the same user
+        static let MANAGE_OFFER_SELL_NO_ISSUER: Int32 = -9 // no issuer for what we're selling
+        static let MANAGE_OFFER_BUY_NO_ISSUER: Int32 = -10 // no issuer for what we're buying
+        
+        // update errors
+        static let MANAGE_OFFER_NOT_FOUND: Int32 = -11 // offerID does not match an existing offer
+        
+        static let MANAGE_OFFER_LOW_RESERVE: Int32 = -12 // not enough funds to create a new Offer
+}
+
+struct ClaimOfferAtom: XDRDecodable {
+    init(from decoder: XDRDecoder) throws {
+        sellerID = try decoder.decode(AccountID.self)
+        offerID = try decoder.decode(UInt64.self)
+        assetSold = try decoder.decode(Asset.self)
+        amountSold = try decoder.decode(Int64.self)
+        assetBought = try decoder.decode(Asset.self)
+        amountBought = try decoder.decode(Int64.self)
+    }
+    
+    let sellerID: AccountID
+    let offerID: UInt64
+    let assetSold: Asset
+    let amountSold: Int64
+    let assetBought: Asset
+    let amountBought: Int64
+}
+
+struct ManageOfferSuccessResult: XDRDecodable {
+    init(from decoder: XDRDecoder) throws {
+        offersClaimed = try decoder.decodeArray(ClaimOfferAtom.self)
+        effect = try decoder.decode(ManageOfferEffect.self)
+    }
+    
+    let offersClaimed: [ClaimOfferAtom]
+    let effect: ManageOfferEffect
+    
+    enum ManageOfferEffect: XDRDecodable {
+        struct ManageOfferEffect
+        {
+            static let MANAGE_OFFER_CREATED: Int32 = 0
+            static let MANAGE_OFFER_UPDATED: Int32 = 1
+            static let MANAGE_OFFER_DELETED: Int32 = 2
+        }
+
+        init(from decoder: XDRDecoder) throws {
+            let discriminant = try decoder.decode(Int32.self)
+            
+            switch discriminant {
+            case ManageOfferEffect.MANAGE_OFFER_CREATED:
+                self = .MANAGE_OFFER_CREATED(try decoder.decode(OfferEntry.self))
+            default:
+                self = .MANAGE_OFFER_UPDATED(try decoder.decode(OfferEntry.self))
+            }
+        }
+        
+        case MANAGE_OFFER_CREATED (OfferEntry)
+        case MANAGE_OFFER_UPDATED (OfferEntry)
+    }
+}
+
+enum ManageOfferResult: XDRDecodable {
+    case MANAGE_OFFER_SUCCESS (ManageOfferSuccessResult)
+    case failure (Int32)
+
+    private func discriminant() -> Int32 {
+        switch self {
+        case .MANAGE_OFFER_SUCCESS:
+            return ManageOfferResultCode.MANAGE_OFFER_SUCCESS
+        case .failure (let code):
+            return code
+        }
+    }
+    
+    init(from decoder: XDRDecoder) throws {
+        let discriminant = try decoder.decode(Int32.self)
+        
+        switch discriminant {
+        case ManageOfferResultCode.MANAGE_OFFER_SUCCESS:
+            self = .MANAGE_OFFER_SUCCESS(try decoder.decode(ManageOfferSuccessResult.self))
+        default:
+            self = .failure(discriminant)
+        }
+    }
+}

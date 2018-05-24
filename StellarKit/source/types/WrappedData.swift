@@ -35,11 +35,11 @@ protocol WrappedData: XDRCodable, Equatable {
 }
 
 extension WrappedData {
-    func encode(to encoder: XDREncoder) throws {
+    public func encode(to encoder: XDREncoder) throws {
         try wrapped.forEach { try $0.encode(to: encoder) }
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         self.init()
         wrapped = try decodeData(from: decoder, capacity: Self.capacity)
     }
@@ -57,7 +57,7 @@ extension WrappedData {
         }
     }
 
-    static func ==(lhs: Self, rhs: Self) -> Bool {
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
         return lhs.wrapped == rhs.wrapped
     }
 }
@@ -82,10 +82,10 @@ struct WrappedData12: WrappedData {
     }
 }
 
-struct WrappedData32: WrappedData, Equatable {
+public struct WrappedData32: WrappedData, Equatable {
     static let capacity: Int = 32
 
-    var wrapped: Data
+    public var wrapped: Data
 
     init() {
         wrapped = Data()
