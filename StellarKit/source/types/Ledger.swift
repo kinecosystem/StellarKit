@@ -192,3 +192,25 @@ public enum TransactionMeta: XDRDecodable {
         }
     }
 }
+
+public struct TransactionSet: XDRDecodable {
+    public init(from decoder: XDRDecoder) throws {
+        previousLedgerHash = try decoder.decode(WrappedData32.self)
+        txs = try decoder.decodeArray(TransactionEnvelope.self)
+    }
+    
+    let previousLedgerHash: WrappedData32
+    let txs: [TransactionEnvelope]
+}
+
+public struct TransactionHistoryEntry: XDRDecodable {
+    public init(from decoder: XDRDecoder) throws {
+        ledgerSeq = try decoder.decode(UInt32.self)
+        txSet = try decoder.decode(TransactionSet.self)
+        _ = try decoder.decode(Int32.self)
+    }
+    
+    let ledgerSeq: UInt32
+    let txSet: TransactionSet
+    let reserved: Int32 = 0
+}
