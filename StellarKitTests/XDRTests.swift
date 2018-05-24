@@ -107,4 +107,25 @@ class XDRTests: XCTestCase {
         XCTAssertEqual(s.b, s2.b)
     }
 
+    func test_dump() {
+        let path = URL(fileURLWithPath: "/Users/Ron/projects/stellarcmd/results-006bc03f.xdr")
+        
+        guard let data = try? Data(contentsOf: path) else {
+            print("Unable to load data.")
+            
+            return
+        }
+        
+        let decoder = XDRDecoder(data: data)
+        
+        while true {
+            let length = try! decoder.decode(UInt32.self)
+            
+            let history = try! decoder.decode(TransactionHistoryResultEntry.self)
+            
+            for result in history.txResultSet.results {
+                print(result.transactionHash.wrapped.hexString)
+            }
+        }
+    }
 }
