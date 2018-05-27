@@ -100,23 +100,47 @@ enum OperationResult: XDRCodable {
     // Add cases as necessary.
     enum Tr: XDRCodable {
         case CREATE_ACCOUNT (CreateAccountResult)
-        case CHANGE_TRUST (ChangeTrustResult)
         case PAYMENT (PaymentResult)
+        case PATH_PAYMENT (PathPaymentResult)
         case MANAGE_OFFER (ManageOfferResult)
+        case CREATE_PASSIVE_OFFER (ManageOfferResult)
+        case SET_OPTIONS (SetOptionsResult)
+        case CHANGE_TRUST (ChangeTrustResult)
+        case ALLOW_TRUST (AllowTrustResult)
+        case ACCOUNT_MERGE (AccountMergeResult)
+        case INFLATION (InflationResult)
+        case MANAGE_DATA (ManageDataResult)
+        case BUMP_SEQUENCE (BumpSequenceResult)
         case unknown
 
         init(from decoder: XDRDecoder) throws {
             let discriminant = try decoder.decode(Int32.self)
 
             switch discriminant {
-            case OperationType.PAYMENT:
-                self = .PAYMENT(try decoder.decode(PaymentResult.self))
             case OperationType.CREATE_ACCOUNT:
                 self = .CREATE_ACCOUNT(try decoder.decode(CreateAccountResult.self))
-            case OperationType.CHANGE_TRUST:
-                self = .CHANGE_TRUST(try decoder.decode(ChangeTrustResult.self))
+            case OperationType.PAYMENT:
+                self = .PAYMENT(try decoder.decode(PaymentResult.self))
+            case OperationType.PATH_PAYMENT:
+                self = .PATH_PAYMENT(try decoder.decode(PathPaymentResult.self))
             case OperationType.MANAGE_OFFER:
                 self = .MANAGE_OFFER(try decoder.decode(ManageOfferResult.self))
+            case OperationType.CREATE_PASSIVE_OFFER:
+                self = .CREATE_PASSIVE_OFFER(try decoder.decode(ManageOfferResult.self))
+            case OperationType.SET_OPTIONS:
+                self = .SET_OPTIONS(try decoder.decode(SetOptionsResult.self))
+            case OperationType.CHANGE_TRUST:
+                self = .CHANGE_TRUST(try decoder.decode(ChangeTrustResult.self))
+            case OperationType.ALLOW_TRUST:
+                self = .ALLOW_TRUST(try decoder.decode(AllowTrustResult.self))
+            case OperationType.ACCOUNT_MERGE:
+                self = .ACCOUNT_MERGE(try decoder.decode(AccountMergeResult.self))
+            case OperationType.INFLATION:
+                self = .INFLATION(try decoder.decode(InflationResult.self))
+            case OperationType.MANAGE_DATA:
+                self = .MANAGE_DATA(try decoder.decode(ManageDataResult.self))
+            case OperationType.BUMP_SEQUENCE:
+                self = .BUMP_SEQUENCE(try decoder.decode(BumpSequenceResult.self))
             default:
                 self = .unknown
             }
@@ -288,29 +312,96 @@ enum PaymentResult: XDRCodable {
     }
 }
 
+struct PathPaymentResultCode {
+    // codes considered as "success" for the operation
+    static let PATH_PAYMENT_SUCCESS: Int32 = 0 // success
+
+    // codes considered as "failure" for the operation
+    static let PATH_PAYMENT_MALFORMED: Int32 = -1          // bad input
+    static let PATH_PAYMENT_UNDERFUNDED: Int32 = -2        // not enough funds in source account
+    static let PATH_PAYMENT_SRC_NO_TRUST: Int32 = -3       // no trust line on source account
+    static let PATH_PAYMENT_SRC_NOT_AUTHORIZED: Int32 = -4 // source not authorized to transfer
+    static let PATH_PAYMENT_NO_DESTINATION: Int32 = -5     // destination account does not exist
+    static let PATH_PAYMENT_NO_TRUST: Int32 = -6           // dest missing a trust line for asset
+    static let PATH_PAYMENT_NOT_AUTHORIZED: Int32 = -7     // dest not authorized to hold asset
+    static let PATH_PAYMENT_LINE_FULL: Int32 = -8          // dest would go above their limit
+    static let PATH_PAYMENT_NO_ISSUER: Int32 = -9          // missing issuer on one asset
+    static let PATH_PAYMENT_TOO_FEW_OFFERS: Int32 = -10    // not enough offers to satisfy path
+    static let PATH_PAYMENT_OFFER_CROSS_SELF: Int32 = -11  // would cross one of its own offers
+    static let PATH_PAYMENT_OVER_SENDMAX: Int32 = -12      // could not satisfy sendmax
+}
+
+enum PathPaymentResult: XDRDecodable {
+    case PATH_PAYMENT_SUCCESS (Inner)
+    case PATH_PAYMENT_NO_ISSUER (Asset)
+    case failure (Int32)
+
+    struct Inner: XDRDecodable {
+        let offers: [ClaimOfferAtom]
+        let last: SimplePaymentResult
+
+        struct SimplePaymentResult: XDRDecodable {
+            let destination: AccountID
+            let asset: Asset
+            let amount: Int64
+
+            init(from decoder: XDRDecoder) throws {
+                destination = try decoder.decode(AccountID.self)
+                asset = try decoder.decode(Asset.self)
+                amount = try decoder.decode(Int64.self)
+            }
+        }
+
+        init(from decoder: XDRDecoder) throws {
+            offers = try decoder.decodeArray(ClaimOfferAtom.self)
+            last = try decoder.decode(SimplePaymentResult.self)
+        }
+    }
+
+    init(from decoder: XDRDecoder) throws {
+        let discriminant = try decoder.decode(Int32.self)
+
+        switch discriminant {
+        case PathPaymentResultCode.PATH_PAYMENT_SUCCESS:
+            self = .PATH_PAYMENT_SUCCESS(try decoder.decode(Inner.self))
+        case PathPaymentResultCode.PATH_PAYMENT_NO_ISSUER:
+            self = .PATH_PAYMENT_NO_ISSUER(try decoder.decode(Asset.self))
+        default:
+            self = .failure(discriminant)
+        }
+    }
+}
+
 struct ManageOfferResultCode {
-        // codes considered as "success" for the operation
+    // codes considered as "success" for the operation
     static let MANAGE_OFFER_SUCCESS: Int32 = 0
-        
-        // codes considered as "failure" for the operation
-        static let MANAGE_OFFER_MALFORMED: Int32 = -1     // generated offer would be invalid
-        static let MANAGE_OFFER_SELL_NO_TRUST: Int32 = -2 // no trust line for what we're selling
-        static let MANAGE_OFFER_BUY_NO_TRUST: Int32 = -3  // no trust line for what we're buying
-        static let MANAGE_OFFER_SELL_NOT_AUTHORIZED: Int32 = -4 // not authorized to sell
-        static let MANAGE_OFFER_BUY_NOT_AUTHORIZED: Int32 = -5  // not authorized to buy
-        static let MANAGE_OFFER_LINE_FULL: Int32 = -6      // can't receive more of what it's buying
-        static let MANAGE_OFFER_UNDERFUNDED: Int32 = -7    // doesn't hold what it's trying to sell
-        static let MANAGE_OFFER_CROSS_SELF: Int32 = -8     // would cross an offer from the same user
-        static let MANAGE_OFFER_SELL_NO_ISSUER: Int32 = -9 // no issuer for what we're selling
-        static let MANAGE_OFFER_BUY_NO_ISSUER: Int32 = -10 // no issuer for what we're buying
-        
-        // update errors
-        static let MANAGE_OFFER_NOT_FOUND: Int32 = -11 // offerID does not match an existing offer
-        
-        static let MANAGE_OFFER_LOW_RESERVE: Int32 = -12 // not enough funds to create a new Offer
+
+    // codes considered as "failure" for the operation
+    static let MANAGE_OFFER_MALFORMED: Int32 = -1     // generated offer would be invalid
+    static let MANAGE_OFFER_SELL_NO_TRUST: Int32 = -2 // no trust line for what we're selling
+    static let MANAGE_OFFER_BUY_NO_TRUST: Int32 = -3  // no trust line for what we're buying
+    static let MANAGE_OFFER_SELL_NOT_AUTHORIZED: Int32 = -4 // not authorized to sell
+    static let MANAGE_OFFER_BUY_NOT_AUTHORIZED: Int32 = -5  // not authorized to buy
+    static let MANAGE_OFFER_LINE_FULL: Int32 = -6      // can't receive more of what it's buying
+    static let MANAGE_OFFER_UNDERFUNDED: Int32 = -7    // doesn't hold what it's trying to sell
+    static let MANAGE_OFFER_CROSS_SELF: Int32 = -8     // would cross an offer from the same user
+    static let MANAGE_OFFER_SELL_NO_ISSUER: Int32 = -9 // no issuer for what we're selling
+    static let MANAGE_OFFER_BUY_NO_ISSUER: Int32 = -10 // no issuer for what we're buying
+
+    // update errors
+    static let MANAGE_OFFER_NOT_FOUND: Int32 = -11 // offerID does not match an existing offer
+
+    static let MANAGE_OFFER_LOW_RESERVE: Int32 = -12 // not enough funds to create a new Offer
 }
 
 struct ClaimOfferAtom: XDRDecodable {
+    let sellerID: AccountID
+    let offerID: UInt64
+    let assetSold: Asset
+    let amountSold: Int64
+    let assetBought: Asset
+    let amountBought: Int64
+
     init(from decoder: XDRDecoder) throws {
         sellerID = try decoder.decode(AccountID.self)
         offerID = try decoder.decode(UInt64.self)
@@ -319,23 +410,16 @@ struct ClaimOfferAtom: XDRDecodable {
         assetBought = try decoder.decode(Asset.self)
         amountBought = try decoder.decode(Int64.self)
     }
-    
-    let sellerID: AccountID
-    let offerID: UInt64
-    let assetSold: Asset
-    let amountSold: Int64
-    let assetBought: Asset
-    let amountBought: Int64
 }
 
 struct ManageOfferSuccessResult: XDRDecodable {
+    let offersClaimed: [ClaimOfferAtom]
+    let effect: ManageOfferEffect
+
     init(from decoder: XDRDecoder) throws {
         offersClaimed = try decoder.decodeArray(ClaimOfferAtom.self)
         effect = try decoder.decode(ManageOfferEffect.self)
     }
-    
-    let offersClaimed: [ClaimOfferAtom]
-    let effect: ManageOfferEffect
     
     enum ManageOfferEffect: XDRDecodable {
         struct ManageOfferEffect
@@ -382,6 +466,98 @@ enum ManageOfferResult: XDRDecodable {
             self = .MANAGE_OFFER_SUCCESS(try decoder.decode(ManageOfferSuccessResult.self))
         default:
             self = .failure(discriminant)
+        }
+    }
+}
+
+enum SetOptionsResult: XDRDecodable {
+    case result (Int32)
+
+    init(from decoder: XDRDecoder) throws {
+        self = .result(try decoder.decode(Int32.self))
+    }
+}
+
+enum AllowTrustResult: XDRDecodable {
+    case result (Int32)
+
+    init(from decoder: XDRDecoder) throws {
+        self = .result(try decoder.decode(Int32.self))
+    }
+}
+
+enum ManageDataResult: XDRDecodable {
+    case result (Int32)
+
+    init(from decoder: XDRDecoder) throws {
+        self = .result(try decoder.decode(Int32.self))
+    }
+}
+
+enum BumpSequenceResult: XDRDecodable {
+    case result (Int32)
+
+    init(from decoder: XDRDecoder) throws {
+        self = .result(try decoder.decode(Int32.self))
+    }
+}
+
+struct AccountMergeResultCode {
+    // codes considered as "success" for the operation
+    static let ACCOUNT_MERGE_SUCCESS: Int32 = 0
+    // codes considered as "failure" for the operation
+    static let ACCOUNT_MERGE_MALFORMED: Int32 = -1       // can't merge onto itself
+    static let ACCOUNT_MERGE_NO_ACCOUNT: Int32 = -2      // destination does not exist
+    static let ACCOUNT_MERGE_IMMUTABLE_SET: Int32 = -3   // source account has AUTH_IMMUTABLE set
+    static let ACCOUNT_MERGE_HAS_SUB_ENTRIES: Int32 = -4 // account has trust lines/offers
+    static let ACCOUNT_MERGE_SEQNUM_TOO_FAR: Int32 = -5  // sequence number is over max allowed
+};
+
+enum AccountMergeResult: XDRDecodable {
+    case ACCOUNT_MERGE_SUCCESS (Int64)
+    case failure (Int32)
+
+    init(from decoder: XDRDecoder) throws {
+        let discriminant = try decoder.decode(Int32.self)
+
+        switch discriminant {
+        case AccountMergeResultCode.ACCOUNT_MERGE_SUCCESS:
+            self = .ACCOUNT_MERGE_SUCCESS(try decoder.decode(Int64.self))
+        default:
+            self = .failure(discriminant)
+        }
+    }
+}
+
+struct InflationResultCode {
+    // codes considered as "success" for the operation
+    static let INFLATION_SUCCESS: Int32 = 0
+    // codes considered as "failure" for the operation
+    static let INFLATION_NOT_TIME: Int32 = -1
+}
+
+struct InflationPayout: XDRDecodable {
+    let destination: AccountID
+    let amount: Int64
+
+    init(from decoder: XDRDecoder) throws {
+        destination = try decoder.decode(AccountID.self)
+        amount = try decoder.decode(Int64.self)
+    }
+}
+
+enum InflationResult: XDRDecodable {
+    case INFLATION_SUCCESS ([InflationPayout])
+    case INFLATION_NOT_TIME
+
+    init(from decoder: XDRDecoder) throws {
+        let discriminant = try decoder.decode(Int32.self)
+
+        switch discriminant {
+        case InflationResultCode.INFLATION_SUCCESS:
+            self = .INFLATION_SUCCESS(try decoder.decodeArray(InflationPayout.self))
+        default:
+            self = .INFLATION_NOT_TIME
         }
     }
 }

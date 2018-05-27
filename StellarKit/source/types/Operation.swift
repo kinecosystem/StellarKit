@@ -20,6 +20,7 @@ struct OperationType {
     static let ACCOUNT_MERGE: Int32 = 8
     static let INFLATION: Int32 = 9
     static let MANAGE_DATA: Int32 = 10
+    static let BUMP_SEQUENCE: Int32 = 11
 }
 
 public struct Operation: XDRCodable {

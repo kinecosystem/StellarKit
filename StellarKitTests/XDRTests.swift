@@ -108,14 +108,14 @@ class XDRTests: XCTestCase {
     }
 
     func test_dump() {
-        let path = URL(fileURLWithPath: "/Users/Ron/projects/stellarcmd/results-006bc03f.xdr")
+        let path = URL(fileURLWithPath: "/Users/avi/Downloads/results-006bc03f.xdr")
         
         guard let data = try? Data(contentsOf: path) else {
             print("Unable to load data.")
             
             return
         }
-        
+
         let decoder = XDRDecoder(data: data)
         
         while true {
