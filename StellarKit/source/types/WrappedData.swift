@@ -23,7 +23,7 @@ private func decodeData(from decoder: XDRDecoder, capacity: Int) throws -> Data 
     return d
 }
 
-protocol WrappedData: XDRCodable, Equatable {
+protocol WrappedData: XDRCodable, Encodable, Equatable {
     static var capacity: Int { get }
 
     var wrapped: Data { get set }

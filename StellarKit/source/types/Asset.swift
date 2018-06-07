@@ -14,7 +14,7 @@ struct AssetType {
     static let ASSET_TYPE_CREDIT_ALPHANUM12: Int32 = 2
 }
 
-public enum Asset: XDRCodable, Equatable {
+public enum Asset: XDRCodable, Encodable, Equatable {
     case ASSET_TYPE_NATIVE
     case ASSET_TYPE_CREDIT_ALPHANUM4 (Alpha4)
     case ASSET_TYPE_CREDIT_ALPHANUM12 (Alpha12)
@@ -164,6 +164,9 @@ public enum Asset: XDRCodable, Equatable {
         case .ASSET_TYPE_CREDIT_ALPHANUM12 (let alpha12):
             try encoder.encode(alpha12)
         }
+    }
+
+    public func encode(to encoder: Encoder) throws {
     }
 
     func isEqual(asset: Asset) -> Bool {

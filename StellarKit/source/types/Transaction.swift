@@ -17,7 +17,7 @@ struct MemoType {
     static let MEMO_RETURN: Int32 = 4
 }
 
-public enum Memo: XDRCodable {
+public enum Memo: XDRCodable, Encodable {
     case MEMO_NONE
     case MEMO_TEXT (String)
     case MEMO_ID (UInt64)
@@ -98,9 +98,12 @@ public enum Memo: XDRCodable {
         case .MEMO_RETURN (let hash): try encoder.encode(WrappedData32(hash))
         }
     }
+
+    public func encode(to encoder: Encoder) throws {
+    }
 }
 
-public struct TimeBounds: XDRCodable, XDREncodableStruct {
+public struct TimeBounds: XDRCodable, XDREncodableStruct, Encodable {
     public init(from decoder: XDRDecoder) throws {
         minTime = try decoder.decode(UInt64.self)
         maxTime = try decoder.decode(UInt64.self)
@@ -110,7 +113,7 @@ public struct TimeBounds: XDRCodable, XDREncodableStruct {
     let maxTime: UInt64
 }
 
-public struct Transaction: XDRCodable {
+public struct Transaction: XDRCodable, Encodable {
     let sourceAccount: PublicKey
     let fee: UInt32
     let seqNum: UInt64
@@ -118,14 +121,6 @@ public struct Transaction: XDRCodable {
     let memo: Memo
     let operations: [Operation]
     let reserved: Int32 = 0
-
-    var memoString: String? {
-        if case let Memo.MEMO_TEXT(text) = memo {
-            return text
-        }
-
-        return nil
-    }
 
     public init(sourceAccount: String,
                 seqNum: UInt64,
@@ -203,7 +198,7 @@ struct TransactionSignaturePayload: XDREncodableStruct {
     }
 }
 
-struct DecoratedSignature: XDRCodable, XDREncodableStruct {
+struct DecoratedSignature: XDRCodable, XDREncodableStruct, Encodable {
     let hint: WrappedData4;
     let signature: Data
 
@@ -218,7 +213,7 @@ struct DecoratedSignature: XDRCodable, XDREncodableStruct {
     }
 }
 
-public struct TransactionEnvelope: XDRCodable, XDREncodableStruct {
+public struct TransactionEnvelope: XDRCodable, XDREncodableStruct, Encodable {
     let tx: Transaction
     let signatures: [DecoratedSignature]
 

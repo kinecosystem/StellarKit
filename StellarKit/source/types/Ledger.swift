@@ -193,7 +193,7 @@ public enum TransactionMeta: XDRDecodable {
     }
 }
 
-public struct TransactionSet: XDRDecodable {
+public struct TransactionSet: XDRDecodable, Encodable {
     public init(from decoder: XDRDecoder) throws {
         previousLedgerHash = try decoder.decode(WrappedData32.self)
         txs = try decoder.decodeArray(TransactionEnvelope.self)
@@ -203,7 +203,7 @@ public struct TransactionSet: XDRDecodable {
     let txs: [TransactionEnvelope]
 }
 
-public struct TransactionHistoryEntry: XDRDecodable {
+public struct TransactionHistoryEntry: XDRDecodable, Encodable {
     public init(from decoder: XDRDecoder) throws {
         ledgerSeq = try decoder.decode(UInt32.self)
         txSet = try decoder.decode(TransactionSet.self)
@@ -215,32 +215,44 @@ public struct TransactionHistoryEntry: XDRDecodable {
     let reserved: Int32 = 0
 }
 
-public struct TransactionResultPair: XDRDecodable {
-    public init(from decoder: XDRDecoder) throws {
+struct TransactionResultPair: XDRDecodable, Encodable {
+    let transactionHash: WrappedData32
+    let result: TransactionResult
+
+    init(from decoder: XDRDecoder) throws {
         transactionHash = try decoder.decode(WrappedData32.self)
         result = try decoder.decode(TransactionResult.self)
     }
-    
-    public let transactionHash: WrappedData32
-    let result: TransactionResult
-}
 
-public struct TransactionResultSet: XDRDecodable {
-    public init(from decoder: XDRDecoder) throws {
-        results = try decoder.decodeArray(TransactionResultPair.self)
+    private enum CodingKeys: String, CodingKey {
+        case transactionHash
+        case result
     }
-    
-    public let results: [TransactionResultPair]
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(transactionHash.wrapped.hexString, forKey: .transactionHash)
+        try container.encode(result, forKey: .result)
+    }
 }
 
-public struct TransactionHistoryResultEntry: XDRDecodable {
+struct TransactionResultSet: XDRDecodable, Encodable {
+    let txResults: [TransactionResultPair]
+
+    init(from decoder: XDRDecoder) throws {
+        txResults = try decoder.decodeArray(TransactionResultPair.self)
+    }
+}
+
+public struct TransactionHistoryResultEntry: XDRDecodable, Encodable {
+    public let ledgerSeq: UInt32
+    let txResultSet: TransactionResultSet
+    let reserved: Int32 = 0
+
     public init(from decoder: XDRDecoder) throws {
         ledgerSeq = try decoder.decode(UInt32.self)
         txResultSet = try decoder.decode(TransactionResultSet.self)
         _ = try decoder.decode(Int32.self)
     }
-    
-    public let ledgerSeq: UInt32
-    public let txResultSet: TransactionResultSet
-    let reserved: Int32 = 0
 }

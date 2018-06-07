@@ -26,15 +26,21 @@ struct TransactionResultCode {
     static let txINTERNAL_ERROR: Int32 = -11      // an unknown error occured
 }
 
-struct TransactionResult: XDRCodable, XDREncodableStruct {
+public struct TransactionResult: XDRCodable, XDREncodableStruct, Encodable {
     let feeCharged: Int64
     let result: Result
     let reserved: Int32 = 0
 
-    enum Result: XDRCodable {
+    enum Result: XDRCodable, Encodable {
         case txSUCCESS ([OperationResult])
         case txFAILED ([OperationResult])
         case txERROR (Int32)
+
+        private enum CodingKeys: String, CodingKey {
+            case txSUCCESS = "success"
+            case txFAILED = "failed"
+            case txERROR = "error"
+        }
 
         init(from decoder: XDRDecoder) throws {
             let discriminant = try decoder.decode(Int32.self)
@@ -63,17 +69,28 @@ struct TransactionResult: XDRCodable, XDREncodableStruct {
             switch self {
             case .txSUCCESS (let ops):
                 try encoder.encode(ops)
-
             case .txFAILED (let ops):
                 try encoder.encode(ops)
-
             case .txERROR (let code):
                 try encoder.encode(code)
             }
         }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+
+            switch self {
+            case .txSUCCESS(let results):
+                try container.encode(results, forKey: .txSUCCESS)
+            case .txFAILED(let results):
+                try container.encode(results, forKey: .txFAILED)
+            case .txERROR(let error):
+                try container.encode(error, forKey: .txERROR)
+            }
+        }
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         feeCharged = try decoder.decode(Int64.self)
         result = try decoder.decode(Result.self)
         _ = try decoder.decode(Int32.self)
@@ -92,13 +109,13 @@ struct OperationResultCode {
     static let opNO_ACCOUNT: Int32 = -2 // source account was not found
 }
 
-enum OperationResult: XDRCodable {
+public enum OperationResult: XDRCodable, Encodable {
     case opINNER (Tr)
     case opBAD_AUTH
     case opNO_ACCOUNT
 
     // Add cases as necessary.
-    enum Tr: XDRCodable {
+    public enum Tr: XDRCodable, Encodable {
         case CREATE_ACCOUNT (CreateAccountResult)
         case PAYMENT (PaymentResult)
         case PATH_PAYMENT (PathPaymentResult)
@@ -113,7 +130,7 @@ enum OperationResult: XDRCodable {
         case BUMP_SEQUENCE (BumpSequenceResult)
         case unknown
 
-        init(from decoder: XDRDecoder) throws {
+        public init(from decoder: XDRDecoder) throws {
             let discriminant = try decoder.decode(Int32.self)
 
             switch discriminant {
@@ -154,7 +171,7 @@ enum OperationResult: XDRCodable {
             }
         }
 
-        func encode(to encoder: XDREncoder) throws {
+        public func encode(to encoder: XDREncoder) throws {
             try encoder.encode(discriminant())
 
             switch self {
@@ -166,9 +183,42 @@ enum OperationResult: XDRCodable {
                 break
             }
         }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+
+            switch self {
+            case .ACCOUNT_MERGE(let result):
+                try container.encode(result)
+            case .ALLOW_TRUST(let result):
+                try container.encode(result)
+            case .BUMP_SEQUENCE(let result):
+                try container.encode(result)
+            case .CHANGE_TRUST(let result):
+                try container.encode(result)
+            case .CREATE_ACCOUNT(let result):
+                try container.encode(result)
+            case .CREATE_PASSIVE_OFFER(let result):
+                try container.encode(result)
+            case .INFLATION(let result):
+                try container.encode(result)
+            case .MANAGE_DATA(let result):
+                try container.encode(result)
+            case .MANAGE_OFFER(let result):
+                try container.encode(result)
+            case .PATH_PAYMENT(let result):
+                try container.encode(result)
+            case .PAYMENT(let result):
+                try container.encode(result)
+            case .SET_OPTIONS(let result):
+                try container.encode(result)
+            case .unknown:
+                break
+            }
+        }
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
@@ -191,7 +241,7 @@ enum OperationResult: XDRCodable {
         }
     }
 
-    func encode(to encoder: XDREncoder) throws {
+    public func encode(to encoder: XDREncoder) throws {
         try encoder.encode(discriminant())
 
         switch self {
@@ -201,6 +251,19 @@ enum OperationResult: XDRCodable {
             break
         case .opNO_ACCOUNT:
             break
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+
+        switch self {
+        case .opINNER(let tr):
+            try container.encode(tr)
+        case .opBAD_AUTH:
+            try container.encode(discriminant())
+        case .opNO_ACCOUNT:
+            try container.encode(discriminant())
         }
     }
 }
@@ -214,9 +277,14 @@ struct CreateAccountResultCode {
     static let CREATE_ACCOUNT_ALREADY_EXIST: Int32 = -4 // account already exists
 }
 
-enum CreateAccountResult: XDRCodable {
+public enum CreateAccountResult: XDRCodable, Encodable {
     case success
     case failure (Int32)
+
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case result
+    }
 
     private func discriminant() -> Int32 {
         switch self {
@@ -231,10 +299,23 @@ enum CreateAccountResult: XDRCodable {
         try encoder.encode(discriminant())
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode("create_account", forKey: .name)
+
+        switch self {
+        case .success:
+            try container.encode(0, forKey: .result)
+        case .failure(let code):
+            try container.encode(code, forKey: .result)
+        }
     }
 }
 
@@ -248,9 +329,14 @@ struct ChangeTrustResultCode {
     static let CHANGE_TRUST_SELF_NOT_ALLOWED: Int32 = -5    // trusting self is not allowed
 };
 
-enum ChangeTrustResult: XDRCodable {
+public enum ChangeTrustResult: XDRCodable, Encodable {
     case success
     case failure (Int32)
+
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case result
+    }
 
     private func discriminant() -> Int32 {
         switch self {
@@ -265,10 +351,23 @@ enum ChangeTrustResult: XDRCodable {
         try encoder.encode(discriminant())
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode("change_trust", forKey: .name)
+
+        switch self {
+        case .success:
+            try container.encode(0, forKey: .result)
+        case .failure(let code):
+            try container.encode(code, forKey: .result)
+        }
     }
 }
 
@@ -288,9 +387,14 @@ struct PaymentResultCode {
     static let PAYMENT_NO_ISSUER: Int32 = -9          // missing issuer on asset
 }
 
-enum PaymentResult: XDRCodable {
+public enum PaymentResult: XDRCodable, Encodable {
     case success
     case failure (Int32)
+
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case result
+    }
 
     private func discriminant() -> Int32 {
         switch self {
@@ -305,10 +409,23 @@ enum PaymentResult: XDRCodable {
         try encoder.encode(discriminant())
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode("payment", forKey: .name)
+
+        switch self {
+        case .success:
+            try container.encode(0, forKey: .result)
+        case .failure(let code):
+            try container.encode(code, forKey: .result)
+        }
     }
 }
 
@@ -331,16 +448,23 @@ struct PathPaymentResultCode {
     static let PATH_PAYMENT_OVER_SENDMAX: Int32 = -12      // could not satisfy sendmax
 }
 
-enum PathPaymentResult: XDRDecodable {
+public enum PathPaymentResult: XDRDecodable, Encodable {
     case PATH_PAYMENT_SUCCESS (Inner)
     case PATH_PAYMENT_NO_ISSUER (Asset)
     case failure (Int32)
 
-    struct Inner: XDRDecodable {
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case success
+        case no_issuer
+        case failure
+    }
+
+    public struct Inner: XDRDecodable, Encodable {
         let offers: [ClaimOfferAtom]
         let last: SimplePaymentResult
 
-        struct SimplePaymentResult: XDRDecodable {
+        struct SimplePaymentResult: XDRDecodable, Encodable {
             let destination: AccountID
             let asset: Asset
             let amount: Int64
@@ -352,13 +476,13 @@ enum PathPaymentResult: XDRDecodable {
             }
         }
 
-        init(from decoder: XDRDecoder) throws {
+        public init(from decoder: XDRDecoder) throws {
             offers = try decoder.decodeArray(ClaimOfferAtom.self)
             last = try decoder.decode(SimplePaymentResult.self)
         }
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
@@ -368,6 +492,21 @@ enum PathPaymentResult: XDRDecodable {
             self = .PATH_PAYMENT_NO_ISSUER(try decoder.decode(Asset.self))
         default:
             self = .failure(discriminant)
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode("path_payment", forKey: .name)
+        
+        switch self {
+        case .PATH_PAYMENT_SUCCESS(let inner):
+            try container.encode(inner, forKey: .success)
+        case .PATH_PAYMENT_NO_ISSUER(let asset):
+            try container.encode(asset, forKey: .no_issuer)
+        case .failure(let code):
+            try container.encode(code, forKey: .failure)
         }
     }
 }
@@ -394,7 +533,7 @@ struct ManageOfferResultCode {
     static let MANAGE_OFFER_LOW_RESERVE: Int32 = -12 // not enough funds to create a new Offer
 }
 
-struct ClaimOfferAtom: XDRDecodable {
+public struct ClaimOfferAtom: XDRDecodable, Encodable {
     let sellerID: AccountID
     let offerID: UInt64
     let assetSold: Asset
@@ -402,7 +541,7 @@ struct ClaimOfferAtom: XDRDecodable {
     let assetBought: Asset
     let amountBought: Int64
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         sellerID = try decoder.decode(AccountID.self)
         offerID = try decoder.decode(UInt64.self)
         assetSold = try decoder.decode(Asset.self)
@@ -412,11 +551,11 @@ struct ClaimOfferAtom: XDRDecodable {
     }
 }
 
-struct ManageOfferSuccessResult: XDRDecodable {
+public struct ManageOfferSuccessResult: XDRDecodable, Encodable {
     let offersClaimed: [ClaimOfferAtom]
     let effect: ManageOfferEffect
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         offersClaimed = try decoder.decodeArray(ClaimOfferAtom.self)
         effect = try decoder.decode(ManageOfferEffect.self)
     }
@@ -443,9 +582,12 @@ struct ManageOfferSuccessResult: XDRDecodable {
         case MANAGE_OFFER_CREATED (OfferEntry)
         case MANAGE_OFFER_UPDATED (OfferEntry)
     }
+
+    public func encode(to encoder: Encoder) throws {
+    }
 }
 
-enum ManageOfferResult: XDRDecodable {
+public enum ManageOfferResult: XDRDecodable, Encodable {
     case MANAGE_OFFER_SUCCESS (ManageOfferSuccessResult)
     case failure (Int32)
 
@@ -458,7 +600,7 @@ enum ManageOfferResult: XDRDecodable {
         }
     }
     
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let discriminant = try decoder.decode(Int32.self)
         
         switch discriminant {
@@ -468,37 +610,104 @@ enum ManageOfferResult: XDRDecodable {
             self = .failure(discriminant)
         }
     }
-}
 
-enum SetOptionsResult: XDRDecodable {
-    case result (Int32)
-
-    init(from decoder: XDRDecoder) throws {
-        self = .result(try decoder.decode(Int32.self))
+    public func encode(to encoder: Encoder) throws {
     }
 }
 
-enum AllowTrustResult: XDRDecodable {
+public enum SetOptionsResult: XDRDecodable, Encodable {
     case result (Int32)
 
-    init(from decoder: XDRDecoder) throws {
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case result
+    }
+
+    public init(from decoder: XDRDecoder) throws {
         self = .result(try decoder.decode(Int32.self))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode("set_options", forKey: .name)
+
+        switch self {
+        case .result(let code):
+            try container.encode(code, forKey: .result)
+        }
     }
 }
 
-enum ManageDataResult: XDRDecodable {
+public enum AllowTrustResult: XDRDecodable, Encodable {
     case result (Int32)
 
-    init(from decoder: XDRDecoder) throws {
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case result
+    }
+
+    public init(from decoder: XDRDecoder) throws {
         self = .result(try decoder.decode(Int32.self))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode("allow_trust", forKey: .name)
+
+        switch self {
+        case .result(let code):
+            try container.encode(code, forKey: .result)
+        }
     }
 }
 
-enum BumpSequenceResult: XDRDecodable {
+public enum ManageDataResult: XDRDecodable, Encodable {
     case result (Int32)
 
-    init(from decoder: XDRDecoder) throws {
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case result
+    }
+
+    public init(from decoder: XDRDecoder) throws {
         self = .result(try decoder.decode(Int32.self))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode("manage_data", forKey: .name)
+
+        switch self {
+        case .result(let code):
+            try container.encode(code, forKey: .result)
+        }
+    }
+}
+
+public enum BumpSequenceResult: XDRDecodable, Encodable {
+    case result (Int32)
+
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case result
+    }
+
+    public init(from decoder: XDRDecoder) throws {
+        self = .result(try decoder.decode(Int32.self))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode("bump_sequence", forKey: .name)
+
+        switch self {
+        case .result(let code):
+            try container.encode(code, forKey: .result)
+        }
     }
 }
 
@@ -513,11 +722,11 @@ struct AccountMergeResultCode {
     static let ACCOUNT_MERGE_SEQNUM_TOO_FAR: Int32 = -5  // sequence number is over max allowed
 };
 
-enum AccountMergeResult: XDRDecodable {
+public enum AccountMergeResult: XDRDecodable, Encodable {
     case ACCOUNT_MERGE_SUCCESS (Int64)
     case failure (Int32)
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
@@ -526,6 +735,9 @@ enum AccountMergeResult: XDRDecodable {
         default:
             self = .failure(discriminant)
         }
+    }
+
+    public func encode(to encoder: Encoder) throws {
     }
 }
 
@@ -536,21 +748,21 @@ struct InflationResultCode {
     static let INFLATION_NOT_TIME: Int32 = -1
 }
 
-struct InflationPayout: XDRDecodable {
+public struct InflationPayout: XDRDecodable, Encodable {
     let destination: AccountID
     let amount: Int64
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         destination = try decoder.decode(AccountID.self)
         amount = try decoder.decode(Int64.self)
     }
 }
 
-enum InflationResult: XDRDecodable {
+public enum InflationResult: XDRDecodable, Encodable {
     case INFLATION_SUCCESS ([InflationPayout])
     case INFLATION_NOT_TIME
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
@@ -558,6 +770,17 @@ enum InflationResult: XDRDecodable {
             self = .INFLATION_SUCCESS(try decoder.decodeArray(InflationPayout.self))
         default:
             self = .INFLATION_NOT_TIME
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+
+        switch self {
+        case .INFLATION_SUCCESS(let payout):
+            try container.encode(payout)
+        case .INFLATION_NOT_TIME:
+            try container.encode(InflationResultCode.INFLATION_NOT_TIME)
         }
     }
 }

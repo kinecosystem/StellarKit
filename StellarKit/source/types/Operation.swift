@@ -23,7 +23,7 @@ struct OperationType {
     static let BUMP_SEQUENCE: Int32 = 11
 }
 
-public struct Operation: XDRCodable {
+public struct Operation: XDRCodable, Encodable {
     let sourceAccount: PublicKey?
     let body: Body
 
@@ -42,7 +42,7 @@ public struct Operation: XDRCodable {
         try encoder.encode(body)
     }
 
-    enum Body: XDRCodable {
+    enum Body: XDRCodable, Encodable {
         case CREATE_ACCOUNT (CreateAccountOp)
         case PAYMENT (PaymentOp)
         case PATH_PAYMENT (PathPaymentOp)
@@ -139,6 +139,9 @@ public struct Operation: XDRCodable {
             case .MANAGE_DATA(let op):
                 try encoder.encode(op)
             }
+        }
+
+        public func encode(to encoder: Encoder) throws {
         }
     }
 }

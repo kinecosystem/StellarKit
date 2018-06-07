@@ -18,7 +18,7 @@ struct PublicKeyType {
     static let PUBLIC_KEY_TYPE_ED25519 = CryptoKeyType.KEY_TYPE_ED25519
 }
 
-enum PublicKey: XDRCodable, Equatable {
+enum PublicKey: XDRCodable, Encodable, Equatable {
     case PUBLIC_KEY_TYPE_ED25519 (WrappedData32)
 
     var publicKey: String? {
@@ -47,6 +47,15 @@ enum PublicKey: XDRCodable, Equatable {
         switch self {
         case .PUBLIC_KEY_TYPE_ED25519 (let key):
             try encoder.encode(key)
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+
+        switch self {
+        case .PUBLIC_KEY_TYPE_ED25519:
+            try container.encode(publicKey)
         }
     }
 
