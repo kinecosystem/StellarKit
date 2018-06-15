@@ -1,5 +1,5 @@
 language: swift
-osx_image: xcode9.2
+osx_image: xcode9.4
 xcode_project: StellarKit.xcodeproj
 xcode_scheme: StellarKit
 xcode_sdk: iphonesimulator8.4
