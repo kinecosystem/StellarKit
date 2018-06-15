@@ -31,7 +31,7 @@ extension XDREncodableStruct {
     }
 }
 
-public class XDREncoder {
+public final class XDREncoder {
     private var data = Data()
 
     public static func encode<T>(_ value: T) throws -> Data where T : XDREncodable {
@@ -83,7 +83,7 @@ public class XDREncoder {
     }
 }
 
-public class XDRDecoder {
+public final class XDRDecoder {
     public enum Errors: Error {
         case prematureEndOfData
         case stringDecodingFailed(Data)
@@ -101,11 +101,11 @@ public class XDRDecoder {
         return try type.init(from: self)
     }
 
-    public func decodeArray<T: XDRDecodable>(_ type: T.Type) throws -> [T] {
+    public func decode<T: XDRDecodable>(_ type: [T].Type) throws -> [T] {
         var a = [T]()
 
         let count = try decode(Int32.self)
-        try (0 ..< count).forEach { _ in try a.append(type.init(from: self)) }
+        try (0 ..< count).forEach { _ in try a.append(T.init(from: self)) }
         return a
     }
 
@@ -201,13 +201,11 @@ extension Data: XDRCodable {
     }
 }
 
-extension Array: XDREncodable {
+extension Array: XDREncodable where Element: XDREncodable {
     public func encode(to encoder: XDREncoder) throws {
         try encoder.encode(Int32(count))
         try forEach {
-            if let e = $0 as? XDREncodable {
-                try e.encode(to: encoder)
-            }
+            try $0.encode(to: encoder)
         }
     }
 }

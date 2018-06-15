@@ -29,11 +29,11 @@ public struct AccountEntry: XDRDecodable {
         balance = try decoder.decode(Int64.self)
         seqNum = try decoder.decode(SequenceNumber.self)
         numSubEntries = try decoder.decode(UInt32.self)
-        inflationDest = try decoder.decodeArray(AccountID.self).first
+        inflationDest = try decoder.decode([AccountID].self).first
         flags = try decoder.decode(UInt32.self)
         homeDomain = try decoder.decode(String.self)
         thresholds = try decoder.decode(WrappedData4.self)
-        signers = try decoder.decodeArray(Signer.self)
+        signers = try decoder.decode([Signer].self)
         _ = try decoder.decode(Int32.self)
     }
 }
@@ -174,7 +174,7 @@ public struct OperationMeta: XDRDecodable {
     public let changes: [LedgerEntryChange]
 
     public init(from decoder: XDRDecoder) throws {
-        changes = try decoder.decodeArray(LedgerEntryChange.self)
+        changes = try decoder.decode([LedgerEntryChange].self)
     }
 }
 
@@ -186,7 +186,7 @@ public enum TransactionMeta: XDRDecodable {
 
         switch discriminant {
         case 0:
-            self = .operations(try decoder.decodeArray(OperationMeta.self))
+            self = .operations(try decoder.decode([OperationMeta].self))
         default:
             fatalError("Unsupported case: \(discriminant)")
         }
@@ -196,7 +196,7 @@ public enum TransactionMeta: XDRDecodable {
 public struct TransactionSet: XDRDecodable, Encodable {
     public init(from decoder: XDRDecoder) throws {
         previousLedgerHash = try decoder.decode(WrappedData32.self)
-        txs = try decoder.decodeArray(TransactionEnvelope.self)
+        txs = try decoder.decode([TransactionEnvelope].self)
     }
     
     let previousLedgerHash: WrappedData32
@@ -241,7 +241,7 @@ struct TransactionResultSet: XDRDecodable, Encodable {
     let txResults: [TransactionResultPair]
 
     init(from decoder: XDRDecoder) throws {
-        txResults = try decoder.decodeArray(TransactionResultPair.self)
+        txResults = try decoder.decode([TransactionResultPair].self)
     }
 }
 

@@ -47,9 +47,9 @@ public struct TransactionResult: XDRCodable, XDREncodableStruct, Encodable {
 
             switch discriminant {
             case TransactionResultCode.txSUCCESS:
-                self = .txSUCCESS(try decoder.decodeArray(OperationResult.self))
+                self = .txSUCCESS(try decoder.decode([OperationResult].self))
             case TransactionResultCode.txFAILED:
-                self = .txFAILED(try decoder.decodeArray(OperationResult.self))
+                self = .txFAILED(try decoder.decode([OperationResult].self))
             default:
                 self = .txERROR(discriminant)
             }
@@ -477,7 +477,7 @@ public enum PathPaymentResult: XDRDecodable, Encodable {
         }
 
         public init(from decoder: XDRDecoder) throws {
-            offers = try decoder.decodeArray(ClaimOfferAtom.self)
+            offers = try decoder.decode([ClaimOfferAtom].self)
             last = try decoder.decode(SimplePaymentResult.self)
         }
     }
@@ -556,7 +556,7 @@ public struct ManageOfferSuccessResult: XDRDecodable, Encodable {
     let effect: ManageOfferEffect
 
     public init(from decoder: XDRDecoder) throws {
-        offersClaimed = try decoder.decodeArray(ClaimOfferAtom.self)
+        offersClaimed = try decoder.decode([ClaimOfferAtom].self)
         effect = try decoder.decode(ManageOfferEffect.self)
     }
     
@@ -767,7 +767,7 @@ public enum InflationResult: XDRDecodable, Encodable {
 
         switch discriminant {
         case InflationResultCode.INFLATION_SUCCESS:
-            self = .INFLATION_SUCCESS(try decoder.decodeArray(InflationPayout.self))
+            self = .INFLATION_SUCCESS(try decoder.decode([InflationPayout].self))
         default:
             self = .INFLATION_NOT_TIME
         }

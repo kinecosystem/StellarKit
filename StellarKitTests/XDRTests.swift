@@ -50,7 +50,7 @@ class XDRTests: XCTestCase {
     func test_array() {
         let a: [UInt8] = [123]
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(UInt8.self))
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decode([UInt8].self))
     }
 
     func test_string_padded() {
@@ -68,13 +68,13 @@ class XDRTests: XCTestCase {
     func test_optional_not_nil() {
         let a: UInt8? = 123
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(UInt8.self).first)
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decode([UInt8].self).first)
     }
 
     func test_optional_nil() {
         let a: UInt8? = nil
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(UInt8.self).first)
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decode([UInt8].self).first)
     }
 
     func test_data() {
@@ -107,25 +107,4 @@ class XDRTests: XCTestCase {
         XCTAssertEqual(s.b, s2.b)
     }
 
-    func test_dump() {
-        let path = URL(fileURLWithPath: "/Users/avi/Downloads/results-006bc03f.xdr")
-        
-        guard let data = try? Data(contentsOf: path) else {
-            print("Unable to load data.")
-            
-            return
-        }
-
-        let decoder = XDRDecoder(data: data)
-        
-        while true {
-            let length = try! decoder.decode(UInt32.self)
-            
-            let history = try! decoder.decode(TransactionHistoryResultEntry.self)
-            
-            for result in history.txResultSet.results {
-                print(result.transactionHash.wrapped.hexString)
-            }
-        }
-    }
 }

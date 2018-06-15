@@ -152,9 +152,9 @@ public struct Transaction: XDRCodable, Encodable {
         sourceAccount = try decoder.decode(PublicKey.self)
         fee = try decoder.decode(UInt32.self)
         seqNum = try decoder.decode(UInt64.self)
-        timeBounds = try decoder.decodeArray(TimeBounds.self).first
+        timeBounds = try decoder.decode([TimeBounds].self).first
         memo = try decoder.decode(Memo.self)
-        operations = try decoder.decodeArray(Operation.self)
+        operations = try decoder.decode([Operation].self)
         _ = try decoder.decode(Int32.self)
     }
 
@@ -219,7 +219,7 @@ public struct TransactionEnvelope: XDRCodable, XDREncodableStruct, Encodable {
 
     public init(from decoder: XDRDecoder) throws {
         tx = try decoder.decode(Transaction.self)
-        signatures = try decoder.decodeArray(DecoratedSignature.self)
+        signatures = try decoder.decode([DecoratedSignature].self)
     }
 
     init(tx: Transaction, signatures: [DecoratedSignature]) {

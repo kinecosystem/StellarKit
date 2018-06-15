@@ -66,7 +66,7 @@ public struct PathPaymentOp: XDRCodable, XDREncodableStruct {
         destination = try decoder.decode(PublicKey.self)
         destAsset = try decoder.decode(Asset.self)
         destAmount = try decoder.decode(Int64.self)
-        path = try decoder.decodeArray(Asset.self)
+        path = try decoder.decode([Asset].self)
     }
 }
 
@@ -120,15 +120,15 @@ public struct SetOptionsOp: XDRCodable, XDREncodableStruct {
     let signer: Signer?
 
     public init(from decoder: XDRDecoder) throws {
-        inflationDest = try decoder.decodeArray(PublicKey.self).first
-        clearFlags = try decoder.decodeArray(UInt32.self).first
-        setFlags = try decoder.decodeArray(UInt32.self).first
-        masterWeight = try decoder.decodeArray(UInt32.self).first
-        lowThreshold = try decoder.decodeArray(UInt32.self).first
-        medThreshold = try decoder.decodeArray(UInt32.self).first
-        highThreshold = try decoder.decodeArray(UInt32.self).first
-        homeDomain = try decoder.decodeArray(String.self).first
-        signer = try decoder.decodeArray(Signer.self).first
+        inflationDest = try decoder.decode([PublicKey].self).first
+        clearFlags = try decoder.decode([UInt32].self).first
+        setFlags = try decoder.decode([UInt32].self).first
+        masterWeight = try decoder.decode([UInt32].self).first
+        lowThreshold = try decoder.decode([UInt32].self).first
+        medThreshold = try decoder.decode([UInt32].self).first
+        highThreshold = try decoder.decode([UInt32].self).first
+        homeDomain = try decoder.decode([String].self).first
+        signer = try decoder.decode([Signer].self).first
     }
 }
 
@@ -177,7 +177,7 @@ public struct ManageDataOp: XDRCodable, XDREncodableStruct {
     public init(from decoder: XDRDecoder) throws {
         dataName = try decoder.decode(String.self)
 
-        let data = try decoder.decodeArray(UInt8.self)
+        let data = try decoder.decode([UInt8].self)
         dataValue = data.isEmpty ? nil : Data(bytes: data)
     }
 }
