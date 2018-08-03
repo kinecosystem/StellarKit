@@ -47,7 +47,7 @@ extension NetworkId: CustomStringConvertible {
  `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
  supporting non-native assets.
  */
-public struct Stellar {
+public enum Stellar {
     public struct Node {
         public let baseURL: URL
         public let networkId: NetworkId
@@ -327,9 +327,4 @@ public struct Stellar {
                 }
         }
     }
-    
-    //MARK: -
-    
-    @available(*, unavailable)
-    private init() { }
 }
