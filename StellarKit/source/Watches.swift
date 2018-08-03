@@ -148,69 +148,29 @@ extension PaymentEvent {
 
 //MARK: -
 
-public class TxWatch {
+private let formatter: DateFormatter = {
+    let df = DateFormatter()
+    df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+
+    return df
+}()
+
+public final class EventWatcher<EventType> where EventType: Decodable {
     public let eventSource: StellarEventSource
-    public let emitter: Observable<TxEvent>
-
-    private static let formatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-
-        return df
-    }()
+    public let emitter: Observable<EventType>
 
     init(eventSource: StellarEventSource) {
         self.eventSource = eventSource
 
-        self.emitter = eventSource.emitter.flatMap({ event -> TxEvent? in
+        self.emitter = eventSource.emitter.flatMap({ event -> EventType? in
             guard let jsonData = event.data?.data(using: .utf8) else {
                 return nil
             }
 
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(TxWatch.formatter)
+            decoder.dateDecodingStrategy = .formatted(formatter)
 
-            guard let tx = try? decoder.decode(TxEvent.self, from: jsonData) else {
-                return nil
-            }
-
-            return tx
-        })
-    }
-
-    deinit {
-        eventSource.close()
-        emitter.unlink()
-    }
-}
-
-public class PaymentWatch {
-    public let eventSource: StellarEventSource
-    public let emitter: Observable<PaymentEvent>
-
-    private static let formatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-
-        return df
-    }()
-
-    init(eventSource: StellarEventSource) {
-        self.eventSource = eventSource
-
-        self.emitter = eventSource.emitter.flatMap({ event -> PaymentEvent? in
-            guard let jsonData = event.data?.data(using: .utf8) else {
-                return nil
-            }
-
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(PaymentWatch.formatter)
-
-            guard let payment = try? decoder.decode(PaymentEvent.self, from: jsonData) else {
-                return nil
-            }
-
-            return payment
+            return try? decoder.decode(EventType.self, from: jsonData)
         })
     }
 
