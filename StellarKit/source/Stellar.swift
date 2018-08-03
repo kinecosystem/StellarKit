@@ -83,7 +83,10 @@ public struct Stellar {
                                            asset: asset,
                                            source: source)
                 
-                return self.transaction(source: source, operations: [ op ], memo: memo, node: node)
+                return TxBuilder(source: source, node: node)
+                    .set(memo: memo)
+                    .add(operation: op)
+                    .tx()
             }
             .then { tx -> Promise<String> in
                 let envelope = try self.sign(transaction: tx,
@@ -137,10 +140,11 @@ public struct Stellar {
                     
                     return
                 }
-                
-                self.transaction(source: account,
-                                 operations: [Operation.changeTrust(asset: asset)],
-                                 node: node)
+
+
+                TxBuilder(source: account, node: node)
+                    .add(operation: Operation.changeTrust(asset: asset))
+                    .tx()
                     .then { tx -> Promise<String> in
                         let envelope = try self.sign(transaction: tx,
                                                      signer: account,
@@ -269,39 +273,7 @@ public struct Stellar {
                 return Promise<UInt64>().signal(accountDetails.seqNum + 1)
         }
     }
-    
-    public static func transaction(source: Account,
-                                   operations: [Operation],
-                                   sequence: UInt64 = 0,
-                                   memo: Memo = .MEMO_NONE,
-                                   node: Node) -> Promise<Transaction> {
-        let p = Promise<Transaction>()
-        
-        guard let sourceKey = source.publicKey else {
-            p.signal(StellarError.missingPublicKey)
-            
-            return p
-        }
-        
-        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceKey)))
-        
-        self.sequence(account: sourceKey, seqNum: sequence, node: node)
-            .then {
-                let tx = Transaction(sourceAccount: sourcePK,
-                                     seqNum: $0,
-                                     timeBounds: nil,
-                                     memo: memo,
-                                     operations: operations)
-                
-                p.signal(tx)
-            }
-            .error { _ in
-                p.signal(StellarError.missingSequence)
-        }
-        
-        return p
-    }
-    
+
     public static func sign(transaction tx: Transaction,
                             signer: Account,
                             node: Node) throws -> TransactionEnvelope {
