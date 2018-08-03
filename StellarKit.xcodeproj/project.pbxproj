@@ -50,6 +50,7 @@
 		828CB54D205E24CD007C679C /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828CB54C205E24CD007C679C /* Errors.swift */; };
 		828CB558205E2793007C679C /* StellarErrors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 828CB535205E23F9007C679C /* StellarErrors.framework */; };
 		8291DA9820353E02002C10F5 /* StellarEventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8291DA9720353E01002C10F5 /* StellarEventSource.swift */; };
+		829B374F21144EF900819BA0 /* TxBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 829B374E21144EF900819BA0 /* TxBuilder.swift */; };
 		82BA1EA8204D0EB300396AE2 /* TestKeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BA1EA7204D0EB300396AE2 /* TestKeyUtils.swift */; };
 		82BA1EAA204D0F4000396AE2 /* PWHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24672013D6D90017EF68 /* PWHash.swift */; };
 		82BA1EAB204D0F4C00396AE2 /* RandomBytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24682013D6D90017EF68 /* RandomBytes.swift */; };
@@ -351,6 +352,7 @@
 		828CB538205E23FA007C679C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		828CB54C205E24CD007C679C /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		8291DA9720353E01002C10F5 /* StellarEventSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarEventSource.swift; sourceTree = "<group>"; };
+		829B374E21144EF900819BA0 /* TxBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxBuilder.swift; sourceTree = "<group>"; };
 		82BA1EA7204D0EB300396AE2 /* TestKeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestKeyUtils.swift; sourceTree = "<group>"; };
 		82BA20A0204D856100396AE2 /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82BA20A1204D856100396AE2 /* StellarKit-macos-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "StellarKit-macos-Info.plist"; path = "/Users/avi/Projects/kin-core-ios/KinSDK/StellarKit/StellarKit-macos-Info.plist"; sourceTree = "<absolute>"; };
@@ -570,6 +572,7 @@
 				82191578204BC7D300450864 /* StellarOps.swift */,
 				82321F46204F80E700C5D557 /* Watches.swift */,
 				824138522060ADF300D7117E /* Endpoint.swift */,
+				829B374E21144EF900819BA0 /* TxBuilder.swift */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -1190,6 +1193,7 @@
 				824063B220147DCD0055D70A /* Operation.swift in Sources */,
 				8240BAF62028EAE0003F08FB /* HorizonResponses.swift in Sources */,
 				824063B520147DCD0055D70A /* Transaction.swift in Sources */,
+				829B374F21144EF900819BA0 /* TxBuilder.swift in Sources */,
 				824063B120147DCD0055D70A /* Asset.swift in Sources */,
 				82ECAB8C2003290F0010E31F /* KeyUtils.swift in Sources */,
 				824063B420147DCD0055D70A /* PublicKey.swift in Sources */,
