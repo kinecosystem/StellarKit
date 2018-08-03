@@ -232,29 +232,29 @@ public struct Stellar {
      */
     public static func txWatch(account: String? = nil,
                                lastEventId: String?,
-                               node: Node) -> TxWatch {
+                               node: Node) -> EventWatcher<TxEvent> {
         let url = Endpoint(url: node.baseURL).account(account).transactions().cursor(lastEventId).url
         
-        return TxWatch(eventSource: StellarEventSource(url: url))
+        return EventWatcher(eventSource: StellarEventSource(url: url))
     }
     
     /**
      Observe payments on the given node.  When `account` is non-`nil`, observations are
      limited to payments involving the given account.
-     
+
      - parameter account: The `Account` whose payments will be observed.  Optional.
      - parameter lastEventId: If non-`nil`, only payments with a later event Id will be observed.
      The string _now_ will only observe payments made after observation begins.
      - parameter node: An object describing the network endpoint.
-     
+
      - Returns: An instance of `PaymentWatch`, which contains an `Observable` which emits `PaymentEvent` objects.
      */
     public static func paymentWatch(account: String? = nil,
                                     lastEventId: String?,
-                                    node: Node) -> PaymentWatch {
+                                    node: Node) -> EventWatcher<PaymentEvent> {
         let url = Endpoint(url: node.baseURL).account(account).payments().cursor(lastEventId).url
-        
-        return PaymentWatch(eventSource: StellarEventSource(url: url))
+
+        return EventWatcher(eventSource: StellarEventSource(url: url))
     }
     
     //MARK: -
