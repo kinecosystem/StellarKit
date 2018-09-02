@@ -28,7 +28,7 @@ func sign(transaction tx: Transaction,
 //    let payload = TransactionSignaturePayload(networkId: WD32(sha256),
 //                                              taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
-    print("Moo: \(XDREncoder.encode(payload).hexString)")
+    print("Moo: \(try! XDREncoder.encode(payload).hexString)")
     let message = try XDREncoder.encode(payload).sha256
 
     guard let sign = signer.sign else {
