@@ -206,6 +206,11 @@ struct TransactionSignaturePayload: XDREncodableStruct {
     }
 }
 
+struct OperationSignaturePayload: XDREncodableStruct {
+    let networkId: WrappedData32
+    let operation: Operation
+}
+
 struct DecoratedSignature: XDRCodable, XDREncodableStruct {
     let hint: WrappedData4;
     let signature: Data

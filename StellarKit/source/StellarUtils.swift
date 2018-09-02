@@ -24,8 +24,9 @@ func sign(transaction tx: Transaction,
           networkId: String) throws -> TransactionEnvelope {
     let sha256 = try networkIdSHA256(networkId)
 
-    let payload = TransactionSignaturePayload(networkId: WD32(sha256),
-                                              taggedTransaction: .ENVELOPE_TYPE_TX(tx))
+    let payload = OperationSignaturePayload(networkId: WD32(sha256), operation: tx.operations[0])
+//    let payload = TransactionSignaturePayload(networkId: WD32(sha256),
+//                                              taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
     let message = try XDREncoder.encode(payload).sha256
 
