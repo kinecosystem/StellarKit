@@ -25,8 +25,6 @@ func sign(transaction tx: Transaction,
     let sha256 = try networkIdSHA256(networkId)
 
     let payload = OperationSignaturePayload(networkId: WD32(sha256), operation: tx.operations[0])
-//    let payload = TransactionSignaturePayload(networkId: WD32(sha256),
-//                                              taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
     print("Moo: \(try! XDREncoder.encode(payload).hexString)")
     let message = try XDREncoder.encode(payload).sha256
@@ -35,11 +33,20 @@ func sign(transaction tx: Transaction,
         throw StellarError.missingSignClosure
     }
 
-    let signature = try sign(message)
+    let opSig = try sign(message)
+
+    let txPayload = TransactionSignaturePayload(networkId: WD32(sha256),
+                                                taggedTransaction: .ENVELOPE_TYPE_TX(tx))
+
+    let txMessage = try XDREncoder.encode(txPayload).sha256
+
+    let txSig = try sign(txMessage)
 
     return TransactionEnvelope(tx: tx,
-                               signatures: [DecoratedSignature(hint: WrappedData4(hint),
-                                                               signature: signature)])
+                               signatures: [
+                                DecoratedSignature(hint: WrappedData4(hint), signature: opSig),
+                                DecoratedSignature(hint: WrappedData4(hint), signature: txSig),
+                                ])
 }
 
 func issue(request: URLRequest) -> Promise<Data> {
