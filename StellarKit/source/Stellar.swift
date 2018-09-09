@@ -144,12 +144,8 @@ public enum Stellar {
 
                 TxBuilder(source: account, node: node)
                     .add(operation: Operation.changeTrust(asset: asset))
-                    .tx()
-                    .then { tx -> Promise<String> in
-                        let envelope = try self.sign(transaction: tx,
-                                                     signer: account,
-                                                     node: node)
-                        
+                    .envelope(networkId: node.networkId.description)
+                    .then { envelope -> Promise<String> in
                         return self.postTransaction(envelope: envelope, node: node)
                     }
                     .then { txHash in
