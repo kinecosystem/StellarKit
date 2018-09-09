@@ -73,6 +73,8 @@ public final class TxBuilder {
 
         let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceKey)))
 
+        let operations = self.operations + opSigners.map({ $0.0 })
+
         if sequence > 0 {
             p.signal(Transaction(sourceAccount: pk,
                                  seqNum: sequence,
@@ -88,7 +90,7 @@ public final class TxBuilder {
                                          seqNum: $0,
                                          timeBounds: nil,
                                          memo: self.memo ?? .MEMO_NONE,
-                                         operations: self.operations)
+                                         operations: operations)
 
                     p.signal(tx)
                 }
@@ -126,7 +128,6 @@ public final class TxBuilder {
 
     private func sign(tx: Transaction, networkId: String) throws -> TransactionEnvelope {
         var sigs = [DecoratedSignature]()
-
 
         let networkHash = try WD32(networkIdSHA256(networkId))
 

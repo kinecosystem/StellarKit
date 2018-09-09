@@ -141,7 +141,6 @@ public enum Stellar {
                     return
                 }
 
-
                 TxBuilder(source: account, node: node)
                     .add(operation: Operation.changeTrust(asset: asset))
                     .envelope(networkId: node.networkId.description)

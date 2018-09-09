@@ -24,16 +24,9 @@ func sign(transaction tx: Transaction,
           networkId: String) throws -> TransactionEnvelope {
     let sha256 = try networkIdSHA256(networkId)
 
-    let payload = OperationSignaturePayload(networkId: WD32(sha256), operation: tx.operations[0])
-
-    let message = try XDREncoder.encode(payload).sha256
-
     guard let sign = signer.sign else {
         throw StellarError.missingSignClosure
     }
-
-    let opSig = try sign(message)
-
     let txPayload = TransactionSignaturePayload(networkId: WD32(sha256),
                                                 taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
@@ -43,7 +36,6 @@ func sign(transaction tx: Transaction,
 
     return TransactionEnvelope(tx: tx,
                                signatures: [
-                                DecoratedSignature(hint: WrappedData4(hint), signature: opSig),
                                 DecoratedSignature(hint: WrappedData4(hint), signature: txSig),
                                 ])
 }
