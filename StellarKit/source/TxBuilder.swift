@@ -149,7 +149,7 @@ public final class TxBuilder {
             return try DecoratedSignature(hint: hint, signature:sign(m))
             }())
 
-        try opSigners.forEach({ (op, signer) in
+        try opSigners.filter({ $0.1.publicKey != source.publicKey }).forEach({ (op, signer) in
             try sigs.append({
                 guard let sign = signer.sign else {
                     throw StellarError.missingSignClosure
