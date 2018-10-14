@@ -23,3 +23,9 @@ public enum StellarError: Error {
     case unknownError (Any?)
     case internalInconsistency
 }
+
+extension StellarError: LocalizedError {
+    public var errorDescription: String? {
+        return String("\(self)")
+    }
+}
