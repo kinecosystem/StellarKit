@@ -23,3 +23,27 @@ public enum StellarError: Error {
     case unknownError (Any?)
     case internalInconsistency
 }
+
+extension StellarError: LocalizedError {
+    var errorDescription: String? {
+        let description: String = {
+            switch self {
+            case .memoTooLong: return "Memo too long"
+            case .missingAccount: return "Missing account"
+            case .missingPublicKey: return "Missing public key"
+            case .missingHash: return "Missing hash"
+            case .missingSequence: return "Missing sequence"
+            case .missingBalance: return "Missing balance"
+            case .missingSignClosure: return "Missing sign closure"
+            case .urlEncodingFailed: return "URL encoding failed"
+            case .dataEncodingFailed: return "Data encoding failed"
+            case .signingFailed: return "Signing failed"
+            case .destinationNotReadyForAsset: return "Destination not ready for asset"
+            case .unknownError: return "Unknown Error"
+            case .internalInconsistency: return "Internal inconsistency"
+            }
+        }()
+
+        return "Stellar error: \(description)"
+    }
+}
