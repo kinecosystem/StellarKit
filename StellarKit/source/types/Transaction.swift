@@ -45,7 +45,7 @@ public enum Memo: XDRCodable {
     }
 
     public init(_ string: String) throws {
-        guard string.count <= 28 else {
+        guard string.utf8.count <= 28 else {
             throw StellarError.memoTooLong(string)
         }
 
