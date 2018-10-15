@@ -170,9 +170,14 @@ public struct AccountMergeOp: XDRCodable, XDREncodableStruct {
     }
 }
 
-public struct ManageDataOp: XDRCodable, XDREncodableStruct {
+public struct ManageDataOp: XDRCodable {
     let dataName: String
     let dataValue: Data?
+
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(dataName)
+        try encoder.encodeOptional(dataValue)
+    }
 
     public init(from decoder: XDRDecoder) throws {
         dataName = try decoder.decode(String.self)
