@@ -180,6 +180,11 @@ public struct ManageDataOp: XDRCodable, XDREncodableStruct {
         let data = try decoder.decodeArray(UInt8.self)
         dataValue = data.isEmpty ? nil : Data(bytes: data)
     }
+
+    public init(dataName: String, dataValue: Data?) {
+        self.dataName = dataName
+        self.dataValue = dataValue
+    }
 }
 
 public struct Signer: XDRDecodable {

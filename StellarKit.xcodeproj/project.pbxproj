@@ -64,7 +64,6 @@
 		82BA1EB3204D0F5700396AE2 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F241F2013D6D90017EF68 /* Auth.swift */; };
 		82BA1EB4204D0F5700396AE2 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24202013D6D90017EF68 /* Box.swift */; };
 		82BA1EB5204D0F5700396AE2 /* GenericHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24212013D6D90017EF68 /* GenericHash.swift */; };
-		82BA1EB6204D0F5700396AE2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E96F24222013D6D90017EF68 /* Info.plist */; };
 		82BA1EB7204D0F5700396AE2 /* KeyDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24232013D6D90017EF68 /* KeyDerivation.swift */; };
 		82BA1EB8204D0F5700396AE2 /* KeyExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F24242013D6D90017EF68 /* KeyExchange.swift */; };
 		82BA1EBA204D1C2C00396AE2 /* libsodium-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E96F245E2013D6D90017EF68 /* libsodium-osx.a */; };
@@ -1134,7 +1133,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82BA1EB6204D0F5700396AE2 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
