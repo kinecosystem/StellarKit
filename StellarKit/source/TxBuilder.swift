@@ -16,6 +16,7 @@ public final class TxBuilder {
     private var fee: UInt32?
     private var sequence: UInt64 = 0
     private var operations = [Operation]()
+    private var opSigners = [Account]()
 
     private var node: Stellar.Node
 
@@ -50,6 +51,12 @@ public final class TxBuilder {
 
     public func add(operations: [Operation]) -> TxBuilder {
         self.operations += operations
+
+        return self
+    }
+
+    public func add(signer: Account) -> TxBuilder {
+        opSigners.append(signer)
 
         return self
     }
@@ -90,5 +97,59 @@ public final class TxBuilder {
         }
 
         return p
+    }
+
+    public func envelope(networkId: String) -> Promise<TransactionEnvelope> {
+        let p = Promise<TransactionEnvelope>()
+
+        tx()
+            .then({tx in
+                do {
+                    p.signal(try self.sign(tx: tx, networkId: networkId))
+                }
+                catch {
+                    p.signal(error)
+                }
+            })
+
+        return p
+    }
+
+    private func networkIdSHA256(_ networkId: String) throws -> Data {
+        guard let sha256 = networkId.data(using: .utf8)?.sha256 else {
+            throw StellarError.dataEncodingFailed
+        }
+
+        return sha256
+    }
+
+    private func sign(tx: Transaction, networkId: String) throws -> TransactionEnvelope {
+        var sigs = [DecoratedSignature]()
+
+        let networkHash = try WD32(networkIdSHA256(networkId))
+        let p = TransactionSignaturePayload(networkId: networkHash,
+                                            taggedTransaction: .ENVELOPE_TYPE_TX(tx))
+
+        let m = try XDREncoder.encode(p).sha256
+
+        var signatories = opSigners
+        signatories.append(source)
+
+        try signatories.forEach({ signer in
+            try sigs.append({
+                guard let sign = signer.sign else {
+                    throw StellarError.missingSignClosure
+                }
+
+                guard let publicKey = signer.publicKey else {
+                    throw StellarError.missingPublicKey
+                }
+
+                let hint = WrappedData4(KeyUtils.key(base32: publicKey).suffix(4))
+                return try DecoratedSignature(hint: hint, signature:sign(m))
+                }())
+        })
+
+        return TransactionEnvelope(tx: tx, signatures: sigs)
     }
 }
