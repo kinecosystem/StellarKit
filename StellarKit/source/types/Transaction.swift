@@ -111,6 +111,7 @@ public struct TimeBounds: XDRCodable, XDREncodableStruct {
 }
 
 public struct Transaction: XDRCodable {
+    public static let MaxMemoLength = 28
     let sourceAccount: PublicKey
     let fee: UInt32
     let seqNum: UInt64
