@@ -168,24 +168,17 @@ extension UInt64: XDRCodable { }
 
 extension String: XDRCodable {
     public init(from decoder: XDRDecoder) throws {
-        let length = try Int32(from: decoder)
-
-        let data = try Data(bytes: decoder.read(Int(length)))
+        let data = try decoder.decode(Data.self)
+        
         guard let s = String(bytes: data, encoding: .utf8) else {
             throw XDRDecoder.Errors.stringDecodingFailed(data)
         }
-
-        _ = try decoder.read((4 - Int(length) % 4) % 4)
 
         self = s
     }
 
     public func encode(to encoder: XDREncoder) throws {
-        let length = Int32(self.lengthOfBytes(using: .utf8))
-
-        try encoder.encode(length)
-        encoder.append(self.data(using: .utf8)!)
-        encoder.append(Array<UInt8>(repeating: 0, count: (4 - Int(length) % 4) % 4))
+        try encoder.encode(self.data(using: .utf8)!)
     }
 }
 
@@ -198,6 +191,7 @@ extension Data: XDRCodable {
     public func encode(to encoder: XDREncoder) throws {
         try encoder.encode(Int32(count))
         encoder.append(self)
+        encoder.append(Array<UInt8>(repeating: 0, count: (4 - Int(count) % 4) % 4))
     }
 }
 
