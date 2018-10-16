@@ -8,8 +8,8 @@
 
 import Foundation
 
-typealias WD4 = WrappedData32
-typealias WD12 = WrappedData32
+typealias WD4 = WrappedData4
+typealias WD12 = WrappedData12
 typealias WD32 = WrappedData32
 
 private func decodeData(from decoder: XDRDecoder, capacity: Int) throws -> Data {
