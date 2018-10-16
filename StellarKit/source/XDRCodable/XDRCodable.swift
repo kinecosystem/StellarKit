@@ -198,6 +198,7 @@ extension Data: XDRCodable {
     public func encode(to encoder: XDREncoder) throws {
         try encoder.encode(Int32(count))
         encoder.append(self)
+        encoder.append(Array<UInt8>(repeating: 0, count: (4 - Int(count) % 4) % 4))
     }
 }
 
