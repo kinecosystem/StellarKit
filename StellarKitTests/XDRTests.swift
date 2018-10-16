@@ -83,6 +83,12 @@ class XDRTests: XCTestCase {
         try! XCTAssertEqual(a, XDRDecoder(data: x).decode(Data.self))
     }
 
+    func test_optional_data() {
+        let a: Data? = Data(bytes: [123])
+        let x = try! XDREncoder.encode(a)
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(Data.self).first)
+    }
+
     func test_struct() {
         struct S: XDRCodable, XDREncodableStruct {
             let a: Int32
