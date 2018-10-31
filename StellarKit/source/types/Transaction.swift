@@ -178,11 +178,12 @@ public struct Transaction: XDRCodable {
     }
     
     public func hash(networkId: String) throws -> Data {
-        guard let networkId = WrappedData32(networkId.data(using: .utf8)) else {
+        guard let data = networkId.data(using: .utf8) else {
             throw StellarError.dataEncodingFailed
         }
         
-        let payload = TransactionSignaturePayload(networkId: networkId, taggedTransaction: .ENVELOPE_TYPE_TX(self))
+        let payload = TransactionSignaturePayload(networkId: WD32(data),
+                                                  taggedTransaction: .ENVELOPE_TYPE_TX(self))
         return try XDREncoder.encode(payload).sha256
     }
 }

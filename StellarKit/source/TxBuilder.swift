@@ -130,7 +130,7 @@ public final class TxBuilder {
         let p = TransactionSignaturePayload(networkId: networkHash,
                                             taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
-        let m = try XDREncoder.encode(p).sha256
+        let m = try tx.hash(networkId: networkId)
 
         var signatories = opSigners
         signatories.append(source)
