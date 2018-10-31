@@ -178,7 +178,7 @@ public struct Transaction: XDRCodable {
     }
     
     public func hash(networkId: String) throws -> Data {
-        guard let data = networkId.data(using: .utf8) else {
+        guard let data = networkId.data(using: .utf8)?.sha256 else {
             throw StellarError.dataEncodingFailed
         }
         
