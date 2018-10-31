@@ -132,11 +132,13 @@ public struct Transaction: XDRCodable {
                 seqNum: UInt64,
                 timeBounds: TimeBounds?,
                 memo: Memo,
+                fee: UInt32? = nil,
                 operations: [Operation]) {
         self.init(sourceAccount: .PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceAccount))),
                   seqNum: seqNum,
                   timeBounds: timeBounds,
                   memo: memo,
+                  fee: fee,
                   operations: operations)
     }
 
@@ -144,6 +146,7 @@ public struct Transaction: XDRCodable {
          seqNum: UInt64,
          timeBounds: TimeBounds?,
          memo: Memo,
+         fee: UInt32? = nil,
          operations: [Operation]) {
         self.sourceAccount = sourceAccount
         self.seqNum = seqNum
@@ -151,7 +154,7 @@ public struct Transaction: XDRCodable {
         self.memo = memo
         self.operations = operations
 
-        self.fee = UInt32(100 * operations.count)
+        self.fee = fee ?? UInt32(100 * operations.count)
     }
 
     public init(from decoder: XDRDecoder) throws {
@@ -175,11 +178,12 @@ public struct Transaction: XDRCodable {
     }
     
     public func hash(networkId: String) throws -> Data {
-        guard let networkId = WrappedData32(networkId.data(using: .utf8)) else {
+        guard let data = networkId.data(using: .utf8) else {
             throw StellarError.dataEncodingFailed
         }
         
-        let payload = TransactionSignaturePayload(networkId: networkId, taggedTransaction: .ENVELOPE_TYPE_TX(self))
+        let payload = TransactionSignaturePayload(networkId: WD32(data),
+                                                  taggedTransaction: .ENVELOPE_TYPE_TX(self))
         return try XDREncoder.encode(payload).sha256
     }
 }

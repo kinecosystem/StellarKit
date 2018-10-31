@@ -47,7 +47,7 @@ extension NetworkId: CustomStringConvertible {
  `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
  supporting non-native assets.
  */
-public struct Stellar {
+public enum Stellar {
     public struct Node {
         public let baseURL: URL
         public let networkId: NetworkId
@@ -83,7 +83,10 @@ public struct Stellar {
                                            asset: asset,
                                            source: source)
                 
-                return self.transaction(source: source, operations: [ op ], memo: memo, node: node)
+                return TxBuilder(source: source, node: node)
+                    .set(memo: memo)
+                    .add(operation: op)
+                    .tx()
             }
             .then { tx -> Promise<String> in
                 let envelope = try self.sign(transaction: tx,
@@ -137,10 +140,11 @@ public struct Stellar {
                     
                     return
                 }
-                
-                self.transaction(source: account,
-                                 operations: [Operation.changeTrust(asset: asset)],
-                                 node: node)
+
+
+                TxBuilder(source: account, node: node)
+                    .add(operation: Operation.changeTrust(asset: asset))
+                    .tx()
                     .then { tx -> Promise<String> in
                         let envelope = try self.sign(transaction: tx,
                                                      signer: account,
@@ -232,29 +236,29 @@ public struct Stellar {
      */
     public static func txWatch(account: String? = nil,
                                lastEventId: String?,
-                               node: Node) -> TxWatch {
+                               node: Node) -> EventWatcher<TxEvent> {
         let url = Endpoint(url: node.baseURL).account(account).transactions().cursor(lastEventId).url
         
-        return TxWatch(eventSource: StellarEventSource(url: url))
+        return EventWatcher(eventSource: StellarEventSource(url: url))
     }
     
     /**
      Observe payments on the given node.  When `account` is non-`nil`, observations are
      limited to payments involving the given account.
-     
+
      - parameter account: The `Account` whose payments will be observed.  Optional.
      - parameter lastEventId: If non-`nil`, only payments with a later event Id will be observed.
      The string _now_ will only observe payments made after observation begins.
      - parameter node: An object describing the network endpoint.
-     
+
      - Returns: An instance of `PaymentWatch`, which contains an `Observable` which emits `PaymentEvent` objects.
      */
     public static func paymentWatch(account: String? = nil,
                                     lastEventId: String?,
-                                    node: Node) -> PaymentWatch {
+                                    node: Node) -> EventWatcher<PaymentEvent> {
         let url = Endpoint(url: node.baseURL).account(account).payments().cursor(lastEventId).url
-        
-        return PaymentWatch(eventSource: StellarEventSource(url: url))
+
+        return EventWatcher(eventSource: StellarEventSource(url: url))
     }
     
     //MARK: -
@@ -269,39 +273,7 @@ public struct Stellar {
                 return Promise<UInt64>().signal(accountDetails.seqNum + 1)
         }
     }
-    
-    public static func transaction(source: Account,
-                                   operations: [Operation],
-                                   sequence: UInt64 = 0,
-                                   memo: Memo = .MEMO_NONE,
-                                   node: Node) -> Promise<Transaction> {
-        let p = Promise<Transaction>()
-        
-        guard let sourceKey = source.publicKey else {
-            p.signal(StellarError.missingPublicKey)
-            
-            return p
-        }
-        
-        let sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceKey)))
-        
-        self.sequence(account: sourceKey, seqNum: sequence, node: node)
-            .then {
-                let tx = Transaction(sourceAccount: sourcePK,
-                                     seqNum: $0,
-                                     timeBounds: nil,
-                                     memo: memo,
-                                     operations: operations)
-                
-                p.signal(tx)
-            }
-            .error { _ in
-                p.signal(StellarError.missingSequence)
-        }
-        
-        return p
-    }
-    
+
     public static func sign(transaction tx: Transaction,
                             signer: Account,
                             node: Node) throws -> TransactionEnvelope {
@@ -355,9 +327,4 @@ public struct Stellar {
                 }
         }
     }
-    
-    //MARK: -
-    
-    @available(*, unavailable)
-    private init() { }
 }
