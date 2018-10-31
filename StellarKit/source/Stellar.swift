@@ -59,6 +59,44 @@ public struct Stellar {
     }
     
     /**
+     Generates a transaction envelope.
+     
+     - Parameter source: The account from which the payment will be made.
+     - Parameter destination: The public key of the receiving account, as a base32 string.
+     - Parameter amount: The amount to be sent.
+     - Parameter asset: The `Asset` to be sent. Defaults to the `Asset` specified in the initializer.
+     - Parameter memo: A short string placed in the MEMO field of the transaction.
+     - Parameter node: An object describing the network endpoint.
+     
+     - Returns: A promise which will be signalled with the result of the operation.
+     */
+    public static func generateEnvelope(source: Account,
+                                        destination: String,
+                                        amount: Int64,
+                                        asset: Asset = .ASSET_TYPE_NATIVE,
+                                        memo: Memo = .MEMO_NONE,
+                                        node: Node) -> Promise<TransactionEnvelope>
+    {
+        return balance(account: destination, asset: asset, node: node)
+            .then { _ -> Promise<Transaction> in
+                let op = Operation.payment(destination: destination, amount: amount, asset: asset, source: source)
+                return transaction(source: source, operations: [op], memo: memo, node: node)
+            }
+            .then { tx -> Promise<TransactionEnvelope> in
+                let envelope = try sign(transaction: tx, signer: source, node: node)
+                return Promise().signal(value: envelope)
+            }
+            .transformError({ error -> Error in
+                switch error {
+                case StellarError.missingAccount, StellarError.missingBalance:
+                    return StellarError.destinationNotReadyForAsset(error, asset.assetCode)
+                default:
+                    return error
+                }
+            })
+    }
+    
+    /**
      Sends a payment to the given account.
      
      - parameter source: The account from which the payment will be made.
@@ -70,6 +108,7 @@ public struct Stellar {
      
      - Returns: A promise which will be signalled with the result of the operation.
      */
+    @available(*, deprecated, message: "Pass the `Stellar.generateEnvelope` response to `Stellar.postTransaction`")
     public static func payment(source: Account,
                                destination: String,
                                amount: Int64,
