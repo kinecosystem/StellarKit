@@ -25,6 +25,15 @@ struct HorizonError: Decodable {
     }
 }
 
+public struct NetworkParameters: Decodable {
+    private let _links: Links
+    private let _embedded: [String: [LedgerResponse]]
+
+    public var baseFee: Int {
+        return _embedded["records"]!.first!.base_fee_in_stroops
+    }
+}
+
 public struct AccountDetails: Decodable, CustomStringConvertible {
     public let id: String
     public let accountId: String
@@ -96,3 +105,28 @@ struct TransactionResponse: Decodable {
     }
 }
 
+struct LedgerResponse: Decodable {
+    let _links: Links
+    let id: String
+    let hash: String
+    let base_fee_in_stroops: Int
+    let base_reserve_in_stroops: Double
+    let max_tx_set_size: Int
+}
+
+struct Links: Decodable {
+    let `self`: Link
+
+    let next: Link?
+    let prev: Link?
+
+    let transactions: Link?
+    let operations: Link?
+    let payments: Link?
+    let effects: Link?
+}
+
+struct Link: Decodable {
+    let href: String
+    let templated: Bool?
+}

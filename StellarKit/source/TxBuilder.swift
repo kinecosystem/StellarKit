@@ -31,7 +31,7 @@ public final class TxBuilder {
         return self
     }
 
-    public func set(fee: UInt32) -> TxBuilder {
+    public func set(fee: UInt32?) -> TxBuilder {
         self.fee = fee
 
         return self
@@ -87,6 +87,7 @@ public final class TxBuilder {
                                          seqNum: $0,
                                          timeBounds: nil,
                                          memo: self.memo ?? .MEMO_NONE,
+                                         fee: self.fee,
                                          operations: self.operations)
 
                     p.signal(tx)
