@@ -66,14 +66,14 @@ extension TxEvent {
             if case let Operation.Body.PAYMENT(pOP) = op.body {
                 return Payment(source: op.sourceAccount?.publicKey ?? source_account,
                                destination: pOP.destination.publicKey!,
-                               amount: Decimal(Double(pOP.amount) / Double(10_000_000)),
+                               amount: Decimal(pOP.amount),
                                asset: pOP.asset)
             }
 
             if case let Operation.Body.CREATE_ACCOUNT(cOP) = op.body {
                 return Payment(source: op.sourceAccount?.publicKey ?? source_account,
                                destination: cOP.destination.publicKey!,
-                               amount: Decimal(Double(cOP.balance) / Double(10_000_000)),
+                               amount: Decimal(cOP.balance),
                                asset: .ASSET_TYPE_NATIVE)
             }
 
