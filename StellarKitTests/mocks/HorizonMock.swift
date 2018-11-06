@@ -68,15 +68,16 @@ class HorizonMock {
     }
 
     init() {
-        HTTPMock.add(mock: accountMock())
-        HTTPMock.add(mock: transactionMock())
+        HTTPMock.add(mocks: accountMocks())
+        HTTPMock.add(mocks: transactionMocks())
+        HTTPMock.add(mocks: ledgerMocks())
     }
 
     deinit {
         HTTPMock.removeAll()
     }
 
-    func accountMock() -> RequestMock {
+    func accountMocks() -> [RequestMock] {
         let handler: MockHandler = { [weak self] mock, request in
             guard
                 let key = mock.variables["account"],
@@ -87,13 +88,19 @@ class HorizonMock {
             return try? JSONSerialization.data(withJSONObject: account.asDictionary(), options: [])
         }
 
-        return RequestMock(host: "horizon",
-                           path: "/accounts/${account}",
-                           httpMethod: "GET",
-                           mockHandler: handler)
+        return [
+            RequestMock(host: "horizon",
+                        path: "/accounts/${account}",
+                        httpMethod: "GET",
+                        mockHandler: handler),
+            RequestMock(host: "horizon",
+                        path: "/accounts/${account}/*",
+                        httpMethod: "GET",
+                        mockHandler: handler),
+        ]
     }
 
-    func transactionMock() -> RequestMock {
+    func transactionMocks() -> [RequestMock] {
         let handler: MockHandler = { [weak self] mock, request in
             guard let bodyString = self?.string(from: request.httpBodyStream) else {
                 return self?.malformedTransaction()
@@ -143,10 +150,29 @@ class HorizonMock {
             return nil
         }
 
-        return RequestMock(host: "horizon",
-                           path: "/transactions",
-                           httpMethod: "POST",
-                           mockHandler: handler)
+        return [
+            RequestMock(host: "horizon",
+                        path: "/transactions",
+                        httpMethod: "POST",
+                        mockHandler: handler),
+            RequestMock(host: "horizon",
+                        path: "/transactions/*",
+                        httpMethod: "POST",
+                        mockHandler: handler),
+        ]
+    }
+
+    func ledgerMocks() -> [RequestMock] {
+        let handler: MockHandler = { [weak self] mock, request in
+            return try? JSONSerialization.data(withJSONObject: self!.ledgerResponse(), options: [])
+        }
+
+        return [
+            RequestMock(host: "horizon",
+                        path: "/ledgers/*",
+                        httpMethod: "GET",
+                        mockHandler: handler),
+        ]
     }
 
     func handle(paymentOp: PaymentOp, source account: MockAccount) -> Data? {
@@ -329,6 +355,25 @@ class HorizonMock {
             ]
 
         return try! JSONSerialization.data(withJSONObject: d, options: [])
+    }
+
+    private func ledgerResponse() -> [String: Any] {
+        return [
+            "_links": [
+                "self": [ "href": "" ],
+                ],
+            "_embedded": [
+                "records": [
+                    [
+                        "id": "",
+                        "hash": "",
+                        "base_fee_in_stroops": 123,
+                        "base_reserve_in_stroops": 15,
+                        "max_tx_set_size": 17,
+                        ],
+                ],
+            ],
+        ]
     }
 
     private func string(from: InputStream?) -> String? {

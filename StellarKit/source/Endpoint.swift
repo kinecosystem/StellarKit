@@ -21,7 +21,7 @@ extension EndpointProtocol {
             p += "\($0.key)=\($0.value)"
         })
 
-        return base.appendingPathComponent(p, isDirectory: false)
+        return base.appendingPathComponent(p)
     }
 }
 

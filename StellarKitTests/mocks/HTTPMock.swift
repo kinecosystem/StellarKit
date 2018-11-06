@@ -15,6 +15,10 @@ class HTTPMock: URLProtocol {
         registeredRequestMocks.append(mock)
     }
 
+    static func add(mocks: [RequestMock]) {
+        registeredRequestMocks += mocks
+    }
+
     static func remove(mock: RequestMock) {
         if let i = registeredRequestMocks.index(where: { $0 === mock }) {
             registeredRequestMocks.remove(at: i)
@@ -142,7 +146,7 @@ class RequestMock {
             return true
         }
 
-        if mockPathComps.count != reqPathComps.count {
+        if mockPathComps.count != reqPathComps.count && mockPathComps.last != "*" {
             return false
         }
 

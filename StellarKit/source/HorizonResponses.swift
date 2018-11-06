@@ -106,7 +106,7 @@ struct TransactionResponse: Decodable {
 }
 
 struct LedgerResponse: Decodable {
-    let _links: Links
+    let _links: Links?
     let id: String
     let hash: String
     let base_fee_in_stroops: Int

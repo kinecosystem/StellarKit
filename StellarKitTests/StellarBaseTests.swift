@@ -284,5 +284,21 @@ class StellarBaseTests: XCTestCase {
         
         wait(for: [e], timeout: 120.0)
     }
-    
+
+    func test_network_parameters() {
+        let e = expectation(description: "")
+
+        Stellar.networkParameters(node: node)
+            .then { params in
+                XCTAssertEqual(params.baseFee, 123)
+        }
+            .error({ error in
+                XCTAssertFalse(true, "\(error)")
+            })
+            .finally {
+                e.fulfill()
+        }
+
+        wait(for: [e], timeout: 120.0)
+    }
 }

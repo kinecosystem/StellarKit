@@ -276,7 +276,7 @@ public enum Stellar {
         }
     }
 
-    public func networkParameters(node: Node) -> Promise<NetworkParameters> {
+    public static func networkParameters(node: Node) -> Promise<NetworkParameters> {
         let url = Endpoint(node.baseURL).ledgers().order(.descending).limit(1).url
 
         return issue(request: URLRequest(url: url))
