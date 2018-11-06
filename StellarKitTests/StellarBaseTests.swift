@@ -76,6 +76,7 @@ class StellarBaseTests: XCTestCase {
                                      seqNum: sequence,
                                      timeBounds: nil,
                                      memo: .MEMO_NONE,
+                                     fee: 100,
                                      operations: [StellarKit.Operation.createAccount(destination: account,
                                                                                      balance: 100 * 10000000)])
                 

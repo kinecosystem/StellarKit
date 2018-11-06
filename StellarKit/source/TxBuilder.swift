@@ -73,24 +73,30 @@ public final class TxBuilder {
         let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceKey)))
 
         if sequence > 0 {
-            p.signal(Transaction(sourceAccount: pk,
-                                 seqNum: sequence,
-                                 timeBounds: nil,
-                                 memo: memo ?? .MEMO_NONE,
-                                 fee: fee,
-                                 operations: operations))
+            calculatedFee()
+                .then({
+                    p.signal(Transaction(sourceAccount: pk,
+                                         seqNum: self.sequence,
+                                         timeBounds: nil,
+                                         memo: self.memo ?? .MEMO_NONE,
+                                         fee: $0,
+                                         operations: self.operations))
+                })
+                .error({ p.signal($0) })
         }
         else {
             Stellar.sequence(account: sourceKey, seqNum: sequence, node: node)
-                .then {
-                    let tx = Transaction(sourceAccount: pk,
-                                         seqNum: $0,
-                                         timeBounds: nil,
-                                         memo: self.memo ?? .MEMO_NONE,
-                                         fee: self.fee,
-                                         operations: self.operations)
-
-                    p.signal(tx)
+                .then { sequence in
+                    self.calculatedFee()
+                        .then({
+                            p.signal(Transaction(sourceAccount: pk,
+                                                 seqNum: sequence,
+                                                 timeBounds: nil,
+                                                 memo: self.memo ?? .MEMO_NONE,
+                                                 fee: $0,
+                                                 operations: self.operations))
+                        })
+                        .error({ p.signal($0) })
                 }
                 .error { _ in
                     p.signal(StellarError.missingSequence)
@@ -112,6 +118,25 @@ public final class TxBuilder {
                     p.signal(error)
                 }
             })
+
+        return p
+    }
+
+    private func calculatedFee() -> Promise<UInt32> {
+        let p = Promise<UInt32>()
+
+        if let fee = fee {
+            p.signal(fee)
+        }
+        else {
+            Stellar.networkParameters(node: node)
+                .then ({ params in
+                    p.signal(UInt32(self.operations.count) * params.baseFee)
+                })
+                .error({
+                    p.signal($0)
+                })
+        }
 
         return p
     }

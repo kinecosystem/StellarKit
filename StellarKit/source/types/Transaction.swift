@@ -132,7 +132,7 @@ public struct Transaction: XDRCodable {
                 seqNum: UInt64,
                 timeBounds: TimeBounds?,
                 memo: Memo,
-                fee: UInt32? = nil,
+                fee: UInt32,
                 operations: [Operation]) {
         self.init(sourceAccount: .PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceAccount))),
                   seqNum: seqNum,
@@ -146,15 +146,14 @@ public struct Transaction: XDRCodable {
          seqNum: UInt64,
          timeBounds: TimeBounds?,
          memo: Memo,
-         fee: UInt32? = nil,
+         fee: UInt32,
          operations: [Operation]) {
         self.sourceAccount = sourceAccount
         self.seqNum = seqNum
         self.timeBounds = timeBounds
         self.memo = memo
+        self.fee = fee
         self.operations = operations
-
-        self.fee = fee ?? UInt32(100 * operations.count)
     }
 
     public init(from decoder: XDRDecoder) throws {
