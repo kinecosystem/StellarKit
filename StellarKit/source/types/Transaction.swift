@@ -197,6 +197,14 @@ struct TransactionSignaturePayload: XDREncodableStruct {
     let networkId: WrappedData32
     let taggedTransaction: TaggedTransaction
 
+    var tx: Transaction? {
+        if case let .ENVELOPE_TYPE_TX(tx) = taggedTransaction {
+            return tx
+        }
+
+        return nil
+    }
+
     enum TaggedTransaction: XDREncodable {
         case ENVELOPE_TYPE_TX (Transaction)
 

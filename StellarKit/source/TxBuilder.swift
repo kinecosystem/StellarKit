@@ -72,35 +72,21 @@ public final class TxBuilder {
 
         let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceKey)))
 
-        if sequence > 0 {
-            calculatedFee()
-                .then({
-                    p.signal(Transaction(sourceAccount: pk,
-                                         seqNum: self.sequence,
-                                         timeBounds: nil,
-                                         memo: self.memo ?? .MEMO_NONE,
-                                         fee: $0,
-                                         operations: self.operations))
-                })
-                .error({ p.signal($0) })
-        }
-        else {
-            Stellar.sequence(account: sourceKey, seqNum: sequence, node: node)
-                .then { sequence in
-                    self.calculatedFee()
-                        .then({
-                            p.signal(Transaction(sourceAccount: pk,
-                                                 seqNum: sequence,
-                                                 timeBounds: nil,
-                                                 memo: self.memo ?? .MEMO_NONE,
-                                                 fee: $0,
-                                                 operations: self.operations))
-                        })
-                        .error({ p.signal($0) })
-                }
-                .error { _ in
-                    p.signal(StellarError.missingSequence)
+        Stellar.sequence(account: sourceKey, seqNum: sequence, node: node)
+            .then { sequence in
+                self.calculatedFee()
+                    .then({
+                        p.signal(Transaction(sourceAccount: pk,
+                                             seqNum: sequence,
+                                             timeBounds: nil,
+                                             memo: self.memo ?? .MEMO_NONE,
+                                             fee: $0,
+                                             operations: self.operations))
+                    })
+                    .error({ p.signal($0) })
             }
+            .error { _ in
+                p.signal(StellarError.missingSequence)
         }
 
         return p
