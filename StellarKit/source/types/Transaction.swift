@@ -226,14 +226,14 @@ struct TransactionSignaturePayload: XDREncodableStruct {
 
 struct DecoratedSignature: XDRCodable, XDREncodableStruct {
     let hint: WrappedData4;
-    let signature: Data
+    let signature: [UInt8]
 
     init(from decoder: XDRDecoder) throws {
         hint = try decoder.decode(WrappedData4.self)
-        signature = try decoder.decode(Data.self)
+        signature = try decoder.decodeArray(UInt8.self)
     }
 
-    init(hint: WrappedData4, signature: Data) {
+    init(hint: WrappedData4, signature: [UInt8]) {
         self.hint = hint
         self.signature = signature
     }

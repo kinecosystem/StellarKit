@@ -10,6 +10,7 @@ import XCTest
 @testable import StellarKit
 import StellarErrors
 import KinUtil
+import Sodium
 
 struct MockStellarAccount: Account {
     var publicKey: String? {
@@ -29,7 +30,7 @@ struct MockStellarAccount: Account {
         }
     }
     
-    var sign: ((Data) throws -> Data)?
+    var sign: ((Data) throws -> [UInt8])?
     
     init() {
         self.init(seedStr: KeyUtils.base32(seed: TestKeyUtils.seed()!))

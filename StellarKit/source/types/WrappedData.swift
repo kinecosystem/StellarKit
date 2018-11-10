@@ -32,6 +32,8 @@ protocol WrappedData: XDRCodable, Equatable {
 
     init()
     init(_ data: Data)
+    init(_ array: [UInt8])
+    init(_ array: ArraySlice<UInt8>)
 }
 
 extension WrappedData {
@@ -55,6 +57,14 @@ extension WrappedData {
             d.append(Data(count: Self.capacity - data.count))
             self.wrapped = d
         }
+    }
+
+    init(_ array: [UInt8]) {
+        self.init(Data(array))
+    }
+
+    init(_ array: ArraySlice<UInt8>) {
+        self.init(Data(array))
     }
 
     static func ==(lhs: Self, rhs: Self) -> Bool {

@@ -20,6 +20,13 @@ private func networkIdSHA256(_ networkId: String) throws -> Data {
 
 func sign(transaction tx: Transaction,
           signer: Account,
+          hint: ArraySlice<UInt8>,
+          networkId: String) throws -> TransactionEnvelope {
+    return try sign(transaction: tx, signer: signer, hint: Data(hint), networkId: networkId)
+}
+
+func sign(transaction tx: Transaction,
+          signer: Account,
           hint: Data,
           networkId: String) throws -> TransactionEnvelope {
     let sha256 = try networkIdSHA256(networkId)
