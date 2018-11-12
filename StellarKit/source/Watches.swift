@@ -62,7 +62,7 @@ extension TxEvent {
     }
 
     public var payments: [Payment] {
-        return envelope.tx.operations.flatMap({ op in
+        return envelope.tx.operations.compactMap({ op in
             if case let Operation.Body.PAYMENT(pOP) = op.body {
                 return Payment(source: op.sourceAccount?.publicKey ?? source_account,
                                destination: pOP.destination.publicKey!,
@@ -162,7 +162,7 @@ public final class EventWatcher<EventType> where EventType: Decodable {
     init(eventSource: StellarEventSource) {
         self.eventSource = eventSource
 
-        self.emitter = eventSource.emitter.flatMap({ event -> EventType? in
+        self.emitter = eventSource.emitter.compactMap({ event -> EventType? in
             guard let jsonData = event.data?.data(using: .utf8) else {
                 return nil
             }

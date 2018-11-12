@@ -97,7 +97,7 @@ public enum Stellar {
                 
                 return self.postTransaction(envelope: envelope, node: node)
             }
-            .transformError({ error -> Error in
+            .mapError({ error -> Error in
                 if case StellarError.missingAccount = error {
                     return StellarError
                         .destinationNotReadyForAsset(error, asset.assetCode)
