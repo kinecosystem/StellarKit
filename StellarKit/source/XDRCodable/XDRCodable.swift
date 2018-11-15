@@ -186,6 +186,8 @@ extension Data: XDRCodable {
     public init(from decoder: XDRDecoder) throws {
         let length = try Int32(from: decoder)
         self = try Data(bytes: decoder.read(Int(length)))
+
+        try (0 ..< (4 - Int(count) % 4) % 4).forEach { _ in _ = try decoder.decode(UInt8.self) }
     }
 
     public func encode(to encoder: XDREncoder) throws {
