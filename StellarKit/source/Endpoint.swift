@@ -17,11 +17,9 @@ protocol EndpointProtocol {
 extension EndpointProtocol {
     var url: URL {
         var p: String = params.isEmpty ? "" : "?"
-        params.forEach({
-            p += "\($0.key)=\($0.value)"
-        })
+        p += params.map({ "\($0.key)=\($0.value)" }).joined(separator: "&")
 
-        return base.appendingPathComponent(p)
+        return URL(string: base.absoluteString + p)!
     }
 }
 
@@ -111,13 +109,17 @@ extension TransactionsEndpoint {
 
 extension LedgersEndpoint {
     func order(_ order: Order) -> LedgersEndpoint {
-        let p = parameterFixup(url: url, parameter: "?order=\(order.rawValue)")
-        return LedgersEndpoint(base: url.appendingPathComponent(p), params: [:])
+        var p = params
+        p["order"] = order.rawValue
+
+        return LedgersEndpoint(base: base, params: p)
     }
 
     func limit(_ limit: Int) -> LedgersEndpoint {
-        let p = parameterFixup(url: url, parameter: "?limit=\(limit)")
-        return LedgersEndpoint(base: url.appendingPathComponent(p), params: [:])
+        var p = params
+        p["limit"] = limit
+
+        return LedgersEndpoint(base: base, params: p)
     }
 }
 
