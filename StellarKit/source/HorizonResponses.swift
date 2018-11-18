@@ -110,7 +110,7 @@ struct LedgerResponse: Decodable {
     let id: String
     let hash: String
     let base_fee: UInt32
-    let base_reserve: Double
+    let base_reserve: String
     let max_tx_set_size: Int
 }
 
