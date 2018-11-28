@@ -208,8 +208,8 @@ public enum Stellar {
      - Returns: A promise which will be signalled with the result of the operation.
      */
     public static func accountDetails(account: String, node: Node) -> Promise<AccountDetails> {
-        let url = Endpoint(node.baseURL).account(account).url
-        
+        let url = EndPoint.accounts(account).url(with: node.baseURL)
+
         return issue(request: URLRequest(url: url))
             .then { data in
                 if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
@@ -239,8 +239,8 @@ public enum Stellar {
     public static func txWatch(account: String? = nil,
                                lastEventId: String?,
                                node: Node) -> EventWatcher<TxEvent> {
-        let url = Endpoint(node.baseURL).account(account).transactions().cursor(lastEventId).url
-        
+        let url = EndPoint.accounts(account).transactions().cursor(lastEventId).url(with: node.baseURL)
+
         return EventWatcher(eventSource: StellarEventSource(url: url))
     }
     
@@ -258,7 +258,7 @@ public enum Stellar {
     public static func paymentWatch(account: String? = nil,
                                     lastEventId: String?,
                                     node: Node) -> EventWatcher<PaymentEvent> {
-        let url = Endpoint(node.baseURL).account(account).payments().cursor(lastEventId).base
+        let url = EndPoint.accounts(account).payments().cursor(lastEventId).url(with: node.baseURL)
 
         return EventWatcher(eventSource: StellarEventSource(url: url))
     }
@@ -277,7 +277,7 @@ public enum Stellar {
     }
 
     public static func networkParameters(node: Node) -> Promise<NetworkParameters> {
-        let url = Endpoint(node.baseURL).ledgers().order(.descending).limit(1).url
+        let url = EndPoint.ledgers().order(.desc).limit(1).url(with: node.baseURL)
 
         return issue(request: URLRequest(url: url))
             .then { data in
@@ -320,7 +320,7 @@ public enum Stellar {
             return Promise<String>(StellarError.dataEncodingFailed)
         }
         
-        var request = URLRequest(url: Endpoint(node.baseURL).transactions().url)
+        var request = URLRequest(url: EndPoint.transactions().url(with: node.baseURL))
         request.httpMethod = "POST"
         request.httpBody = httpBody
         
