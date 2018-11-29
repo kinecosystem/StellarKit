@@ -43,6 +43,14 @@ extension NetworkId: CustomStringConvertible {
     }
 }
 
+public struct NetworkParameters {
+    let baseFee: UInt32
+
+    init(_ ledgers: HorizonResponses.Ledgers) {
+        baseFee = ledgers.ledgers[0].baseFee
+    }
+}
+
 /**
  `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
  supporting non-native assets.
@@ -207,22 +215,15 @@ public enum Stellar {
      
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public static func accountDetails(account: String, node: Node) -> Promise<AccountDetails> {
-        let url = EndPoint.accounts(account).url(with: node.baseURL)
-
-        return issue(request: URLRequest(url: url))
-            .then { data in
-                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
-                    if horizonError.status == 404 {
-                        throw StellarError.missingAccount
-                    }
-                    else {
-                        throw StellarError.unknownError(horizonError)
-                    }
+    public static func accountDetails(account: String, node: Node) -> Promise<HorizonResponses.AccountDetails> {
+        return Endpoint.accounts(account).load(from: node.baseURL)
+            .mapError({
+                if let error = $0 as? HorizonResponses.HorizonError, error.status == 404 {
+                    return StellarError.missingAccount
                 }
-                
-                return try Promise<AccountDetails>(JSONDecoder().decode(AccountDetails.self, from: data))
-        }
+
+                return StellarError.unknownError($0)
+            })
     }
     
     /**
@@ -239,7 +240,7 @@ public enum Stellar {
     public static func txWatch(account: String? = nil,
                                lastEventId: String?,
                                node: Node) -> EventWatcher<TxEvent> {
-        let url = EndPoint.accounts(account).transactions().cursor(lastEventId).url(with: node.baseURL)
+        let url = Endpoint.accounts(account).transactions().cursor(lastEventId).url(with: node.baseURL)
 
         return EventWatcher(eventSource: StellarEventSource(url: url))
     }
@@ -258,7 +259,7 @@ public enum Stellar {
     public static func paymentWatch(account: String? = nil,
                                     lastEventId: String?,
                                     node: Node) -> EventWatcher<PaymentEvent> {
-        let url = EndPoint.accounts(account).payments().cursor(lastEventId).url(with: node.baseURL)
+        let url = Endpoint.accounts(account).payments().cursor(lastEventId).url(with: node.baseURL)
 
         return EventWatcher(eventSource: StellarEventSource(url: url))
     }
@@ -277,17 +278,10 @@ public enum Stellar {
     }
 
     public static func networkParameters(node: Node) -> Promise<NetworkParameters> {
-        let url = EndPoint.ledgers().order(.desc).limit(1).url(with: node.baseURL)
-
-        return issue(request: URLRequest(url: url))
-            .then { data in
-                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data) {
-                    throw StellarError.unknownError(horizonError)
-                }
-
-                return try Promise<NetworkParameters>(JSONDecoder().decode(NetworkParameters.self,
-                                                                           from: data))
-        }
+        return Endpoint.ledgers().order(.desc).limit(1).load(from: node.baseURL)
+            .then({ (response: HorizonResponses.Ledgers) -> Promise<NetworkParameters> in
+                return Promise<NetworkParameters>(NetworkParameters(response))
+            })
     }
 
     public static func sign(transaction tx: Transaction,
@@ -320,20 +314,20 @@ public enum Stellar {
             return Promise<String>(StellarError.dataEncodingFailed)
         }
         
-        var request = URLRequest(url: EndPoint.transactions().url(with: node.baseURL))
+        var request = URLRequest(url: Endpoint.transactions().url(with: node.baseURL))
         request.httpMethod = "POST"
         request.httpBody = httpBody
         
         return issue(request: request)
             .then { data in
-                if let horizonError = try? JSONDecoder().decode(HorizonError.self, from: data),
+                if let horizonError = try? JSONDecoder().decode(HorizonResponses.HorizonError.self, from: data),
                     let resultXDR = horizonError.extras?.resultXDR,
                     let error = errorFromResponse(resultXDR: resultXDR) {
                     throw error
                 }
                 
                 do {
-                    let txResponse = try JSONDecoder().decode(TransactionResponse.self,
+                    let txResponse = try JSONDecoder().decode(HorizonResponses.TransactionPostResponse.self,
                                                               from: data)
                     
                     return Promise<String>(txResponse.hash)

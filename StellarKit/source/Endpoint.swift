@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KinUtil
 
 enum Option: Hashable {
     enum Order: String { case asc, desc }
@@ -24,9 +25,9 @@ protocol EndpointProtocol {
 
     init(_ eps: [EP], options: Set<Option>)
 
-    func order(_ order: Option.Order) -> EndpointProtocol
-    func limit(_ limit: Int) -> EndpointProtocol
-    func cursor(_ cursor: String?) -> EndpointProtocol
+    func order(_ order: Option.Order) -> Self
+    func limit(_ limit: Int) -> Self
+    func cursor(_ cursor: String?) -> Self
 }
 
 extension EndpointProtocol {
@@ -65,15 +66,15 @@ extension EndpointProtocol {
 }
 
 extension EndpointProtocol {
-    func order(_ order: Option.Order) -> EndpointProtocol {
+    func order(_ order: Option.Order) -> Self {
         return Self.init(components, options: options.union([Option.order(order)]))
     }
 
-    func limit(_ limit: Int) -> EndpointProtocol {
+    func limit(_ limit: Int) -> Self {
         return Self.init(components, options: options.union([Option.limit(limit)]))
     }
 
-    func cursor(_ cursor: String?) -> EndpointProtocol {
+    func cursor(_ cursor: String?) -> Self {
         return Self.init(components,
                          options: cursor != nil ? options.union([Option.cursor(cursor!)]) : options)
     }
@@ -91,7 +92,7 @@ enum EP {
         let options: Set<Option> = Set()
 
         init(_ eps: [EP], options: Set<Option>) {
-            components = eps + [.accounts("")]
+            fatalError("account must be first")
         }
 
         init(account: String?) {
@@ -116,13 +117,25 @@ enum EP {
         let options: Set<Option>
 
         init(_ eps: [EP], options: Set<Option>) {
-            components = eps + [.ledgers(nil)]
+            components = eps + (options.isEmpty ? [.ledgers(nil)] : [])
             self.options = options
         }
 
         init(ledger: Int?) {
             components = [.ledgers(ledger)]
             options = Set()
+        }
+
+        func operations() -> EndpointProtocol {
+            return EP.OperationsEndpoint(components, options: options)
+        }
+
+        func payments() -> EndpointProtocol {
+            return EP.PaymentsEndpoint(components, options: options)
+        }
+
+        func transactions() -> EndpointProtocol {
+            return EP.TransactionsEndpoint(components, options: options)
         }
     }
 
@@ -164,27 +177,35 @@ enum EP {
             components = [.transactions(transaction)]
             options = Set()
         }
+
+        func operations() -> EndpointProtocol {
+            return EP.OperationsEndpoint(components, options: options)
+        }
+
+        func payments() -> EndpointProtocol {
+            return EP.PaymentsEndpoint(components, options: options)
+        }
     }
 }
 
-enum EndPoint {
+enum Endpoint {
     static func accounts(_ account: String?) -> EP.AccountsEndpoint {
         return EP.AccountsEndpoint(account: account)
     }
 
-    static func ledgers(_ ledger: Int? = nil) -> EndpointProtocol {
+    static func ledgers(_ ledger: Int? = nil) -> EP.LedgersEndpoint {
         return EP.LedgersEndpoint(ledger: ledger)
     }
 
-    static func operations(_ operation: Int? = nil) -> EndpointProtocol {
+    static func operations(_ operation: Int? = nil) -> EP.OperationsEndpoint {
         return EP.OperationsEndpoint(operation: operation)
     }
 
-    static func payments() -> EndpointProtocol {
+    static func payments() -> EP.PaymentsEndpoint {
         return EP.PaymentsEndpoint([], options: Set())
     }
 
-    static func transactions(_ transaction: Int? = nil) -> EndpointProtocol {
+    static func transactions(_ transaction: Int? = nil) -> EP.TransactionsEndpoint {
         return EP.TransactionsEndpoint(transaction: transaction)
     }
 }
