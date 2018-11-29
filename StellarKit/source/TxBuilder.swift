@@ -25,36 +25,42 @@ public final class TxBuilder {
         self.node = node
     }
 
+    @discardableResult
     public func set(memo: Memo) -> TxBuilder {
         self.memo = memo
 
         return self
     }
 
+    @discardableResult
     public func set(fee: UInt32?) -> TxBuilder {
         self.fee = fee
 
         return self
     }
 
+    @discardableResult
     public func set(sequence: UInt64) -> TxBuilder {
         self.sequence = sequence
 
         return self
     }
 
+    @discardableResult
     public func add(operation: Operation) -> TxBuilder {
         operations.append(operation)
 
         return self
     }
 
+    @discardableResult
     public func add(operations: [Operation]) -> TxBuilder {
         self.operations += operations
 
         return self
     }
 
+    @discardableResult
     public func add(signer: Account) -> TxBuilder {
         opSigners.append(signer)
 
