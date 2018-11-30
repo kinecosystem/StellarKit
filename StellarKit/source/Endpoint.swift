@@ -178,11 +178,11 @@ enum EP {
             options = Set()
         }
 
-        func operations() -> EndpointProtocol {
+        func operations() -> OperationsEndpoint {
             return EP.OperationsEndpoint(components, options: options)
         }
 
-        func payments() -> EndpointProtocol {
+        func payments() -> PaymentsEndpoint {
             return EP.PaymentsEndpoint(components, options: options)
         }
     }
