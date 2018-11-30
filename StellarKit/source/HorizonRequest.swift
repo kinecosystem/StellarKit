@@ -28,7 +28,10 @@ class HorizonRequest: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
 
         super.init()
 
-        session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+        let configuration = URLSessionConfiguration.default
+        configuration.httpMaximumConnectionsPerHost = 10_000
+
+        session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }
 
     private struct E: Error { let horizonError: HorizonResponses.HorizonError }
@@ -53,6 +56,28 @@ class HorizonRequest: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
                 catch {
                     p.signal(error)
                 }
+            }
+        }
+
+        tasks[task] = RequestState(data: Data(), completion: completion)
+
+        task.resume()
+
+        return p
+    }
+
+    func post(request: URLRequest) -> Promise<Data> {
+        let p = Promise<Data>()
+
+        let task = session.dataTask(with: request)
+
+        let completion: (Data?, Error?) -> () = { data, error in
+            if let error = error {
+                p.signal(error)
+            }
+
+            if let data = data {
+                p.signal(data)
             }
         }
 

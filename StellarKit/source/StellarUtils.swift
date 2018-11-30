@@ -46,28 +46,3 @@ func sign(transaction tx: Transaction,
                                signatures: [DecoratedSignature(hint: WrappedData4(hint),
                                                                signature: signature)])
 }
-
-func issue(request: URLRequest) -> Promise<Data> {
-    let p = Promise<Data>()
-
-    URLSession
-        .shared
-        .dataTask(with: request, completionHandler: { (data, _, error) in
-            if let error = error {
-                p.signal(error)
-
-                return
-            }
-
-            guard let data = data else {
-                p.signal(StellarError.internalInconsistency)
-
-                return
-            }
-
-            p.signal(data)
-        })
-        .resume()
-
-    return p
-}

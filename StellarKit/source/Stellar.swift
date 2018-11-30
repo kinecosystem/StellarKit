@@ -86,7 +86,7 @@ public enum Stellar {
                                memo: Memo = .MEMO_NONE,
                                node: Node) -> Promise<String> {
         return balance(account: destination, asset: asset, node: node)
-            .then { _ -> Promise<Transaction> in
+            .then { _ -> Promise<TransactionEnvelope> in
                 let op = Operation.payment(destination: destination,
                                            amount: amount,
                                            asset: asset,
@@ -96,14 +96,10 @@ public enum Stellar {
                     .set(fee: fee)
                     .set(memo: memo)
                     .add(operation: op)
-                    .tx()
+                    .envelope(networkId: node.networkId.description)
             }
-            .then { tx -> Promise<String> in
-                let envelope = try self.sign(transaction: tx,
-                                             signer: source,
-                                             node: node)
-                
-                return self.postTransaction(envelope: envelope, node: node)
+            .then {
+                return self.postTransaction(envelope: $0, node: node)
             }
             .mapError({ error -> Error in
                 if case StellarError.missingAccount = error {
@@ -312,8 +308,8 @@ public enum Stellar {
         var request = URLRequest(url: Endpoint.transactions().url(with: node.baseURL))
         request.httpMethod = "POST"
         request.httpBody = httpBody
-        
-        return issue(request: request)
+
+        return HorizonRequest().post(request: request)
             .then { data in
                 if let horizonError = try? JSONDecoder().decode(HorizonResponses.HorizonError.self, from: data),
                     let resultXDR = horizonError.extras?.resultXDR,
@@ -325,7 +321,7 @@ public enum Stellar {
                     let txResponse = try JSONDecoder().decode(HorizonResponses.TransactionPostResponse.self,
                                                               from: data)
                     
-                    return Promise<String>(txResponse.hash)
+                    return Promise(txResponse.hash)
                 }
                 catch {
                     throw error
