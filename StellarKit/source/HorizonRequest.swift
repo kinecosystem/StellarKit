@@ -10,15 +10,21 @@ import Foundation
 import KinUtil
 
 class HorizonRequest: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
-    private var session: URLSession
-    private var task: URLSessionDataTask
-    fileprivate var data = Data()
+    fileprivate class RequestState {
+        var data: Data
+        var completion: (Data?, Error?) -> ()
 
-    fileprivate var completion: ((Data?, Error?) -> ())?
+        init(data: Data, completion: @escaping (Data?, Error?) -> ()) {
+            self.data = data
+            self.completion = completion
+        }
+    }
+
+    private var session: URLSession
+    fileprivate var tasks = [URLSessionTask: RequestState]()
 
     override init() {
         session = URLSession()
-        task = URLSessionDataTask()
 
         super.init()
 
@@ -30,10 +36,9 @@ class HorizonRequest: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
     func load<T: Decodable>(url: URL) -> Promise<T> {
         let p = Promise<T>()
 
-        task = session.dataTask(with: url)
-        task.resume()
+        let task = session.dataTask(with: url)
 
-        completion = { data, error in
+        let completion: (Data?, Error?) -> () = { data, error in
             if let error = error {
                 p.signal(error)
             }
@@ -51,49 +56,51 @@ class HorizonRequest: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
             }
         }
 
-        return p
-    }
+        tasks[task] = RequestState(data: Data(), completion: completion)
 
-    deinit {
-        print("bye")
+        task.resume()
+
+        return p
     }
 }
 
 extension HorizonRequest {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        completion?(self.data, error)
-        completion = nil
+        if let state = tasks[task] {
+            state.completion(state.data, error)
+            tasks[task] = nil
+        }
 
         session.finishTasksAndInvalidate()
     }
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        self.data.append(data)
+        tasks[dataTask]?.data.append(data)
     }
 }
 
 extension EP.AccountsEndpoint {
-    public func load(from base: URL) -> Promise<HorizonResponses.AccountDetails> {
-        return HorizonRequest().load(url: url(with: base))
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.AccountDetails> {
+        return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 }
 
 extension EP.LedgersEndpoint {
-    public func load(from base: URL) -> Promise<HorizonResponses.Ledgers> {
-        return HorizonRequest().load(url: url(with: base))
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.Ledgers> {
+        return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 
-    public func load(from base: URL) -> Promise<HorizonResponses.Ledger> {
-        return HorizonRequest().load(url: url(with: base))
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.Ledger> {
+        return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 }
 
 extension EP.TransactionsEndpoint {
-    public func load(from base: URL) -> Promise<HorizonResponses.Transactions> {
-        return HorizonRequest().load(url: url(with: base))
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.Transactions> {
+        return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 
-    public func load(from base: URL) -> Promise<HorizonResponses.Transaction> {
-        return HorizonRequest().load(url: url(with: base))
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.Transaction> {
+        return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 }

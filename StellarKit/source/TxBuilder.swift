@@ -99,38 +99,22 @@ public final class TxBuilder {
     }
 
     public func envelope(networkId: String) -> Promise<TransactionEnvelope> {
-        let p = Promise<TransactionEnvelope>()
-
-        tx()
-            .then({tx in
-                do {
-                    p.signal(try self.sign(tx: tx, networkId: networkId))
-                }
-                catch {
-                    p.signal(error)
-                }
-            })
-
-        return p
+        return
+            tx()
+                .then({
+                    return Promise(try self.sign(tx: $0, networkId: networkId))
+                })
     }
 
     private func calculatedFee() -> Promise<UInt32> {
-        let p = Promise<UInt32>()
-
         if let fee = fee {
-            p.signal(fee)
-        }
-        else {
-            Stellar.networkParameters(node: node)
-                .then ({ params in
-                    p.signal(UInt32(self.operations.count) * params.baseFee)
-                })
-                .error({
-                    p.signal($0)
-                })
+            return Promise(fee)
         }
 
-        return p
+        return Stellar.networkParameters(node: node)
+            .then ({ params in
+                Promise(UInt32(self.operations.count) * params.baseFee)
+            })
     }
     
     private func sign(tx: Transaction, networkId: String) throws -> TransactionEnvelope {

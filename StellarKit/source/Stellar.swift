@@ -132,14 +132,12 @@ public enum Stellar {
     public static func trust(asset: Asset,
                              account: Account,
                              node: Node) -> Promise<String> {
-        let p = Promise<String>()
-        
         guard let destination = account.publicKey else {
-            p.signal(StellarError.missingPublicKey)
-            
-            return p
+            return Promise(StellarError.missingPublicKey)
         }
         
+        let p = Promise<String>()
+
         balance(account: destination, asset: asset, node: node)
             .then { _ -> Void in
                 p.signal("-na-")
@@ -150,7 +148,6 @@ public enum Stellar {
                     
                     return
                 }
-
 
                 TxBuilder(source: account, node: node)
                     .add(operation: Operation.changeTrust(asset: asset))
@@ -186,25 +183,23 @@ public enum Stellar {
                                asset: Asset = .ASSET_TYPE_NATIVE,
                                node: Node) -> Promise<Decimal> {
         return accountDetails(account: account, node: node)
-            .then { accountDetails in
-                let p = Promise<Decimal>()
-                
+            .then({ accountDetails -> Decimal in
                 for balance in accountDetails.balances {
                     let code = balance.assetCode
                     let issuer = balance.assetIssuer
                     
                     if (balance.assetType == "native" && asset.assetCode == "native") {
-                        return p.signal(balance.balanceNum)
+                        return balance.balanceNum
                     }
                     
                     if let issuer = issuer, let code = code,
                         Asset(assetCode: code, issuer: issuer) == asset {
-                        return p.signal(balance.balanceNum)
+                        return balance.balanceNum
                     }
                 }
                 
-                return p.signal(StellarError.missingBalance)
-        }
+                throw StellarError.missingBalance
+            })
     }
     
     /**

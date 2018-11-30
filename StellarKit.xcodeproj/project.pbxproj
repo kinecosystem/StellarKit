@@ -53,6 +53,7 @@
 		8291DA9820353E02002C10F5 /* StellarEventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8291DA9720353E01002C10F5 /* StellarEventSource.swift */; };
 		829B374F21144EF900819BA0 /* TxBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 829B374E21144EF900819BA0 /* TxBuilder.swift */; };
 		82AA911521AFBCEE00CEF370 /* HorizonRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AA911421AFBCEE00CEF370 /* HorizonRequest.swift */; };
+		82AA911D21B0F26E00CEF370 /* HorizonRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AA911C21B0F26E00CEF370 /* HorizonRequestTests.swift */; };
 		82BA1EA8204D0EB300396AE2 /* TestKeyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BA1EA7204D0EB300396AE2 /* TestKeyUtils.swift */; };
 		82BA2047204D856100396AE2 /* WrappedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82343AA92024A97900848CF4 /* WrappedData.swift */; };
 		82BA2048204D856100396AE2 /* StellarEventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8291DA9720353E01002C10F5 /* StellarEventSource.swift */; };
@@ -258,6 +259,7 @@
 		8291DA9720353E01002C10F5 /* StellarEventSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarEventSource.swift; sourceTree = "<group>"; };
 		829B374E21144EF900819BA0 /* TxBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxBuilder.swift; sourceTree = "<group>"; };
 		82AA911421AFBCEE00CEF370 /* HorizonRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonRequest.swift; sourceTree = "<group>"; };
+		82AA911C21B0F26E00CEF370 /* HorizonRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonRequestTests.swift; sourceTree = "<group>"; };
 		82BA1EA7204D0EB300396AE2 /* TestKeyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestKeyUtils.swift; sourceTree = "<group>"; };
 		82BA20A0204D856100396AE2 /* StellarKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StellarKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82BA20A1204D856100396AE2 /* StellarKit-macos-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "StellarKit-macos-Info.plist"; path = "/Users/avi/Projects/kin-core-ios/KinSDK/StellarKit/StellarKit-macos-Info.plist"; sourceTree = "<absolute>"; };
@@ -367,12 +369,13 @@
 			isa = PBXGroup;
 			children = (
 				8287073E21974EC40031229D /* Sodium.xcodeproj */,
-				82EE995020762BD8004CF368 /* XDRTests.swift */,
 				824063F6201E062C0055D70A /* mocks */,
-				824063FF201F00530055D70A /* StellarUnitTests.swift */,
-				82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */,
 				82340BAC1FFDF2DA0034204F /* Info.plist */,
+				82AA911C21B0F26E00CEF370 /* HorizonRequestTests.swift */,
 				8214E886202CAB8000789C78 /* StellarBaseTests.swift */,
+				82340BAA1FFDF2DA0034204F /* StellarIntegrationTests.swift */,
+				824063FF201F00530055D70A /* StellarUnitTests.swift */,
+				82EE995020762BD8004CF368 /* XDRTests.swift */,
 			);
 			path = StellarKitTests;
 			sourceTree = "<group>";
@@ -864,6 +867,7 @@
 				824063F8201E064B0055D70A /* HTTPMock.swift in Sources */,
 				824063FA201E23FA0055D70A /* HorizonMock.swift in Sources */,
 				82406400201F00530055D70A /* StellarUnitTests.swift in Sources */,
+				82AA911D21B0F26E00CEF370 /* HorizonRequestTests.swift in Sources */,
 				82340BAB1FFDF2DA0034204F /* StellarIntegrationTests.swift in Sources */,
 				82BA1EA8204D0EB300396AE2 /* TestKeyUtils.swift in Sources */,
 			);

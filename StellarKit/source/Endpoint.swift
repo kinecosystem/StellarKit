@@ -44,8 +44,8 @@ extension EndpointProtocol {
                 path += (path.isEmpty ? "" : "/") + "operations" + (num != nil ? "/\(num!)" : "")
             case .payments:
                 path += (path.isEmpty ? "" : "/") + "payments"
-            case .transactions(let num):
-                path += (path.isEmpty ? "" : "/") + "transactions" + (num != nil ? "/\(num!)" : "")
+            case .transactions(let id):
+                path += (path.isEmpty ? "" : "/") + "transactions" + (id != nil ? "/\(id!)" : "")
             }
         }
 
@@ -85,7 +85,7 @@ enum EP {
     case ledgers(Int?)
     case operations(Int?)
     case payments
-    case transactions(Int?)
+    case transactions(String?)
 
     struct AccountsEndpoint: EndpointProtocol {
         let components: [EP]
@@ -99,15 +99,15 @@ enum EP {
             components = account != nil ? [.accounts(account!)] : []
         }
 
-        func operations() -> EndpointProtocol {
+        func operations() -> OperationsEndpoint {
             return EP.OperationsEndpoint(components, options: options)
         }
 
-        func payments() -> EndpointProtocol {
+        func payments() -> PaymentsEndpoint {
             return EP.PaymentsEndpoint(components, options: options)
         }
 
-        func transactions() -> EndpointProtocol {
+        func transactions() -> TransactionsEndpoint {
             return EP.TransactionsEndpoint(components, options: options)
         }
     }
@@ -126,15 +126,15 @@ enum EP {
             options = Set()
         }
 
-        func operations() -> EndpointProtocol {
+        func operations() -> OperationsEndpoint {
             return EP.OperationsEndpoint(components, options: options)
         }
 
-        func payments() -> EndpointProtocol {
+        func payments() -> PaymentsEndpoint {
             return EP.PaymentsEndpoint(components, options: options)
         }
 
-        func transactions() -> EndpointProtocol {
+        func transactions() -> TransactionsEndpoint {
             return EP.TransactionsEndpoint(components, options: options)
         }
     }
@@ -173,7 +173,7 @@ enum EP {
             self.options = options
         }
 
-        init(transaction: Int?) {
+        init(transaction: String?) {
             components = [.transactions(transaction)]
             options = Set()
         }
@@ -205,7 +205,7 @@ enum Endpoint {
         return EP.PaymentsEndpoint([], options: Set())
     }
 
-    static func transactions(_ transaction: Int? = nil) -> EP.TransactionsEndpoint {
+    static func transactions(_ transaction: String? = nil) -> EP.TransactionsEndpoint {
         return EP.TransactionsEndpoint(transaction: transaction)
     }
 }
