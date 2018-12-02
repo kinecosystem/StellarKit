@@ -8,14 +8,8 @@
 
 import Foundation
 
-private var formatter: DateFormatter = {
-    let df = DateFormatter()
-    df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-    return df
-}()
-
-public enum HorizonResponses {
-    struct HorizonError: Error, Decodable {
+public enum Responses {
+    struct RequestFailure: Error, Decodable {
         let type: URL
         let title: String
         let status: Int
@@ -32,11 +26,22 @@ public enum HorizonResponses {
         }
     }
 
+    public struct TransactionSuccess: Decodable {
+        let hash: String
+        let resultXDR: String
+
+        enum CodingKeys: String, CodingKey {
+            case hash
+            case resultXDR = "result_xdr"
+        }
+    }
+
     public struct AccountDetails: Decodable, CustomStringConvertible {
         public let id: String
         public let accountId: String
         public let sequence: String
         public let balances: [Balance]
+        public let data: [String: String]
 
         public var seqNum: UInt64 {
             return UInt64(sequence) ?? 0
@@ -90,16 +95,7 @@ public enum HorizonResponses {
             case accountId = "account_id"
             case sequence
             case balances
-        }
-    }
-
-    struct TransactionPostResponse: Decodable {
-        let hash: String
-        let resultXDR: String
-
-        enum CodingKeys: String, CodingKey {
-            case hash
-            case resultXDR = "result_xdr"
+            case data
         }
     }
 
@@ -190,18 +186,45 @@ public enum HorizonResponses {
     }
 }
 
-extension HorizonResponses.Ledger {
+extension Responses.RequestFailure {
+    var transactionResult: TransactionResult? {
+        if
+            let resultXDR = extras?.resultXDR,
+            let data = Data(base64Encoded: resultXDR)
+        {
+            return try? XDRDecoder(data: data).decode(TransactionResult.self)
+        }
+
+        return nil
+    }
+}
+
+extension Responses.TransactionSuccess {
+    var transactionResult: TransactionResult? {
+        if let data = Data(base64Encoded: resultXDR) {
+            return try? XDRDecoder(data: data).decode(TransactionResult.self)
+        }
+
+        return nil
+    }
+}
+
+extension Responses.Ledger {
     var closedAt: Date {
-        return formatter.date(from: closed_at)!
+        return DateFormatter.stellar.date(from: closed_at)!
     }
 
     var baseFee: UInt32 {
         return (base_fee ?? base_fee_in_stroops)!
     }
+
+    var baseReserve: UInt32 {
+        return UInt32(Double(base_reserve ?? base_reserve_in_stroops!)!)
+    }
 }
 
-extension HorizonResponses.Transaction {
+extension Responses.Transaction {
     var createdAt: Date {
-        return formatter.date(from: created_at)!
+        return DateFormatter.stellar.date(from: created_at)!
     }
 }

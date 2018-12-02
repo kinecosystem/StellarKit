@@ -48,13 +48,14 @@ extension WrappedData {
     init(_ data: Data) {
         self.init()
 
-        if data.count >= Self.capacity {
+        if data.count == Self.capacity {
             self.wrapped = data
         }
+        else if data.count > Self.capacity {
+            self.wrapped = Data(data[0 ..< Self.capacity])
+        }
         else {
-            var d = data
-            d.append(Data(count: Self.capacity - data.count))
-            self.wrapped = d
+            self.wrapped = data + Data(count: Self.capacity - data.count)
         }
     }
 

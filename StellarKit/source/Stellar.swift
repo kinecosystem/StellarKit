@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import StellarErrors
 import KinUtil
 
 public protocol Account {
@@ -26,14 +25,6 @@ public enum NetworkId {
 }
 
 extension NetworkId: CustomStringConvertible {
-    public init(_ description: String) {
-        switch description {
-        case testId: self = .test
-        case mainId: self = .main
-        default: self = .custom(description)
-        }
-    }
-    
     public var description: String {
         switch self {
         case .test: return testId
@@ -43,17 +34,20 @@ extension NetworkId: CustomStringConvertible {
     }
 }
 
-public struct NetworkParameters {
+public struct NetworkConfiguration {
     let baseFee: UInt32
+    let baseReserve: UInt32
+    let maxTxSetSize: Int
 
-    init(_ ledgers: HorizonResponses.Ledgers) {
+    init(_ ledgers: Responses.Ledgers) {
         baseFee = ledgers.ledgers[0].baseFee
+        baseReserve = ledgers.ledgers[0].baseReserve
+        maxTxSetSize = ledgers.ledgers[0].max_tx_set_size
     }
 }
 
 /**
- `Stellar` provides an API for communicating with Stellar Horizon servers, with an emphasis on
- supporting non-native assets.
+ `Stellar` provides an API for communicating with Stellar Horizon servers.
  */
 public enum Stellar {
     public struct Node {
@@ -67,110 +61,10 @@ public enum Stellar {
     }
     
     /**
-     Sends a payment to the given account.
-     
-     - parameter source: The account from which the payment will be made.
-     - parameter destination: The public key of the receiving account, as a base32 string.
-     - parameter amount: The amount to be sent.
-     - parameter asset: The `Asset` to be sent.  Defaults to the `Asset` specified in the initializer.
-     - parameter memo: A short string placed in the MEMO field of the transaction.
-     - parameter node: An object describing the network endpoint.
-     
-     - Returns: A promise which will be signalled with the result of the operation.
-     */
-    public static func payment(source: Account,
-                               destination: String,
-                               amount: Int64,
-                               asset: Asset = .ASSET_TYPE_NATIVE,
-                               fee: UInt32? = nil,
-                               memo: Memo = .MEMO_NONE,
-                               node: Node) -> Promise<String> {
-        return balance(account: destination, asset: asset, node: node)
-            .then { _ -> Promise<TransactionEnvelope> in
-                let op = Operation.payment(destination: destination,
-                                           amount: amount,
-                                           asset: asset,
-                                           source: source)
-                
-                return TxBuilder(source: source, node: node)
-                    .set(fee: fee)
-                    .set(memo: memo)
-                    .add(operation: op)
-                    .envelope(networkId: node.networkId.description)
-            }
-            .then {
-                return self.postTransaction(envelope: $0, node: node)
-            }
-            .mapError({ error -> Error in
-                if case StellarError.missingAccount = error {
-                    return StellarError
-                        .destinationNotReadyForAsset(error, asset.assetCode)
-                }
-                
-                if case StellarError.missingBalance = error {
-                    return StellarError
-                        .destinationNotReadyForAsset(error, asset.assetCode)
-                }
-                
-                return error
-            })
-    }
-    
-    /**
-     Establishes trust for a non-native asset.
-     
-     - parameter asset: The `Asset` to trust.
-     - parameter account: The `Account` which will trust the given asset.
-     - parameter node: An object describing the network endpoint.
-     
-     - Returns: A promise which will be signalled with the result of the operation.
-     */
-    public static func trust(asset: Asset,
-                             account: Account,
-                             node: Node) -> Promise<String> {
-        guard let destination = account.publicKey else {
-            return Promise(StellarError.missingPublicKey)
-        }
-        
-        let p = Promise<String>()
-
-        balance(account: destination, asset: asset, node: node)
-            .then { _ -> Void in
-                p.signal("-na-")
-            }
-            .error { error in
-                if case StellarError.missingAccount = error {
-                    p.signal(error)
-                    
-                    return
-                }
-
-                TxBuilder(source: account, node: node)
-                    .add(operation: Operation.changeTrust(asset: asset))
-                    .tx()
-                    .then { tx -> Promise<String> in
-                        let envelope = try self.sign(transaction: tx,
-                                                     signer: account,
-                                                     node: node)
-                        
-                        return self.postTransaction(envelope: envelope, node: node)
-                    }
-                    .then { txHash in
-                        p.signal(txHash)
-                    }
-                    .error { error in
-                        p.signal(error)
-                }
-        }
-        
-        return p
-    }
-    
-    /**
      Obtain the balance for a given asset.
      
      - parameter account: The `Account` whose balance will be retrieved.
-     - parameter asset: The `Asset` whose balance will be obtained.  Defaults to the `Asset` specified in the initializer.
+     - parameter asset: The `Asset` whose balance will be obtained.
      - parameter node: An object describing the network endpoint.
      
      - Returns: A promise which will be signalled with the result of the operation.
@@ -180,18 +74,8 @@ public enum Stellar {
                                node: Node) -> Promise<Decimal> {
         return accountDetails(account: account, node: node)
             .then({ accountDetails -> Decimal in
-                for balance in accountDetails.balances {
-                    let code = balance.assetCode
-                    let issuer = balance.assetIssuer
-                    
-                    if (balance.assetType == "native" && asset.assetCode == "native") {
-                        return balance.balanceNum
-                    }
-                    
-                    if let issuer = issuer, let code = code,
-                        Asset(assetCode: code, issuer: issuer) == asset {
-                        return balance.balanceNum
-                    }
+                for balance in accountDetails.balances where balance.asset == asset {
+                    return balance.balanceNum
                 }
                 
                 throw StellarError.missingBalance
@@ -206,10 +90,10 @@ public enum Stellar {
      
      - Returns: A promise which will be signalled with the result of the operation.
      */
-    public static func accountDetails(account: String, node: Node) -> Promise<HorizonResponses.AccountDetails> {
+    public static func accountDetails(account: String, node: Node) -> Promise<Responses.AccountDetails> {
         return Endpoint.accounts(account).load(from: node.baseURL)
             .mapError({
-                if let error = $0 as? HorizonResponses.HorizonError, error.status == 404 {
+                if let error = $0 as? Responses.RequestFailure, error.status == 404 {
                     return StellarError.missingAccount
                 }
 
@@ -268,10 +152,10 @@ public enum Stellar {
         }
     }
 
-    public static func networkParameters(node: Node) -> Promise<NetworkParameters> {
+    public static func networkConfiguration(node: Node) -> Promise<NetworkConfiguration> {
         return Endpoint.ledgers().order(.desc).limit(1).load(from: node.baseURL)
-            .then({ (response: HorizonResponses.Ledgers) -> Promise<NetworkParameters> in
-                return Promise<NetworkParameters>(NetworkParameters(response))
+            .then({ (response: Responses.Ledgers) -> Promise<NetworkConfiguration> in
+                return Promise(NetworkConfiguration(response))
             })
     }
 
@@ -288,21 +172,21 @@ public enum Stellar {
                                    networkId: node.networkId.description)
     }
     
-    public static func postTransaction(envelope: TransactionEnvelope, node: Node) -> Promise<String> {
+    public static func postTransaction(envelope: TransactionEnvelope, node: Node) -> Promise<Responses.TransactionSuccess> {
         let envelopeData: Data
         do {
             envelopeData = try Data(XDREncoder.encode(envelope))
         }
         catch {
-            return Promise<String>(error)
+            return Promise(error)
         }
         
         guard let urlEncodedEnvelope = envelopeData.base64EncodedString().urlEncoded else {
-            return Promise<String>(StellarError.urlEncodingFailed)
+            return Promise(StellarError.urlEncodingFailed)
         }
         
         guard let httpBody = ("tx=" + urlEncodedEnvelope).data(using: .utf8) else {
-            return Promise<String>(StellarError.dataEncodingFailed)
+            return Promise(StellarError.dataEncodingFailed)
         }
         
         var request = URLRequest(url: Endpoint.transactions().url(with: node.baseURL))
@@ -311,21 +195,13 @@ public enum Stellar {
 
         return HorizonRequest().post(request: request)
             .then { data in
-                if let horizonError = try? JSONDecoder().decode(HorizonResponses.HorizonError.self, from: data),
-                    let resultXDR = horizonError.extras?.resultXDR,
-                    let error = errorFromResponse(resultXDR: resultXDR) {
-                    throw error
+                if let failure = try? JSONDecoder().decode(Responses.RequestFailure.self, from: data) {
+                    throw failure
                 }
                 
-                do {
-                    let txResponse = try JSONDecoder().decode(HorizonResponses.TransactionPostResponse.self,
-                                                              from: data)
-                    
-                    return Promise(txResponse.hash)
-                }
-                catch {
-                    throw error
-                }
+                let txResponse = try JSONDecoder().decode(Responses.TransactionSuccess.self,
+                                                          from: data)
+                return Promise(txResponse)
         }
     }
 }

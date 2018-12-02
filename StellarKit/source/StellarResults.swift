@@ -32,9 +32,18 @@ struct TransactionResult: XDRCodable, XDREncodableStruct {
     let reserved: Int32 = 0
 
     enum Result: XDRCodable {
-        case txSUCCESS ([OperationResult])
-        case txFAILED ([OperationResult])
-        case txERROR (Int32)
+        case txSUCCESS([OperationResult])
+        case txFAILED([OperationResult])
+        case txTOO_EARLY
+        case txTOO_LATE
+        case txMISSING_OPERATION
+        case txBAD_SEQ
+        case txBAD_AUTH
+        case txINSUFFICIENT_BALANCE
+        case txNO_ACCOUNT
+        case txINSUFFICIENT_FEE
+        case txBAD_AUTH_EXTRA
+        case txINTERNAL_ERROR
 
         init(from decoder: XDRDecoder) throws {
             let discriminant = try decoder.decode(Int32.self)
@@ -44,8 +53,28 @@ struct TransactionResult: XDRCodable, XDREncodableStruct {
                 self = .txSUCCESS(try decoder.decodeArray(OperationResult.self))
             case TransactionResultCode.txFAILED:
                 self = .txFAILED(try decoder.decodeArray(OperationResult.self))
+            case TransactionResultCode.txTOO_EARLY:
+                self = .txTOO_EARLY
+            case TransactionResultCode.txTOO_LATE:
+                self = .txTOO_LATE
+            case TransactionResultCode.txMISSING_OPERATION:
+                self = .txMISSING_OPERATION
+            case TransactionResultCode.txBAD_SEQ:
+                self = .txBAD_SEQ
+            case TransactionResultCode.txBAD_AUTH:
+                self = .txBAD_AUTH
+            case TransactionResultCode.txINSUFFICIENT_BALANCE:
+                self = .txINSUFFICIENT_BALANCE
+            case TransactionResultCode.txNO_ACCOUNT:
+                self = .txNO_ACCOUNT
+            case TransactionResultCode.txINSUFFICIENT_FEE:
+                self = .txINSUFFICIENT_FEE
+            case TransactionResultCode.txBAD_AUTH_EXTRA:
+                self = .txBAD_AUTH_EXTRA
+            case TransactionResultCode.txINTERNAL_ERROR:
+                self = .txINTERNAL_ERROR
             default:
-                self = .txERROR(discriminant)
+                self = .txINTERNAL_ERROR
             }
         }
 
@@ -53,7 +82,16 @@ struct TransactionResult: XDRCodable, XDREncodableStruct {
             switch self {
             case .txSUCCESS: return TransactionResultCode.txSUCCESS
             case .txFAILED: return TransactionResultCode.txFAILED
-            case .txERROR (let code): return code
+            case .txTOO_EARLY: return TransactionResultCode.txTOO_EARLY
+            case .txTOO_LATE: return TransactionResultCode.txTOO_LATE
+            case .txMISSING_OPERATION: return TransactionResultCode.txMISSING_OPERATION
+            case .txBAD_SEQ: return TransactionResultCode.txBAD_SEQ
+            case .txBAD_AUTH: return TransactionResultCode.txBAD_AUTH
+            case .txINSUFFICIENT_BALANCE: return TransactionResultCode.txINSUFFICIENT_BALANCE
+            case .txNO_ACCOUNT: return TransactionResultCode.txNO_ACCOUNT
+            case .txINSUFFICIENT_FEE: return TransactionResultCode.txINSUFFICIENT_FEE
+            case .txBAD_AUTH_EXTRA: return TransactionResultCode.txBAD_AUTH_EXTRA
+            case .txINTERNAL_ERROR: return TransactionResultCode.txINTERNAL_ERROR
             }
         }
 
@@ -61,14 +99,10 @@ struct TransactionResult: XDRCodable, XDREncodableStruct {
             try encoder.encode(discriminant())
 
             switch self {
-            case .txSUCCESS (let ops):
-                try encoder.encode(ops)
-
-            case .txFAILED (let ops):
-                try encoder.encode(ops)
-
-            case .txERROR (let code):
-                try encoder.encode(code)
+            case .txSUCCESS(let ops): try encoder.encode(ops)
+            case .txFAILED(let ops): try encoder.encode(ops)
+            default:
+                break
             }
         }
     }
@@ -99,9 +133,10 @@ enum OperationResult: XDRCodable {
 
     // Add cases as necessary.
     enum Tr: XDRCodable {
-        case CREATE_ACCOUNT (CreateAccountResult)
-        case CHANGE_TRUST (ChangeTrustResult)
-        case PAYMENT (PaymentResult)
+        case CREATE_ACCOUNT(CreateAccountResult)
+        case CHANGE_TRUST(ChangeTrustResult)
+        case PAYMENT(PaymentResult)
+        case MANAGE_DATA(ManageDataResult)
         case unknown
 
         init(from decoder: XDRDecoder) throws {
@@ -123,7 +158,8 @@ enum OperationResult: XDRCodable {
             switch self {
             case .CREATE_ACCOUNT: return OperationType.CREATE_ACCOUNT
             case .PAYMENT: return OperationType.PAYMENT
-            default: return -1
+            default:
+                return -1
             }
         }
 
@@ -131,10 +167,8 @@ enum OperationResult: XDRCodable {
             try encoder.encode(discriminant())
 
             switch self {
-            case .CREATE_ACCOUNT (let result):
-                try encoder.encode(result)
-            case .PAYMENT (let result):
-                try encoder.encode(result)
+            case .CREATE_ACCOUNT(let result): try encoder.encode(result)
+            case .PAYMENT(let result): try encoder.encode(result)
             default:
                 break
             }
@@ -150,7 +184,7 @@ enum OperationResult: XDRCodable {
         case OperationResultCode.opBAD_AUTH:
             self = .opBAD_AUTH
         case OperationResultCode.opNO_ACCOUNT:
-            fallthrough
+            self = .opNO_ACCOUNT
         default:
             self = .opNO_ACCOUNT
         }
@@ -168,12 +202,9 @@ enum OperationResult: XDRCodable {
         try encoder.encode(discriminant())
 
         switch self {
-        case .opINNER (let tr):
-            try encoder.encode(tr)
-        case .opBAD_AUTH:
-            break
-        case .opNO_ACCOUNT:
-            break
+        case .opINNER(let tr): try encoder.encode(tr)
+        case .opBAD_AUTH: break
+        case .opNO_ACCOUNT: break
         }
     }
 }
@@ -285,3 +316,37 @@ enum PaymentResult: XDRCodable {
     }
 }
 
+struct ManageDataResultCode {
+    // codes considered as "success" for the operation
+    static let MANAGE_DATA_SUCCESS: Int32 = 0
+
+    // codes considered as "failure" for the operation
+    static let MANAGE_DATA_NOT_SUPPORTED_YET: Int32 = -1  // The network hasn't moved to this protocol change yet
+    static let MANAGE_DATA_NAME_NOT_FOUND: Int32 = -2     // Trying to remove a Data Entry that isn't there
+    static let MANAGE_DATA_LOW_RESERVE: Int32 = -3        // not enough funds to create a new Data Entry
+    static let MANAGE_DATA_INVALID_NAME: Int32 = -4       // Name not a valid string
+}
+
+enum ManageDataResult: XDRCodable {
+    case success
+    case failure(Int32)
+
+    private func discriminant() -> Int32 {
+        switch self {
+        case .success:
+            return ManageDataResultCode.MANAGE_DATA_SUCCESS
+        case .failure(let code):
+            return code
+        }
+    }
+
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encode(discriminant())
+    }
+
+    init(from decoder: XDRDecoder) throws {
+        let value = try decoder.decode(Int32.self)
+
+        self = value == 0 ? .success : .failure(value)
+    }
+}

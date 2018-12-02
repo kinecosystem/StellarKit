@@ -34,7 +34,7 @@ class HorizonRequest: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
         session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }
 
-    private struct E: Error { let horizonError: HorizonResponses.HorizonError }
+    private struct E: Error { let horizonError: Responses.RequestFailure }
 
     func load<T: Decodable>(url: URL) -> Promise<T> {
         let p = Promise<T>()
@@ -46,7 +46,7 @@ class HorizonRequest: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
                 p.signal(error)
             }
 
-            if let e = try? JSONDecoder().decode(HorizonResponses.HorizonError.self, from: data!) {
+            if let e = try? JSONDecoder().decode(Responses.RequestFailure.self, from: data!) {
                 p.signal(e)
             }
             else {
@@ -105,27 +105,27 @@ extension HorizonRequest {
 }
 
 extension EP.AccountsEndpoint {
-    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.AccountDetails> {
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.AccountDetails> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 }
 
 extension EP.LedgersEndpoint {
-    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.Ledgers> {
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.Ledgers> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 
-    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.Ledger> {
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.Ledger> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 }
 
 extension EP.TransactionsEndpoint {
-    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.Transactions> {
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.Transactions> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 
-    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<HorizonResponses.Transaction> {
+    public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.Transaction> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
 }

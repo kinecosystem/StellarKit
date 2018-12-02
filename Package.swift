@@ -16,10 +16,7 @@ let package = Package(
     targets: [
 	.target(
 	    name: "StellarKit",
-	    dependencies: ["KinUtil", "StellarErrors"]),
-	.target(
-	    name: "StellarErrors",
-	    dependencies: []),
+	    dependencies: ["KinUtil"]),
     ]
 )
 

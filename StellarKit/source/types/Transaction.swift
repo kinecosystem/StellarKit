@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import StellarErrors
 
 struct MemoType {
     static let MEMO_NONE: Int32 = 0
@@ -101,17 +100,21 @@ public enum Memo: XDRCodable {
 }
 
 public struct TimeBounds: XDRCodable, XDREncodableStruct {
+    let minTime: UInt64
+    let maxTime: UInt64
+
+    public init(minTime: UInt64, maxTime: UInt64) {
+        self.minTime = minTime
+        self.maxTime = maxTime
+    }
+
     public init(from decoder: XDRDecoder) throws {
         minTime = try decoder.decode(UInt64.self)
         maxTime = try decoder.decode(UInt64.self)
     }
-
-    let minTime: UInt64
-    let maxTime: UInt64
 }
 
 public struct Transaction: XDRCodable {
-    public static let MaxMemoLength = 28
     let sourceAccount: PublicKey
     let fee: UInt32
     let seqNum: UInt64

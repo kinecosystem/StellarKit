@@ -8,7 +8,6 @@
 
 import Foundation
 import StellarKit
-import StellarErrors
 import Sodium
 
 enum KeyUtilsError: Error {

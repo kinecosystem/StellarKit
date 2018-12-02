@@ -8,17 +8,17 @@
 
 import Foundation
 import KinUtil
-import StellarErrors
 
 public final class TxBuilder {
-    private var source: Account
+    private let source: Account
+    private let node: Stellar.Node
+
     private var memo: Memo?
     private var fee: UInt32?
     private var sequence: UInt64 = 0
+    private var timeBounds: TimeBounds?
     private var operations = [Operation]()
-    private var opSigners = [Account]()
-
-    private var node: Stellar.Node
+    private var signers = [Account]()
 
     public init(source: Account, node: Stellar.Node) {
         self.source = source
@@ -47,6 +47,36 @@ public final class TxBuilder {
     }
 
     @discardableResult
+    public func set(lowerBounds: Date) -> TxBuilder {
+        let lower = UInt64(lowerBounds.timeIntervalSince1970)
+        let upper = timeBounds?.maxTime ?? 0
+
+        self.timeBounds = TimeBounds(minTime: lower, maxTime: upper)
+
+        return self
+    }
+
+    @discardableResult
+    public func set(upperBounds: Date) -> TxBuilder {
+        let lower = timeBounds?.minTime ?? 0
+        let upper = UInt64(upperBounds.timeIntervalSince1970)
+
+        self.timeBounds = TimeBounds(minTime: lower, maxTime: upper)
+
+        return self
+    }
+
+    @discardableResult
+    public func set(bounds: (Date, Date)) -> TxBuilder {
+        let lower = UInt64(bounds.0.timeIntervalSince1970)
+        let upper = UInt64(bounds.1.timeIntervalSince1970)
+
+        self.timeBounds = TimeBounds(minTime: lower, maxTime: upper)
+
+        return self
+    }
+
+    @discardableResult
     public func add(operation: Operation) -> TxBuilder {
         operations.append(operation)
 
@@ -62,7 +92,7 @@ public final class TxBuilder {
 
     @discardableResult
     public func add(signer: Account) -> TxBuilder {
-        opSigners.append(signer)
+        signers.append(signer)
 
         return self
     }
@@ -98,11 +128,23 @@ public final class TxBuilder {
         return p
     }
 
-    public func envelope(networkId: String) -> Promise<TransactionEnvelope> {
+    public func post(envelope env: TransactionEnvelope? = nil) -> Promise<Responses.TransactionSuccess> {
+        if let env = env {
+            return Stellar.postTransaction(envelope: env, node: node)
+        }
+
+        return envelope()
+            .then ({
+                return Stellar.postTransaction(envelope: $0, node: self.node)
+            })
+    }
+
+    public func envelope() -> Promise<TransactionEnvelope> {
         return
             tx()
                 .then({
-                    return Promise(try self.sign(tx: $0, networkId: networkId))
+                    return Promise(try self.sign(tx: $0,
+                                                 networkId: self.node.networkId.description))
                 })
     }
 
@@ -111,7 +153,7 @@ public final class TxBuilder {
             return Promise(fee)
         }
 
-        return Stellar.networkParameters(node: node)
+        return Stellar.networkConfiguration(node: node)
             .then ({ params in
                 Promise(UInt32(self.operations.count) * params.baseFee)
             })
@@ -122,7 +164,7 @@ public final class TxBuilder {
 
         let m = try tx.hash(networkId: networkId)
 
-        var signatories = opSigners
+        var signatories = signers
         signatories.append(source)
 
         try signatories.forEach({ signer in
@@ -136,7 +178,7 @@ public final class TxBuilder {
                 }
 
                 let hint = WrappedData4(KeyUtils.key(base32: publicKey).suffix(4))
-                return try DecoratedSignature(hint: hint, signature:sign(m))
+                return try DecoratedSignature(hint: hint, signature: sign(m))
                 }())
         })
 

@@ -148,16 +148,12 @@ extension PaymentEvent {
 
 //MARK: -
 
-private let formatter: DateFormatter = {
-    let df = DateFormatter()
-    df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-
-    return df
-}()
-
 public final class EventWatcher<EventType> where EventType: Decodable {
-    public let eventSource: StellarEventSource
     public let emitter: Observable<EventType>
+
+    public var lastEventId: String? { return eventSource.lastEventId }
+
+    private let eventSource: StellarEventSource
 
     init(eventSource: StellarEventSource) {
         self.eventSource = eventSource
@@ -168,7 +164,7 @@ public final class EventWatcher<EventType> where EventType: Decodable {
             }
 
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(formatter)
+            decoder.dateDecodingStrategy = .formatted(DateFormatter.stellar)
 
             return try? decoder.decode(EventType.self, from: jsonData)
         })
@@ -177,5 +173,10 @@ public final class EventWatcher<EventType> where EventType: Decodable {
     deinit {
         eventSource.close()
         emitter.unlink()
+    }
+
+    public func on(queue: DispatchQueue? = nil,
+                   next: @escaping (EventType) -> Void) -> Observable<EventType> {
+        return emitter.on(queue: queue, next: next)
     }
 }

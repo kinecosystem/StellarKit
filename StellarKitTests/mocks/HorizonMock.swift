@@ -257,19 +257,19 @@ class HorizonMock {
     private func badSequence() -> Data {
         return failedTransaction(resultCode: "tx_bad_seq",
                                  transactionResult: TransactionResult(feeCharged: 100, result:
-                                    .txERROR(TransactionResultCode.txBAD_SEQ)))
+                                    .txBAD_SEQ))
     }
 
     private func missingOp() -> Data {
         return failedTransaction(resultCode: "tx_missing_op",
                                  transactionResult: TransactionResult(feeCharged: 100, result:
-                                    .txERROR(TransactionResultCode.txMISSING_OPERATION)))
+                                    .txMISSING_OPERATION))
     }
 
     private func missingSource() -> Data {
         return failedTransaction(resultCode: "tx_no_source_account",
                                  transactionResult: TransactionResult(feeCharged: 100, result:
-                                    .txERROR(TransactionResultCode.txNO_ACCOUNT)))
+                                    .txNO_ACCOUNT))
     }
 
     private func missingDestination() -> Data {

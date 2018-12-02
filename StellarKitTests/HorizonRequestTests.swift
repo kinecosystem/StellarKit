@@ -33,7 +33,7 @@ class HorizonRequestsTests: XCTestCase {
         let e = expectation(description: "")
 
         Endpoint.accounts(account).transactions().load(from: base)
-            .then({ (response: HorizonResponses.Transactions) in
+            .then({ (response: Responses.Transactions) in
                 XCTAssert(response.transactions.filter { $0.id == self.txId1 }.count == 1)
             })
             .error { print($0); XCTFail() }
@@ -49,14 +49,14 @@ class HorizonRequestsTests: XCTestCase {
         let requestor = HorizonRequest()
 
         requestor.load(url: Endpoint.transactions(txId1).url(with: base))
-            .then({ (response: HorizonResponses.Transaction) in
+            .then({ (response: Responses.Transaction) in
                 XCTAssert(response.id == self.txId1)
             })
             .error { print($0); XCTFail() }
             .finally { e1.fulfill() }
 
         requestor.load(url: Endpoint.accounts(account).transactions().url(with: base))
-            .then({ (response: HorizonResponses.Transactions) in
+            .then({ (response: Responses.Transactions) in
                 XCTAssert(response.transactions.filter { $0.id == self.txId2 }.count == 1)
             })
             .error { print($0); XCTFail() }
