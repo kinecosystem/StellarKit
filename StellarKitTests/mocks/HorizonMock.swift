@@ -251,7 +251,7 @@ class HorizonMock {
         return failedTransaction(resultCode: "tx_failed",
                                  transactionResult: TransactionResult(feeCharged: 100, result: .txFAILED([OperationResult
                                     .opINNER(OperationResult.Tr
-                                        .CREATE_ACCOUNT(CreateAccountResult.failure(CreateAccountResultCode.CREATE_ACCOUNT_ALREADY_EXIST)))])))
+                                        .CREATE_ACCOUNT(CreateAccountResult.alreadyExists))])))
     }
 
     private func badSequence() -> Data {
