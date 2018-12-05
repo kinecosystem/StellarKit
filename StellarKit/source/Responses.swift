@@ -125,7 +125,7 @@ public enum Responses {
         let base_fee: UInt32?
         let base_reserve: String?
         let base_fee_in_stroops: UInt32?
-        let base_reserve_in_stroops: String?
+        let base_reserve_in_stroops: UInt32?
         let max_tx_set_size: Int
         let protocol_version: Int
         let header_xdr: String?
@@ -219,7 +219,11 @@ extension Responses.Ledger {
     }
 
     var baseReserve: UInt32 {
-        return UInt32(Double(base_reserve ?? base_reserve_in_stroops!)!)
+        if let base = base_reserve_in_stroops {
+            return base
+        }
+
+        return UInt32(Double(base_reserve!)!)
     }
 }
 
