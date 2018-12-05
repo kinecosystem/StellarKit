@@ -26,12 +26,12 @@ struct TransactionResultCode {
     static let txINTERNAL_ERROR: Int32 = -11      // an unknown error occured
 }
 
-struct TransactionResult: XDRCodable, XDREncodableStruct {
-    let feeCharged: Int64
-    let result: Result
-    let reserved: Int32 = 0
+public struct TransactionResult: XDRCodable, XDREncodableStruct {
+    public let feeCharged: Int64
+    public let result: Result
+    public let reserved: Int32 = 0
 
-    enum Result: XDRCodable {
+    public enum Result: XDRCodable {
         case txSUCCESS([OperationResult])
         case txFAILED([OperationResult])
         case txTOO_EARLY
@@ -45,7 +45,7 @@ struct TransactionResult: XDRCodable, XDREncodableStruct {
         case txBAD_AUTH_EXTRA
         case txINTERNAL_ERROR
 
-        init(from decoder: XDRDecoder) throws {
+        public init(from decoder: XDRDecoder) throws {
             let discriminant = try decoder.decode(Int32.self)
 
             switch discriminant {
@@ -107,7 +107,7 @@ struct TransactionResult: XDRCodable, XDREncodableStruct {
         }
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         feeCharged = try decoder.decode(Int64.self)
         result = try decoder.decode(Result.self)
         _ = try decoder.decode(Int32.self)
@@ -126,20 +126,20 @@ struct OperationResultCode {
     static let opNO_ACCOUNT: Int32 = -2 // source account was not found
 }
 
-enum OperationResult: XDRCodable {
+public enum OperationResult: XDRCodable {
     case opINNER (Tr)
     case opBAD_AUTH
     case opNO_ACCOUNT
 
     // Add cases as necessary.
-    enum Tr: XDRCodable {
+    public enum Tr: XDRCodable {
         case CREATE_ACCOUNT(CreateAccountResult)
         case CHANGE_TRUST(ChangeTrustResult)
         case PAYMENT(PaymentResult)
         case MANAGE_DATA(ManageDataResult)
         case unknown
 
-        init(from decoder: XDRDecoder) throws {
+        public init(from decoder: XDRDecoder) throws {
             let discriminant = try decoder.decode(Int32.self)
 
             switch discriminant {
@@ -163,7 +163,7 @@ enum OperationResult: XDRCodable {
             }
         }
 
-        func encode(to encoder: XDREncoder) throws {
+        public func encode(to encoder: XDREncoder) throws {
             try encoder.encode(discriminant())
 
             switch self {
@@ -175,7 +175,7 @@ enum OperationResult: XDRCodable {
         }
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let discriminant = try decoder.decode(Int32.self)
 
         switch discriminant {
@@ -198,7 +198,7 @@ enum OperationResult: XDRCodable {
         }
     }
 
-    func encode(to encoder: XDREncoder) throws {
+    public func encode(to encoder: XDREncoder) throws {
         try encoder.encode(discriminant())
 
         switch self {
@@ -209,16 +209,16 @@ enum OperationResult: XDRCodable {
     }
 }
 
-struct CreateAccountResultCode {
-    static let CREATE_ACCOUNT_SUCCESS: Int32 = 0        // account was created
+public struct CreateAccountResultCode {
+    public static let CREATE_ACCOUNT_SUCCESS: Int32 = 0        // account was created
 
-    static let CREATE_ACCOUNT_MALFORMED: Int32 = -1     // invalid destination
-    static let CREATE_ACCOUNT_UNDERFUNDED: Int32 = -2   // not enough funds in source account
-    static let CREATE_ACCOUNT_LOW_RESERVE: Int32 = -3   // would create an account below the min reserve
-    static let CREATE_ACCOUNT_ALREADY_EXIST: Int32 = -4 // account already exists
+    public static let CREATE_ACCOUNT_MALFORMED: Int32 = -1     // invalid destination
+    public static let CREATE_ACCOUNT_UNDERFUNDED: Int32 = -2   // not enough funds in source account
+    public static let CREATE_ACCOUNT_LOW_RESERVE: Int32 = -3   // would create an account below the min reserve
+    public static let CREATE_ACCOUNT_ALREADY_EXIST: Int32 = -4 // account already exists
 }
 
-enum CreateAccountResult: XDRCodable {
+public enum CreateAccountResult: XDRCodable {
     case success
     case failure (Int32)
 
@@ -235,7 +235,7 @@ enum CreateAccountResult: XDRCodable {
         try encoder.encode(discriminant())
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
@@ -252,7 +252,7 @@ struct ChangeTrustResultCode {
     static let CHANGE_TRUST_SELF_NOT_ALLOWED: Int32 = -5    // trusting self is not allowed
 };
 
-enum ChangeTrustResult: XDRCodable {
+public enum ChangeTrustResult: XDRCodable {
     case success
     case failure (Int32)
 
@@ -269,7 +269,7 @@ enum ChangeTrustResult: XDRCodable {
         try encoder.encode(discriminant())
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
@@ -292,7 +292,7 @@ struct PaymentResultCode {
     static let PAYMENT_NO_ISSUER: Int32 = -9          // missing issuer on asset
 }
 
-enum PaymentResult: XDRCodable {
+public enum PaymentResult: XDRCodable {
     case success
     case failure (Int32)
 
@@ -309,7 +309,7 @@ enum PaymentResult: XDRCodable {
         try encoder.encode(discriminant())
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)
@@ -327,7 +327,7 @@ struct ManageDataResultCode {
     static let MANAGE_DATA_INVALID_NAME: Int32 = -4       // Name not a valid string
 }
 
-enum ManageDataResult: XDRCodable {
+public enum ManageDataResult: XDRCodable {
     case success
     case failure(Int32)
 
@@ -344,7 +344,7 @@ enum ManageDataResult: XDRCodable {
         try encoder.encode(discriminant())
     }
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
         self = value == 0 ? .success : .failure(value)

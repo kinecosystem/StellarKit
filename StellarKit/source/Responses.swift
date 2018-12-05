@@ -9,16 +9,16 @@
 import Foundation
 
 public enum Responses {
-    struct RequestFailure: Error, Decodable {
-        let type: URL
-        let title: String
-        let status: Int
-        let detail: String
-        let instance: String?
-        let extras: Extras?
+    public struct RequestFailure: Error, Decodable {
+        public let type: URL
+        public let title: String
+        public let status: Int
+        public let detail: String
+        public let instance: String?
+        public let extras: Extras?
 
-        struct Extras: Decodable {
-            let resultXDR: String
+        public struct Extras: Decodable {
+            public let resultXDR: String
 
             enum CodingKeys: String, CodingKey {
                 case resultXDR = "result_xdr"
@@ -27,7 +27,7 @@ public enum Responses {
     }
 
     public struct TransactionSuccess: Decodable {
-        let hash: String
+        public let hash: String
         let resultXDR: String
 
         enum CodingKeys: String, CodingKey {
@@ -187,7 +187,7 @@ public enum Responses {
 }
 
 extension Responses.RequestFailure {
-    var transactionResult: TransactionResult? {
+    public var transactionResult: TransactionResult? {
         if
             let resultXDR = extras?.resultXDR,
             let data = Data(base64Encoded: resultXDR)
@@ -200,7 +200,7 @@ extension Responses.RequestFailure {
 }
 
 extension Responses.TransactionSuccess {
-    var transactionResult: TransactionResult? {
+    public var transactionResult: TransactionResult? {
         if let data = Data(base64Encoded: resultXDR) {
             return try? XDRDecoder(data: data).decode(TransactionResult.self)
         }
