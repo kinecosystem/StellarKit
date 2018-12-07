@@ -50,11 +50,9 @@ public enum Asset: XDRCodable, Equatable {
         case AssetType.ASSET_TYPE_NATIVE:
             self = .ASSET_TYPE_NATIVE
         case AssetType.ASSET_TYPE_CREDIT_ALPHANUM4:
-            let a4 = try decoder.decode(Alpha4.self)
-            self = .ASSET_TYPE_CREDIT_ALPHANUM4(a4)
+            self = .ASSET_TYPE_CREDIT_ALPHANUM4(try decoder.decode(Alpha4.self))
         case AssetType.ASSET_TYPE_CREDIT_ALPHANUM12:
-            let a12 = try decoder.decode(Alpha12.self)
-            self = .ASSET_TYPE_CREDIT_ALPHANUM12(a12)
+            self = .ASSET_TYPE_CREDIT_ALPHANUM12(try decoder.decode(Alpha12.self))
         default:
             self = .ASSET_TYPE_NATIVE
         }
@@ -67,14 +65,12 @@ public enum Asset: XDRCodable, Equatable {
 
         if codeData.count <= 4 {
             let a4 = Alpha4(assetCode: WrappedData4(codeData),
-                            issuer: PublicKey
-                                .PUBLIC_KEY_TYPE_ED25519(WrappedData32(KeyUtils.key(base32: issuer))))
+                            issuer: PublicKey(WrappedData32(KeyUtils.key(base32: issuer))))
             self = .ASSET_TYPE_CREDIT_ALPHANUM4(a4)
         }
         else if codeData.count <= 12 {
             let a12 = Alpha12(assetCode: WrappedData12(codeData),
-                              issuer: PublicKey
-                                .PUBLIC_KEY_TYPE_ED25519(WrappedData32(KeyUtils.key(base32: issuer))))
+                              issuer: PublicKey(WrappedData32(KeyUtils.key(base32: issuer))))
             self = .ASSET_TYPE_CREDIT_ALPHANUM12(a12)
         }
         else {

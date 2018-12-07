@@ -74,10 +74,6 @@ public class XDREncoder {
         }
     }
 
-    fileprivate func append(_ data: Data) {
-        self.data.append(data)
-    }
-
     fileprivate func append<S>(_ data: S) where S: Sequence, S.Element == Data.Iterator.Element {
         self.data.append(contentsOf: data)
     }
@@ -89,23 +85,32 @@ public class XDRDecoder {
         case stringDecodingFailed(Data)
     }
 
-    private var data: Data
+    private let data: Data
     private var cursor: Int = 0
 
-    public static func decode<T>(_ type: T.Type, data: Data) throws -> T where T: XDRDecodable {
+    public static func decode<T: XDRDecodable>(_ type: T.Type, data: Data) throws -> T {
         let decoder = XDRDecoder(data: data)
         return try decoder.decode(type)
+    }
+
+    public static func decode<T: XDRDecodable>(_ type: T?.Type, data: Data) throws -> T? {
+        let decoder = XDRDecoder(data: data)
+        return try decoder.decodeArray(T.self).first
     }
 
     public func decode<T: XDRDecodable>(_ type: T.Type) throws -> T {
         return try type.init(from: self)
     }
 
+    public func decode<T: XDRDecodable>(_ type: T?.Type) throws -> T? {
+        return try decodeArray(T.self).first
+    }
+
     public func decodeArray<T: XDRDecodable>(_ type: T.Type) throws -> [T] {
         var a = [T]()
 
         let count = try decode(Int32.self)
-        try (0 ..< count).forEach { _ in try a.append(type.init(from: self)) }
+        for _ in (0 ..< count) { try a.append(type.init(from: self)) }
         return a
     }
 
@@ -127,7 +132,7 @@ public class XDRDecoder {
     }
 
     fileprivate func read(_ count: Int) throws -> [UInt8] {
-        let bytes = data[cursor..<cursor + count]
+        let bytes = data[cursor ..< cursor + count]
         cursor += count
 
         return bytes.map { $0 }
@@ -187,7 +192,7 @@ extension Data: XDRCodable {
         let length = try Int32(from: decoder)
         self = try Data(bytes: decoder.read(Int(length)))
 
-        try (0 ..< (4 - Int(count) % 4) % 4).forEach { _ in _ = try decoder.decode(UInt8.self) }
+        for _ in (0 ..< (4 - Int(count) % 4) % 4) { _ = try decoder.decode(UInt8.self) }
     }
 
     public func encode(to encoder: XDREncoder) throws {
@@ -197,13 +202,9 @@ extension Data: XDRCodable {
     }
 }
 
-extension Array: XDREncodable {
+extension Array: XDREncodable where Element: XDREncodable {
     public func encode(to encoder: XDREncoder) throws {
         try encoder.encode(Int32(count))
-        try forEach {
-            if let e = $0 as? XDREncodable {
-                try e.encode(to: encoder)
-            }
-        }
+        try forEach { try $0.encode(to: encoder) }
     }
 }

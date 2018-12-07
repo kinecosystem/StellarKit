@@ -163,6 +163,8 @@ public enum OperationResult: XDRCodable {
                 self = .CREATE_ACCOUNT(try decoder.decode(CreateAccountResult.self))
             case OperationType.CHANGE_TRUST:
                 self = .CHANGE_TRUST(try decoder.decode(ChangeTrustResult.self))
+            case OperationType.MANAGE_DATA:
+                self = .MANAGE_DATA(try decoder.decode(ManageDataResult.self))
             default:
                 self = .unknown
             }
@@ -233,15 +235,6 @@ public extension OperationResult {
     }
 }
 
-struct CreateAccountResultCode {
-    public static let CREATE_ACCOUNT_SUCCESS: Int32 = 0        // account was created
-
-    public static let CREATE_ACCOUNT_MALFORMED: Int32 = -1     // invalid destination
-    public static let CREATE_ACCOUNT_UNDERFUNDED: Int32 = -2   // not enough funds in source account
-    public static let CREATE_ACCOUNT_LOW_RESERVE: Int32 = -3   // would create an account below the min reserve
-    public static let CREATE_ACCOUNT_ALREADY_EXIST: Int32 = -4 // account already exists
-}
-
 public enum CreateAccountResult: Int32, XDRCodable {
     case success = 0
     case malformed = -1
@@ -260,111 +253,62 @@ public enum CreateAccountResult: Int32, XDRCodable {
     }
 }
 
-struct ChangeTrustResultCode {
-    static let CHANGE_TRUST_SUCCESS: Int32 = 0
-
-    static let CHANGE_TRUST_MALFORMED: Int32 = -1           // bad input
-    static let CHANGE_TRUST_NO_ISSUER: Int32 = -2           // could not find issuer
-    static let CHANGE_TRUST_INVALID_LIMIT: Int32 = -3       // cannot drop limit below balance
-    static let CHANGE_TRUST_LOW_RESERVE: Int32 = -4         // not enough funds to create a new trust line,
-    static let CHANGE_TRUST_SELF_NOT_ALLOWED: Int32 = -5    // trusting self is not allowed
-};
-
-public enum ChangeTrustResult: XDRCodable {
-    case success
-    case failure (Int32)
-
-    private func discriminant() -> Int32 {
-        switch self {
-        case .success:
-            return ChangeTrustResultCode.CHANGE_TRUST_SUCCESS
-        case .failure (let code):
-            return code
-        }
-    }
+public enum ChangeTrustResult: Int32, XDRCodable {
+    case success = 0
+    case malformed = -1
+    case noIssuer = -2
+    case invalidLimit = -3
+    case lowReserve = -4
+    case selfNotAllowed = -5
 
     public func encode(to encoder: XDREncoder) throws {
-        try encoder.encode(discriminant())
+        try encoder.encode(self.rawValue)
     }
 
     public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
-        self = value == 0 ? .success : .failure(value)
+        self.init(rawValue: value)!
     }
 }
 
-struct PaymentResultCode {
-    // codes considered as "success" for the operation
-    static let PAYMENT_SUCCESS: Int32 = 0 // payment successfuly completed
-
-    // codes considered as "failure" for the operation
-    static let PAYMENT_MALFORMED: Int32 = -1          // bad input
-    static let PAYMENT_UNDERFUNDED: Int32 = -2        // not enough funds in source account
-    static let PAYMENT_SRC_NO_TRUST: Int32 = -3       // no trust line on source account
-    static let PAYMENT_SRC_NOT_AUTHORIZED: Int32 = -4 // source not authorized to transfer
-    static let PAYMENT_NO_DESTINATION: Int32 = -5     // destination account does not exist
-    static let PAYMENT_NO_TRUST: Int32 = -6           // destination missing a trust line for asset
-    static let PAYMENT_NOT_AUTHORIZED: Int32 = -7     // destination not authorized to hold asset
-    static let PAYMENT_LINE_FULL: Int32 = -8          // destination would go above their limit
-    static let PAYMENT_NO_ISSUER: Int32 = -9          // missing issuer on asset
-}
-
-public enum PaymentResult: XDRCodable {
-    case success
-    case failure (Int32)
-
-    private func discriminant() -> Int32 {
-        switch self {
-        case .success:
-            return PaymentResultCode.PAYMENT_SUCCESS
-        case .failure (let code):
-            return code
-        }
-    }
+public enum PaymentResult: Int32, XDRCodable {
+    case success = 0
+    case malformed = -1
+    case underfunded = -2
+    case srcNoTrust = -3
+    case srcNotAuthorized = -4
+    case noDestination = -5
+    case noTrust = -6
+    case notAuthorized = -7
+    case lineFull = -8
+    case noIssuer = -9
 
     public func encode(to encoder: XDREncoder) throws {
-        try encoder.encode(discriminant())
+        try encoder.encode(self.rawValue)
     }
 
     public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
-        self = value == 0 ? .success : .failure(value)
+        self.init(rawValue: value)!
     }
 }
 
-struct ManageDataResultCode {
-    // codes considered as "success" for the operation
-    static let MANAGE_DATA_SUCCESS: Int32 = 0
-
-    // codes considered as "failure" for the operation
-    static let MANAGE_DATA_NOT_SUPPORTED_YET: Int32 = -1  // The network hasn't moved to this protocol change yet
-    static let MANAGE_DATA_NAME_NOT_FOUND: Int32 = -2     // Trying to remove a Data Entry that isn't there
-    static let MANAGE_DATA_LOW_RESERVE: Int32 = -3        // not enough funds to create a new Data Entry
-    static let MANAGE_DATA_INVALID_NAME: Int32 = -4       // Name not a valid string
-}
-
-public enum ManageDataResult: XDRCodable {
-    case success
-    case failure(Int32)
-
-    private func discriminant() -> Int32 {
-        switch self {
-        case .success:
-            return ManageDataResultCode.MANAGE_DATA_SUCCESS
-        case .failure(let code):
-            return code
-        }
-    }
+public enum ManageDataResult: Int32, XDRCodable {
+    case success = 0
+    case notSupportedYet = -1
+    case nameNotFound = -2
+    case lowReserve = -3
+    case invalidName = -4
 
     public func encode(to encoder: XDREncoder) throws {
-        try encoder.encode(discriminant())
+        try encoder.encode(self.rawValue)
     }
 
     public init(from decoder: XDRDecoder) throws {
         let value = try decoder.decode(Int32.self)
 
-        self = value == 0 ? .success : .failure(value)
+        self.init(rawValue: value)!
     }
 }

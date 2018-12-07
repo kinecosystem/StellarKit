@@ -15,3 +15,9 @@ extension DateFormatter {
         return df
     }()
 }
+
+extension Data {
+    var sha256: Data {
+        return Data(bytes: SHA256([UInt8](self)).digest())
+    }
+}

@@ -68,13 +68,13 @@ class XDRTests: XCTestCase {
     func test_optional_not_nil() {
         let a: UInt8? = 123
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(UInt8.self).first)
+        try! XCTAssertEqual(a, XDRDecoder.decode(UInt8?.self, data: x))
     }
 
     func test_optional_nil() {
         let a: UInt8? = nil
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(UInt8.self).first)
+        try! XCTAssertEqual(a, XDRDecoder.decode(UInt8?.self, data: x))
     }
 
     func test_data() {
@@ -86,7 +86,8 @@ class XDRTests: XCTestCase {
     func test_optional_data() {
         let a: Data? = Data(bytes: [123])
         let x = try! XDREncoder.encode(a)
-        try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(Data.self).first)
+
+        try! XCTAssertEqual(a, XDRDecoder(data: x).decode(Data?.self))
     }
 
     func test_struct() {

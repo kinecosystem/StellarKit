@@ -39,11 +39,15 @@ public struct TxEvent: Decodable, Equatable {
         self.source_account = try container.decode(String.self, forKey: .source_account)
 
         let eb64 = try container.decode(String.self, forKey: .envelope)
-        self.envelope = try XDRDecoder(data: Data(base64Encoded: eb64)!)
+        guard let ebData = Data(base64Encoded: eb64) else { throw StellarError.dataDecodingFailed }
+        
+        self.envelope = try XDRDecoder(data: ebData)
             .decode(TransactionEnvelope.self)
 
         let xb64 = try container.decode(String.self, forKey: .meta)
-        self.meta = try XDRDecoder(data: Data(base64Encoded: xb64)!)
+        guard let xbData = Data(base64Encoded: xb64) else { throw StellarError.dataDecodingFailed }
+
+        self.meta = try XDRDecoder(data: xbData)
             .decode(TransactionMeta.self)
     }
 
@@ -53,26 +57,18 @@ public struct TxEvent: Decodable, Equatable {
 }
 
 extension TxEvent {
-    public var memoText: String? {
-        return envelope.tx.memo.text
-    }
-
-    public var memoData: Data? {
-        return envelope.tx.memo.data
-    }
-
     public var payments: [Payment] {
         return envelope.tx.operations.compactMap({ op in
             if case let Operation.Body.PAYMENT(pOP) = op.body {
                 return Payment(source: op.sourceAccount?.publicKey ?? source_account,
-                               destination: pOP.destination.publicKey!,
+                               destination: pOP.destination.publicKey,
                                amount: Decimal(pOP.amount),
                                asset: pOP.asset)
             }
 
             if case let Operation.Body.CREATE_ACCOUNT(cOP) = op.body {
                 return Payment(source: op.sourceAccount?.publicKey ?? source_account,
-                               destination: cOP.destination.publicKey!,
+                               destination: cOP.destination.publicKey,
                                amount: Decimal(cOP.balance),
                                asset: .ASSET_TYPE_NATIVE)
             }

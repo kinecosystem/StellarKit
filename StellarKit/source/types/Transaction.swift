@@ -115,12 +115,12 @@ public struct TimeBounds: XDRCodable, XDREncodableStruct {
 }
 
 public struct Transaction: XDRCodable {
-    let sourceAccount: PublicKey
-    let fee: UInt32
-    let seqNum: UInt64
-    let timeBounds: TimeBounds?
-    let memo: Memo
-    let operations: [Operation]
+    var sourceAccount: PublicKey
+    var fee: UInt32
+    var seqNum: UInt64
+    var timeBounds: TimeBounds?
+    var memo: Memo
+    var operations: [Operation]
     let reserved: Int32 = 0
 
     var memoString: String? {
@@ -137,7 +137,7 @@ public struct Transaction: XDRCodable {
                 memo: Memo,
                 fee: UInt32,
                 operations: [Operation]) {
-        self.init(sourceAccount: .PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceAccount))),
+        self.init(sourceAccount: PublicKey(WD32(KeyUtils.key(base32: sourceAccount))),
                   seqNum: seqNum,
                   timeBounds: timeBounds,
                   memo: memo,
@@ -163,7 +163,7 @@ public struct Transaction: XDRCodable {
         sourceAccount = try decoder.decode(PublicKey.self)
         fee = try decoder.decode(UInt32.self)
         seqNum = try decoder.decode(UInt64.self)
-        timeBounds = try decoder.decodeArray(TimeBounds.self).first
+        timeBounds = try decoder.decode(TimeBounds?.self)
         memo = try decoder.decode(Memo.self)
         operations = try decoder.decodeArray(Operation.self)
         _ = try decoder.decode(Int32.self)
@@ -180,12 +180,7 @@ public struct Transaction: XDRCodable {
     }
     
     public func hash(networkId: String) throws -> Data {
-        guard let data = networkId.data(using: .utf8)?.sha256 else {
-            throw StellarError.dataEncodingFailed
-        }
-        
-        let payload = TransactionSignaturePayload(networkId: WD32(data),
-                                                  taggedTransaction: .ENVELOPE_TYPE_TX(self))
+        let payload = try TransactionSignaturePayload(tx: self, networkId: networkId)
         return try XDREncoder.encode(payload).sha256
     }
 }
@@ -196,7 +191,7 @@ struct EnvelopeType {
     static let ENVELOPE_TYPE_AUTH: Int32 = 3
 }
 
-struct TransactionSignaturePayload: XDREncodableStruct {
+public struct TransactionSignaturePayload: XDREncodableStruct {
     let networkId: WrappedData32
     let taggedTransaction: TaggedTransaction
 
@@ -225,13 +220,22 @@ struct TransactionSignaturePayload: XDREncodableStruct {
             }
         }
     }
+
+    public init(tx: Transaction, networkId: String) throws {
+        guard let data = networkId.data(using: .utf8)?.sha256 else {
+            throw StellarError.dataEncodingFailed
+        }
+
+        self.networkId = WD32(data)
+        taggedTransaction = .ENVELOPE_TYPE_TX(tx)
+    }
 }
 
-struct DecoratedSignature: XDRCodable, XDREncodableStruct {
+public struct DecoratedSignature: XDRCodable, XDREncodableStruct {
     let hint: WrappedData4;
     let signature: [UInt8]
 
-    init(from decoder: XDRDecoder) throws {
+    public init(from decoder: XDRDecoder) throws {
         hint = try decoder.decode(WrappedData4.self)
         signature = try decoder.decodeArray(UInt8.self)
     }
@@ -244,15 +248,21 @@ struct DecoratedSignature: XDRCodable, XDREncodableStruct {
 
 public struct TransactionEnvelope: XDRCodable, XDREncodableStruct {
     let tx: Transaction
-    let signatures: [DecoratedSignature]
+    private(set) var signatures: [DecoratedSignature]
 
     public init(from decoder: XDRDecoder) throws {
         tx = try decoder.decode(Transaction.self)
         signatures = try decoder.decodeArray(DecoratedSignature.self)
     }
 
-    init(tx: Transaction, signatures: [DecoratedSignature]) {
+    public init(tx: Transaction, signatures: [DecoratedSignature]) {
         self.tx = tx
         self.signatures = signatures
+    }
+}
+
+extension TransactionEnvelope {
+    public mutating func add(signature: DecoratedSignature) {
+        signatures.append(signature)
     }
 }

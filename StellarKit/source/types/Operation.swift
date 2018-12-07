@@ -32,7 +32,7 @@ public struct Operation: XDRCodable {
     }
 
     public init(from decoder: XDRDecoder) throws {
-        sourceAccount = try decoder.decodeArray(PublicKey.self).first
+        sourceAccount = try decoder.decode(PublicKey?.self)
         body = try decoder.decode(Body.self)
     }
 

@@ -29,7 +29,7 @@ public struct AccountEntry: XDRDecodable {
         balance = try decoder.decode(Int64.self)
         seqNum = try decoder.decode(SequenceNumber.self)
         numSubEntries = try decoder.decode(UInt32.self)
-        inflationDest = try decoder.decodeArray(AccountID.self).first
+        inflationDest = try decoder.decode(AccountID?.self)
         flags = try decoder.decode(UInt32.self)
         homeDomain = try decoder.decode(String.self)
         thresholds = try decoder.decode(WrappedData4.self)
@@ -47,7 +47,7 @@ public struct TrustLineEntry: XDRDecodable {
     let reserved: Int32 = 0
 
     public var account: String {
-        return accountID.publicKey!
+        return accountID.publicKey
     }
 
     public init(from decoder: XDRDecoder) throws {

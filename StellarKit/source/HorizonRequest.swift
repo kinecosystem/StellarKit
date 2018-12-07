@@ -104,7 +104,7 @@ extension HorizonRequest {
     }
 }
 
-extension EP.AccountsEndpoint {
+extension EP.AccountEndpoint {
     public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.AccountDetails> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
@@ -114,7 +114,9 @@ extension EP.LedgersEndpoint {
     public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.Ledgers> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
+}
 
+extension EP.LedgerEndpoint {
     public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.Ledger> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
@@ -124,7 +126,9 @@ extension EP.TransactionsEndpoint {
     public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.Transactions> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }
+}
 
+extension EP.TransactionEndpoint {
     public func load(from base: URL, using: HorizonRequest? = nil) -> Promise<Responses.Transaction> {
         return (using ?? HorizonRequest()).load(url: url(with: base))
     }

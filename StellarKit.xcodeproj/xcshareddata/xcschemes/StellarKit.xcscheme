@@ -49,6 +49,9 @@
                   Identifier = "StellarBaseTests/test_network_parameters()">
                </Test>
                <Test
+                  Identifier = "StellarBaseTests/test_no_balance()">
+               </Test>
+               <Test
                   Identifier = "StellarBaseTests/test_payment_from_empty_account()">
                </Test>
                <Test
@@ -62,6 +65,12 @@
                </Test>
                <Test
                   Identifier = "StellarBaseTests/test_trust()">
+               </Test>
+               <Test
+                  Identifier = "StellarIntegrationTests/test_node_payment_watch_cursor_now()">
+               </Test>
+               <Test
+                  Identifier = "StellarIntegrationTests/test_node_tx_watch_cursor_now()">
                </Test>
             </SkippedTests>
          </TestableReference>

@@ -31,7 +31,6 @@ protocol WrappedData: XDRCodable, Equatable {
     func encode(to encoder: XDREncoder) throws
 
     init()
-    init(_ data: Data)
     init<S: Sequence>(_ sequence: S) where S.Element == UInt8
 }
 
@@ -45,8 +44,10 @@ extension WrappedData {
         wrapped = try decodeData(from: decoder, capacity: Self.capacity)
     }
 
-    init(_ data: Data) {
+    init<S: Sequence>(_ sequence: S) where S.Element == UInt8 {
         self.init()
+
+        let data = Data(sequence)
 
         if data.count == Self.capacity {
             self.wrapped = data
@@ -57,10 +58,6 @@ extension WrappedData {
         else {
             self.wrapped = data + Data(count: Self.capacity - data.count)
         }
-    }
-
-    init<S: Sequence>(_ sequence: S) where S.Element == UInt8 {
-        self.init(Data(sequence))
     }
 
     static func ==(lhs: Self, rhs: Self) -> Bool {
@@ -88,7 +85,7 @@ struct WrappedData12: WrappedData {
     }
 }
 
-struct WrappedData32: WrappedData, Equatable {
+struct WrappedData32: WrappedData {
     static let capacity: Int = 32
 
     var wrapped: Data

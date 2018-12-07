@@ -21,7 +21,7 @@ struct PublicKeyType {
 enum PublicKey: XDRCodable, Equatable {
     case PUBLIC_KEY_TYPE_ED25519 (WrappedData32)
 
-    var publicKey: String? {
+    var publicKey: String! {
         if case .PUBLIC_KEY_TYPE_ED25519(let wrapper) = self {
             return KeyUtils.base32(publicKey: wrapper.wrapped.array)
         }
@@ -33,6 +33,10 @@ enum PublicKey: XDRCodable, Equatable {
         _ = try decoder.decode(Int32.self)
 
         self = .PUBLIC_KEY_TYPE_ED25519(try decoder.decode(WrappedData32.self))
+    }
+
+    init(_ keyData: WrappedData32) {
+        self = .PUBLIC_KEY_TYPE_ED25519(keyData)
     }
     
     private func discriminant() -> Int32 {

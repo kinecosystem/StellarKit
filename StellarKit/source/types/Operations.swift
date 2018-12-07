@@ -120,15 +120,15 @@ public struct SetOptionsOp: XDRCodable, XDREncodableStruct {
     let signer: Signer?
 
     public init(from decoder: XDRDecoder) throws {
-        inflationDest = try decoder.decodeArray(PublicKey.self).first
-        clearFlags = try decoder.decodeArray(UInt32.self).first
-        setFlags = try decoder.decodeArray(UInt32.self).first
-        masterWeight = try decoder.decodeArray(UInt32.self).first
-        lowThreshold = try decoder.decodeArray(UInt32.self).first
-        medThreshold = try decoder.decodeArray(UInt32.self).first
-        highThreshold = try decoder.decodeArray(UInt32.self).first
-        homeDomain = try decoder.decodeArray(String.self).first
-        signer = try decoder.decodeArray(Signer.self).first
+        inflationDest = try decoder.decode(PublicKey?.self)
+        clearFlags = try decoder.decode(UInt32?.self)
+        setFlags = try decoder.decode(UInt32?.self)
+        masterWeight = try decoder.decode(UInt32?.self)
+        lowThreshold = try decoder.decode(UInt32?.self)
+        medThreshold = try decoder.decode(UInt32?.self)
+        highThreshold = try decoder.decode(UInt32?.self)
+        homeDomain = try decoder.decode(String?.self)
+        signer = try decoder.decode(Signer?.self)
     }
 }
 
