@@ -17,6 +17,7 @@ public final class TxBuilder {
 
     private var fee: UInt32?
     private var signers = [String: Account]()
+    private var opsToSign = [(Int, Account)]()
 
     public init(source: Account, node: Node, tx: Transaction? = nil) {
         self.source = source
@@ -112,6 +113,13 @@ public final class TxBuilder {
         return self
     }
 
+    @discardableResult
+    public func signOperation(at index: Int, with account: Account) -> TxBuilder {
+        opsToSign.append((index, account))
+
+        return self
+    }
+
     public func tx() -> Promise<Transaction> {
         return source.sequence(seqNum: _tx.seqNum, node: node)
             .then {
@@ -145,7 +153,7 @@ public final class TxBuilder {
                 UInt32(self._tx.operations.count) * params.baseFee
             })
     }
-    
+
     private func sign(tx: Transaction, networkId: String) throws -> TransactionEnvelope {
         var sigs = [DecoratedSignature]()
 
@@ -162,6 +170,34 @@ public final class TxBuilder {
                 }())
         })
 
+        for (index, signer) in opsToSign {
+            try sigs.append(sign(op: _tx.operations[index], at: index, with: signer))
+        }
+
         return TransactionEnvelope(tx: tx, signatures: sigs)
+    }
+
+    private func sign(op: Operation, at index: Int, with signer: Account) throws -> DecoratedSignature {
+        let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: source.publicKey)))
+
+        guard let data = node.networkId.description.data(using: .utf8)?.sha256 else {
+            throw StellarError.dataEncodingFailed
+        }
+
+        let m =
+            try XDREncoder.encode(OperationSignaturePayload(networkId: WD32(data),
+                                                            txSourceAccount: pk,
+                                                            seqNum: self._tx.seqNum,
+                                                            slot: Int32(index),
+                                                            taggedOperation: .ENVELOPE_TYPE_OP(op)))
+                .sha256
+
+        guard let sign = signer.sign else {
+            throw StellarError.missingSignClosure
+        }
+
+        let hint = WrappedData4(KeyUtils.key(base32: signer.publicKey).suffix(4))
+
+        return try DecoratedSignature(hint: hint, signature: sign(m))
     }
 }
