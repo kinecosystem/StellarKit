@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarErrors"
-  s.version     = "0.2.8"
+  s.version     = "0.2.7"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/kinfoundation/StellarKit.git"
   s.summary     = "A framework describing the errors that may be raised by StellarKit."
