@@ -165,7 +165,32 @@ public enum Stellar {
         
         return p
     }
-    
+
+    /**
+     Burn an account.
+
+     - Parameter balance: The given `Account`s current balance.
+     - Parameter asset: The `Asset` to burn.
+     - Parameter account: The `Account` which will be burned.
+     - Parameter node: An object describing the network endpoint.
+
+     - Returns: A transaction hash if burned. If the burn already took place, a 'bad auth' error will be returned.
+     */
+    public static func burn(balance: Int64,
+                            asset: Asset,
+                            account: Account,
+                            node: Node) -> Promise<String> {
+        return TxBuilder(source: account, node: node)
+            .add(operation: Operation.changeTrust(asset: asset, limit: balance))
+            .add(operation: Operation.setOptions(masterWeight: 0))
+            .tx()
+            .then { transaction -> Promise<String> in
+                let envelope = try Stellar.sign(transaction: transaction, signer: account, node: node)
+
+                return Stellar.postTransaction(envelope: envelope, node: node)
+        }
+    }
+
     /**
      Obtain the balance for a given asset.
      
