@@ -170,8 +170,8 @@ public enum Stellar {
      Burn an account.
 
      - Parameter balance: The given `Account`s current balance.
-     - Parameter asset: The `Asset` to trust.
-     - Parameter account: The `Account` which will trust the given asset.
+     - Parameter asset: The `Asset` to burn.
+     - Parameter account: The `Account` which will be burned.
      - Parameter node: An object describing the network endpoint.
 
      - Returns: A transaction hash if burned. If the burn already took place, a 'bad auth' error will be returned.
