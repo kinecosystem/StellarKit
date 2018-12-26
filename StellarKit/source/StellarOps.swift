@@ -42,14 +42,24 @@ extension Operation {
 
     }
 
-    public static func changeTrust(asset: Asset, source: Account? = nil) -> Operation {
+    public static func changeTrust(asset: Asset, limit: Int64 = .max, source: Account? = nil) -> Operation {
         var sourcePK: PublicKey? = nil
         if let source = source, let pk = source.publicKey {
             sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
         }
 
-        return Operation(sourceAccount: sourcePK,
-                         body: Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset)))
+        let body = Operation.Body.CHANGE_TRUST(ChangeTrustOp(asset: asset, limit: limit))
+        return Operation(sourceAccount: sourcePK, body: body)
+    }
+
+    public static func setOptions(masterWeight: UInt32, source: Account? = nil) -> Operation {
+        var sourcePK: PublicKey? = nil
+        if let source = source, let pk = source.publicKey {
+            sourcePK = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: pk)))
+        }
+
+        let body = Operation.Body.SET_OPTIONS(SetOptionsOp(masterWeight: masterWeight))
+        return Operation(sourceAccount: sourcePK, body: body)
     }
 
     public static func manageData(key: String, value: Data?, source: Account? = nil) -> Operation {

@@ -130,6 +130,18 @@ public struct SetOptionsOp: XDRCodable, XDREncodableStruct {
         homeDomain = try decoder.decodeArray(String.self).first
         signer = try decoder.decodeArray(Signer.self).first
     }
+
+    public init(masterWeight: UInt32) {
+        self.inflationDest = nil
+        self.clearFlags = nil
+        self.setFlags = nil
+        self.masterWeight = masterWeight
+        self.lowThreshold = nil
+        self.medThreshold = nil
+        self.highThreshold = nil
+        self.homeDomain = nil
+        self.signer = nil
+    }
 }
 
 public struct ManageOfferOp: XDRCodable, XDREncodableStruct {
