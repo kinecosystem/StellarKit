@@ -129,7 +129,7 @@ public enum HorizonResponses {
         let base_fee: UInt32?
         let base_reserve: String?
         let base_fee_in_stroops: UInt32?
-        let base_reserve_in_stroops: String?
+        let base_reserve_in_stroops: UInt32?
         let max_tx_set_size: Int
         let protocol_version: Int
         let header_xdr: String?

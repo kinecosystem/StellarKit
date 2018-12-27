@@ -131,6 +131,18 @@ public struct SetOptionsOp: XDRCodable, XDREncodableStruct {
         signer = try decoder.decodeArray(Signer.self).first
     }
 
+    public func encode(to encoder: XDREncoder) throws {
+        try encoder.encodeOptional(inflationDest)
+        try encoder.encodeOptional(clearFlags)
+        try encoder.encodeOptional(setFlags)
+        try encoder.encodeOptional(masterWeight)
+        try encoder.encodeOptional(lowThreshold)
+        try encoder.encodeOptional(medThreshold)
+        try encoder.encodeOptional(highThreshold)
+        try encoder.encodeOptional(homeDomain)
+        try encoder.encodeOptional(signer)
+    }
+    
     public init(masterWeight: UInt32) {
         self.inflationDest = nil
         self.clearFlags = nil
@@ -204,7 +216,7 @@ public struct ManageDataOp: XDRCodable {
     }
 }
 
-public struct Signer: XDRDecodable {
+public struct Signer: XDRDecodable, XDREncodableStruct {
     let key: SignerKey
     let weight: UInt32
 

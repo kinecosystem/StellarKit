@@ -34,7 +34,7 @@ func sign(transaction tx: Transaction,
     let payload = TransactionSignaturePayload(networkId: WD32(sha256),
                                               taggedTransaction: .ENVELOPE_TYPE_TX(tx))
 
-    let message = try XDREncoder.encode(payload).sha256
+    let message = Array(try XDREncoder.encode(payload).sha256)
 
     guard let sign = signer.sign else {
         throw StellarError.missingSignClosure

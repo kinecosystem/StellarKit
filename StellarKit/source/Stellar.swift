@@ -13,7 +13,7 @@ import KinUtil
 public protocol Account {
     var publicKey: String? { get }
     
-    var sign: ((Data) throws -> [UInt8])? { get }
+    var sign: (([UInt8]) throws -> [UInt8])? { get }
 }
 
 private let testId = "Test SDF Network ; September 2015"
