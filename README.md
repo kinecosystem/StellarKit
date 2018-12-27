@@ -62,7 +62,7 @@ Stellar identifies a network via a pre-defined string.  The Stellar Development 
 public protocol Account {
     var publicKey: String? { get }
 
-    var sign: ((Data) throws -> Data)? { get }
+    var sign: (([UInt8]) throws -> [UInt8])? { get }
 }
 ```
 
