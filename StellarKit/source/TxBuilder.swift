@@ -136,7 +136,7 @@ public final class TxBuilder {
                 }
 
                 let hint = WrappedData4(KeyUtils.key(base32: publicKey).suffix(4))
-                return try DecoratedSignature(hint: hint, signature:sign(m))
+                return try DecoratedSignature(hint: hint, signature: sign(Array(m)))
                 }())
         })
 

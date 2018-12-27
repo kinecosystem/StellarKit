@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.author      = { 'Kin Foundation' => 'kin@kik.com' }
   s.source      = { :git => "https://github.com/kinfoundation/StellarKit.git", :tag => s.version, :submodules => true }
 
-  s.dependency 'KinUtil', '0.0.6'
+  s.dependency 'KinUtil', '0.0.12'
   s.dependency 'StellarErrors', '0.2.7'
 
   s.ios.deployment_target = "8.0"

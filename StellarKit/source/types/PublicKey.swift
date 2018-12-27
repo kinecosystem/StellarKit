@@ -23,6 +23,7 @@ enum PublicKey: XDRCodable, Equatable {
 
     var publicKey: String? {
         if case .PUBLIC_KEY_TYPE_ED25519(let wrapper) = self {
+            wrapper.wrapped
             return KeyUtils.base32(publicKey: wrapper.wrapped.array)
         }
 
