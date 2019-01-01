@@ -15,6 +15,7 @@ enum Option: Hashable {
     case order(Order)
     case limit(Int)
     case cursor(String)
+    case null
 }
 
 protocol EndpointProtocol {
@@ -58,6 +59,8 @@ extension EndpointProtocol {
                 params += (params.count == 1 ? "" : "&") + "limit=\(limit)"
             case .cursor(let cursor):
                 params += (params.count == 1 ? "" : "&") + "cursor=\(cursor)"
+            case .null:
+                break
             }
         }
 
@@ -76,7 +79,7 @@ extension EndpointProtocol {
 
     func cursor(_ cursor: String?) -> Self {
         return Self.init(components,
-                         options: cursor != nil ? options.union([Option.cursor(cursor!)]) : options)
+                         options: options.union([cursor != nil ? Option.cursor(cursor!) : .null]))
     }
 }
 
