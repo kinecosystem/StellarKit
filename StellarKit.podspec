@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
-  s.version     = "0.3.12"
+  s.version     = "0.3.13"
   s.license     = { :type => "MIT" }
   s.homepage    = "https://github.com/kinfoundation/StellarKit.git"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.author      = { 'Kin Foundation' => 'kin@kik.com' }
   s.source      = { :git => "https://github.com/kinfoundation/StellarKit.git", :tag => s.version, :submodules => true }
 
-  s.dependency 'KinUtil', '0.0.15'
+  s.dependency 'KinUtil', '0.0.16'
   s.dependency 'StellarErrors', '0.2.7'
 
   s.ios.deployment_target = "8.0"
