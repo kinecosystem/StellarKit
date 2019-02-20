@@ -30,6 +30,7 @@ public final class StellarEventSource: NSObject, URLSessionDataDelegate {
     private var urlSession: URLSession?
     private var task: URLSessionDataTask?
     private var retryTime = 3000
+    private let lock = NSLock()
 
     public private(set) var lastEventId: String?
 
@@ -45,6 +46,10 @@ public final class StellarEventSource: NSObject, URLSessionDataDelegate {
     }
 
     private func connect() {
+        
+        lock.lock()
+        defer { lock.unlock() }
+        
         guard state != .closed else {
             return
         }
@@ -74,6 +79,10 @@ public final class StellarEventSource: NSObject, URLSessionDataDelegate {
     }
 
     public func close() {
+        
+        lock.lock()
+        defer { lock.unlock() }
+        
         state = .closed
 
         emitter?.finish()
