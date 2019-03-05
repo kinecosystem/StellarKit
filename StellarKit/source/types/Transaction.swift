@@ -241,7 +241,7 @@ struct DecoratedSignature: XDRCodable, XDREncodableStruct {
 
 public struct TransactionEnvelope: XDRCodable, XDREncodableStruct {
     let tx: Transaction
-    let signatures: [DecoratedSignature]
+    private(set) var signatures: [DecoratedSignature]
 
     public init(from decoder: XDRDecoder) throws {
         tx = try decoder.decode(Transaction.self)
@@ -251,5 +251,25 @@ public struct TransactionEnvelope: XDRCodable, XDREncodableStruct {
     init(tx: Transaction, signatures: [DecoratedSignature]) {
         self.tx = tx
         self.signatures = signatures
+    }
+
+    mutating func add(signer: Account, networkId: String) throws {
+        let m = try tx.hash(networkId: networkId)
+        guard let sign = signer.sign else {
+            throw StellarError.missingSignClosure
+        }
+
+        guard let publicKey = signer.publicKey else {
+            throw StellarError.missingPublicKey
+        }
+
+        let hint = WrappedData4(KeyUtils.key(base32: publicKey).suffix(4))
+        let signature = try DecoratedSignature(hint: hint, signature: sign(Array(m)))
+
+        add(signature: signature)
+    }
+
+    mutating func add(signature: DecoratedSignature) {
+        signatures.append(signature)
     }
 }

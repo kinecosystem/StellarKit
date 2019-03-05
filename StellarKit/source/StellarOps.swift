@@ -52,6 +52,18 @@ extension Operation {
         return Operation(sourceAccount: sourcePK, body: body)
     }
 
+    public static func setOptions(signer address: String, source: String? = nil) -> Operation {
+        var sourcePK: PublicKey? = nil
+        if let source = source {
+            sourcePK = .PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: source)))
+        }
+
+        let signerKey = SignerKey.SIGNER_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: address)))
+        let signer = Signer(key: signerKey)
+        let body = Operation.Body.SET_OPTIONS(SetOptionsOp(signer: signer))
+        return Operation(sourceAccount: sourcePK, body: body)
+    }
+
     public static func setOptions(masterWeight: UInt32, source: Account? = nil) -> Operation {
         var sourcePK: PublicKey? = nil
         if let source = source, let pk = source.publicKey {

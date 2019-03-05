@@ -34,6 +34,12 @@ enum PublicKey: XDRCodable, Equatable {
 
         self = .PUBLIC_KEY_TYPE_ED25519(try decoder.decode(WrappedData32.self))
     }
+
+    init(string: String) {
+        let key = KeyUtils.key(base32: string)
+        let wrappedData = WrappedData32(Data(bytes: key))
+        self = .PUBLIC_KEY_TYPE_ED25519(wrappedData)
+    }
     
     private func discriminant() -> Int32 {
         switch self {

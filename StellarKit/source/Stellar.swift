@@ -353,4 +353,15 @@ public enum Stellar {
                 }
         }
     }
+
+    public static func linkingTransaction(publicKey publicKeyString: String, localSigner: Account, node: Node) -> Promise<TransactionEnvelope> {
+        let authorizeOp = Operation.setOptions(signer: localSigner.publicKey!, source: publicKeyString)
+        let linkOp = Operation.manageData(key: publicKeyString, value: Data(bytes: [1]), source: localSigner)
+
+        return TxBuilder(source: localSigner, node: node)
+            .set(sourceAddress: publicKeyString)
+            .add(operation: authorizeOp)
+            .add(operation: linkOp)
+            .envelope(networkId: node.networkId.description)
+    }
 }

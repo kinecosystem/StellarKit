@@ -12,6 +12,7 @@ import StellarErrors
 
 public final class TxBuilder {
     private var source: Account
+    private var sourceAddress: PublicKey?
     private var memo: Memo?
     private var fee: UInt32?
     private var sequence: UInt64 = 0
@@ -67,6 +68,12 @@ public final class TxBuilder {
         return self
     }
 
+    @discardableResult
+    public func set(sourceAddress: String) -> TxBuilder {
+        self.sourceAddress = PublicKey(string: sourceAddress)
+        return self
+    }
+
     public func tx() -> Promise<Transaction> {
         let p = Promise<Transaction>()
 
@@ -76,7 +83,7 @@ public final class TxBuilder {
             return p
         }
 
-        let pk = PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceKey)))
+        let pk = sourceAddress ?? PublicKey.PUBLIC_KEY_TYPE_ED25519(WD32(KeyUtils.key(base32: sourceKey)))
 
         Stellar.sequence(account: sourceKey, seqNum: sequence, node: node)
             .then { sequence in

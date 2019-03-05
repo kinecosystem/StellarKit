@@ -143,7 +143,7 @@ public struct SetOptionsOp: XDRCodable, XDREncodableStruct {
         try encoder.encodeOptional(signer)
     }
     
-    public init(masterWeight: UInt32) {
+    public init(masterWeight: UInt32? = nil, signer: Signer? = nil) {
         self.inflationDest = nil
         self.clearFlags = nil
         self.setFlags = nil
@@ -152,7 +152,7 @@ public struct SetOptionsOp: XDRCodable, XDREncodableStruct {
         self.medThreshold = nil
         self.highThreshold = nil
         self.homeDomain = nil
-        self.signer = nil
+        self.signer = signer
     }
 }
 
@@ -223,6 +223,11 @@ public struct Signer: XDRDecodable, XDREncodableStruct {
     public init(from decoder: XDRDecoder) throws {
         key = try decoder.decode(SignerKey.self)
         weight = try decoder.decode(UInt32.self)
+    }
+
+    init(key: SignerKey, weight: UInt32 = 1) {
+        self.key = key
+        self.weight = weight
     }
 }
 
