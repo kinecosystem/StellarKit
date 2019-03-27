@@ -83,8 +83,8 @@ public struct TestKeyUtils {
         return Sodium().randomBytes.buf(length: 16)?.hexString
     }
 
-    public static func sign(message: Data, signingKey: [UInt8]) throws -> [UInt8] {
-        guard let signature = Sodium().sign.signature(message: message.array,
+    public static func sign(message: [UInt8], signingKey: [UInt8]) throws -> [UInt8] {
+        guard let signature = Sodium().sign.signature(message: message,
                                                       secretKey: signingKey) else {
             throw StellarError.signingFailed
         }

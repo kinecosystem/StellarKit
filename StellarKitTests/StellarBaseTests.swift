@@ -23,14 +23,15 @@ struct MockStellarAccount: Account {
         keyPair = TestKeyUtils.keyPair(from: seedStr)!
         
         let secretKey = keyPair.secretKey
-        
-        sign = { message in
-            return try TestKeyUtils.sign(message: message,
-                                         signingKey: secretKey)
+
+        let sign: (([UInt8]) throws -> [UInt8]) = { message in
+            return try TestKeyUtils.sign(message: message, signingKey: secretKey)
         }
+
+        self.sign = sign
     }
     
-    var sign: ((Data) throws -> [UInt8])?
+    var sign: (([UInt8]) throws -> [UInt8])?
     
     init() {
         self.init(seedStr: KeyUtils.base32(seed: TestKeyUtils.seed()!))
