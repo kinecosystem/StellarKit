@@ -113,23 +113,37 @@ public class XDRDecoder {
         self.data = data
     }
 
-    func load<T: FixedWidthInteger>(_ type: T.Type) throws -> T {
-        let byteCount = T.bitWidth / 8
-
+    fileprivate func read(_ byteCount: Int, into: UnsafeMutableRawPointer) throws {
         if cursor + byteCount > data.count {
             throw Errors.prematureEndOfData
         }
 
-        var x: T = 0
-        
-        data.withUnsafeBytes({ (ptr: UnsafeRawBufferPointer) -> () in
-            x = ptr.load(fromByteOffset: cursor, as: type)
+        data.withUnsafeBytes({ (ptr: UnsafePointer<UInt8>) -> () in
+            let from = ptr + cursor
+            memcpy(into, from, byteCount)
         })
 
         cursor += byteCount
-
-        return x
     }
+
+    // !!!: Swift 5
+//    func load<T: FixedWidthInteger>(_ type: T.Type) throws -> T {
+//        let byteCount = T.bitWidth / 8
+//
+//        if cursor + byteCount > data.count {
+//            throw Errors.prematureEndOfData
+//        }
+//
+//        var x: T = 0
+//
+//        data.withUnsafeBytes({ (ptr: UnsafeRawBufferPointer) -> () in
+//            x = ptr.load(fromByteOffset: cursor, as: type)
+//        })
+//
+//        cursor += byteCount
+//
+//        return x
+//    }
 
     fileprivate func read(_ count: Int) throws -> [UInt8] {
         let bytes = data[cursor..<cursor + count]
@@ -151,7 +165,12 @@ extension Bool: XDRCodable {
 
 extension FixedWidthInteger where Self: XDRCodable {
     public init(from decoder: XDRDecoder) throws {
-        self = try decoder.load(Self.self).bigEndian
+        var v = Self.init()
+        try decoder.read(Self.bitWidth / 8, into: &v)
+        self = Self.init(bigEndian: v)
+
+        // !!!: Swift 5
+//        self = try decoder.load(Self.self).bigEndian
     }
 
     public func encode(to encoder: XDREncoder) throws {
