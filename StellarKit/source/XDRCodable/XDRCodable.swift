@@ -113,17 +113,22 @@ public class XDRDecoder {
         self.data = data
     }
 
-    fileprivate func read(_ byteCount: Int, into: UnsafeMutableRawPointer) throws {
+    func load<T: FixedWidthInteger>(_ type: T.Type) throws -> T {
+        let byteCount = T.bitWidth / 8
+
         if cursor + byteCount > data.count {
             throw Errors.prematureEndOfData
         }
 
-        data.withUnsafeBytes({ (ptr: UnsafePointer<UInt8>) -> () in
-            let from = ptr + cursor
-            memcpy(into, from, byteCount)
+        var x: T = 0
+        
+        data.withUnsafeBytes({ (ptr: UnsafeRawBufferPointer) -> () in
+            x = ptr.load(fromByteOffset: cursor, as: type)
         })
 
         cursor += byteCount
+
+        return x
     }
 
     fileprivate func read(_ count: Int) throws -> [UInt8] {
@@ -146,9 +151,7 @@ extension Bool: XDRCodable {
 
 extension FixedWidthInteger where Self: XDRCodable {
     public init(from decoder: XDRDecoder) throws {
-        var v = Self.init()
-        try decoder.read(Self.bitWidth / 8, into: &v)
-        self = Self.init(bigEndian: v)
+        self = try decoder.load(Self.self).bigEndian
     }
 
     public func encode(to encoder: XDREncoder) throws {
@@ -185,7 +188,7 @@ extension String: XDRCodable {
 extension Data: XDRCodable {
     public init(from decoder: XDRDecoder) throws {
         let length = try Int32(from: decoder)
-        self = try Data(bytes: decoder.read(Int(length)))
+        self = try Data(decoder.read(Int(length)))
 
         try (0 ..< (4 - Int(count) % 4) % 4).forEach { _ in _ = try decoder.decode(UInt8.self) }
     }

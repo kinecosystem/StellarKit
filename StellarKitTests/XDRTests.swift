@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import StellarKit
+@testable import StellarKit
 
 class XDRTests: XCTestCase {
 
@@ -78,13 +78,13 @@ class XDRTests: XCTestCase {
     }
 
     func test_data() {
-        let a: Data = Data(bytes: [123])
+        let a: Data = Data([123])
         let x = try! XDREncoder.encode(a)
         try! XCTAssertEqual(a, XDRDecoder(data: x).decode(Data.self))
     }
 
     func test_optional_data() {
-        let a: Data? = Data(bytes: [123])
+        let a: Data? = Data([123])
         let x = try! XDREncoder.encode(a)
         try! XCTAssertEqual(a, XDRDecoder(data: x).decodeArray(Data.self).first)
     }

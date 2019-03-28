@@ -79,6 +79,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		68213E4A224C8D7D0000BB46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8287073E21974EC40031229D /* Sodium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D891FE9421642CB40092AA84;
+			remoteInfo = Sodium_watchOS;
+		};
+		68213E4C224C8D7D0000BB46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8287073E21974EC40031229D /* Sodium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D87D515521647597006D2C03;
+			remoteInfo = "Example Watch";
+		};
+		68213E4E224C8D7D0000BB46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8287073E21974EC40031229D /* Sodium.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D87D516121647598006D2C03;
+			remoteInfo = "Example Watch Extension";
+		};
 		82340BA71FFDF2DA0034204F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 82340B931FFDF2DA0034204F /* Project object */;
@@ -470,8 +491,11 @@
 				8287074721974EC40031229D /* Sodium.framework */,
 				8287074921974EC40031229D /* SodiumTests.xctest */,
 				8287074B21974EC40031229D /* Sodium.framework */,
+				68213E4B224C8D7D0000BB46 /* Sodium.framework */,
 				8287074D21974EC40031229D /* Example iOS.app */,
 				8287074F21974EC40031229D /* Example OSX.app */,
+				68213E4D224C8D7D0000BB46 /* Example Watch.app */,
+				68213E4F224C8D7D0000BB46 /* Example Watch Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -662,18 +686,18 @@
 				TargetAttributes = {
 					82340B9B1FFDF2DA0034204F = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					82340BA41FFDF2DA0034204F = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 82340BC01FFDF3F30034204F;
 					};
 					82340BC01FFDF3F30034204F = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					824138802061712D00D7117E = {
@@ -681,7 +705,7 @@
 					};
 					828CB534205E23F9007C679C = {
 						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					82BA2042204D856100396AE2 = {
@@ -724,6 +748,27 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		68213E4B224C8D7D0000BB46 /* Sodium.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Sodium.framework;
+			remoteRef = 68213E4A224C8D7D0000BB46 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		68213E4D224C8D7D0000BB46 /* Example Watch.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Example Watch.app";
+			remoteRef = 68213E4C224C8D7D0000BB46 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		68213E4F224C8D7D0000BB46 /* Example Watch Extension.appex */ = {
+			isa = PBXReferenceProxy;
+			fileType = "wrapper.app-extension";
+			path = "Example Watch Extension.appex";
+			remoteRef = 68213E4E224C8D7D0000BB46 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		8287074721974EC40031229D /* Sodium.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1145,7 +1190,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1174,7 +1219,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1194,7 +1239,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StellarKitHost.app/StellarKitHost";
 			};
@@ -1215,7 +1260,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StellarKitHost.app/StellarKitHost";
 			};
@@ -1234,7 +1279,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1252,7 +1297,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarKitHost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/StellarKit/third-party/swift-sodium/Sodium/libsodium";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1328,7 +1373,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1352,7 +1397,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinfoundation.StellarErrors;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.source      = { :git => "https://github.com/kinfoundation/StellarKit.git", :tag => s.version, :submodules => true }
 
   s.ios.deployment_target = "8.0"
-  s.swift_version = "3.2"
+  s.swift_version = "4.2"
 
   s.source_files          = 'StellarErrors/*.swift'
 end

@@ -207,7 +207,7 @@ public struct ManageDataOp: XDRCodable {
         dataName = try decoder.decode(String.self)
 
         let data = try decoder.decodeArray(UInt8.self)
-        dataValue = data.isEmpty ? nil : Data(bytes: data)
+        dataValue = data.isEmpty ? nil : Data(data)
     }
 
     public init(dataName: String, dataValue: Data?) {
