@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
   s.version     = "0.3.17"
-  s.license     = { :type => "MIT" }
+  s.license     = { :type => "Kin Ecosystem SDK License", :file => 'LICENSE.pdf' }
   s.homepage    = "https://github.com/kinecosystem/StellarKit.git"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
   s.description = <<-DESC
