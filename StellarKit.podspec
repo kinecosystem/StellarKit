@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
-  s.version     = "0.3.17"
-  s.license     = { :type => "Kin Ecosystem SDK License", :file => 'LICENSE.pdf' }
+  s.version     = "0.4.0"
+  s.license     = { :type => "Kin Ecosystem SDK License" }
   s.homepage    = "https://github.com/kinecosystem/StellarKit.git"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
   s.description = <<-DESC
@@ -10,11 +10,11 @@ Pod::Spec.new do |s|
   s.author      = { 'Kin' => 'info@kin.org' }
   s.source      = { :git => "https://github.com/kinecosystem/StellarKit.git", :tag => s.version, :submodules => true }
 
-  s.dependency 'KinUtil', '0.0.18'
-  s.dependency 'StellarErrors', '0.3.17'
+  s.dependency 'KinUtil', '0.1.0'
+  s.dependency 'StellarErrors', '0.4.0'
 
   s.ios.deployment_target = "8.0"
-  s.swift_version = "4.2"
+  s.swift_version = "5.0"
 
   s.source_files = 'StellarKit/source/*.swift',
                    'StellarKit/source/types/*.swift',
