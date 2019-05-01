@@ -177,20 +177,6 @@
 			remoteGlobalIDString = 828CB534205E23F9007C679C;
 			remoteInfo = StellarErrors;
 		};
-		82BA20A4204D856100396AE2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 82F2FADD2043172A00E754BD /* KinUtil.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 82BA2040204D84AA00396AE2;
-			remoteInfo = "KinUtil-macos";
-		};
-		82BA20A6204D863700396AE2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 82F2FADD2043172A00E754BD /* KinUtil.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 82BA2033204D84AA00396AE2;
-			remoteInfo = "KinUtil-macos";
-		};
 		82ECAB94200380290010E31F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 82340B931FFDF2DA0034204F /* Project object */;
@@ -515,7 +501,6 @@
 			children = (
 				82F2FAE32043172A00E754BD /* KinUtil.framework */,
 				82F2FAE52043172A00E754BD /* KinUtilTests.xctest */,
-				82BA20A5204D856100396AE2 /* KinUtil.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -667,7 +652,6 @@
 			);
 			dependencies = (
 				8241388D2061716600D7117E /* PBXTargetDependency */,
-				82BA20A7204D863700396AE2 /* PBXTargetDependency */,
 			);
 			name = "StellarKit-macos";
 			productName = SwiftyStellar;
@@ -802,13 +786,6 @@
 			fileType = wrapper.application;
 			path = "Example OSX.app";
 			remoteRef = 8287074E21974EC40031229D /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		82BA20A5204D856100396AE2 /* KinUtil.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = KinUtil.framework;
-			remoteRef = 82BA20A4204D856100396AE2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		82F2FAE32043172A00E754BD /* KinUtil.framework */ = {
@@ -1003,11 +980,6 @@
 			target = 828CB534205E23F9007C679C /* StellarErrors */;
 			targetProxy = 828CB556205E278D007C679C /* PBXContainerItemProxy */;
 		};
-		82BA20A7204D863700396AE2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "KinUtil-macos";
-			targetProxy = 82BA20A6204D863700396AE2 /* PBXContainerItemProxy */;
-		};
 		82ECAB95200380290010E31F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 82340BC01FFDF3F30034204F /* StellarKitHost */;
@@ -1100,7 +1072,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1158,7 +1130,7 @@
 				OTHER_LDFLAGS = "-lsodium-ios";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
