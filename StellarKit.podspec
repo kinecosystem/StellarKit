@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarKit"
-  s.version     = "0.4.0"
+  s.version     = "0.4.1"
   s.license     = { :type => "Kin Ecosystem SDK License" }
   s.homepage    = "https://github.com/kinecosystem/StellarKit.git"
   s.summary     = "A framework for communicating with a Stellar Horizon node"
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.source      = { :git => "https://github.com/kinecosystem/StellarKit.git", :tag => s.version, :submodules => true }
 
   s.dependency 'KinUtil', '0.1.0'
-  s.dependency 'StellarErrors', '0.4.0'
+  s.dependency 'StellarErrors', '0.4.1'
 
   s.ios.deployment_target = "8.0"
   s.swift_version = "5.0"

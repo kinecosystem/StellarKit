@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = "StellarErrors"
-  s.version     = "0.4.0"
+  s.version     = "0.4.1"
   s.license     = { :type => "Kin Ecosystem SDK License" }
   s.homepage    = "https://github.com/kinecosystem/StellarKit.git"
   s.summary     = "A framework describing the errors that may be raised by StellarKit."
